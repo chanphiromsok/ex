@@ -49,7 +49,7 @@ The person the goods are addressed to; name and phone on the Shipment, not an ac
 _Avoid_: Consignee, customer
 
 **Route**:
-The ordered origin Location to destination Location pair a Shipment travels on; owns no price of its own beyond the global Price List.
+The ordered origin Location to destination Location pair a Shipment travels on; owns no price of its own.
 _Avoid_: Line, trip, leg
 
 ## Lifecycle
@@ -124,16 +124,12 @@ _Avoid_: Insured value, COD amount
 
 ## Pricing
 
-**Price List**:
-The single global set of price rules: a price per kg and a price per Size Class for each Route. A new version takes effect from a date.
-_Avoid_: Tariff, rate card
-
 **Chargeable Amount**:
-The price of one Parcel: the higher of its weight price and its Size Class price.
+The price of one Parcel: the price of the smallest Size Class it fits.
 _Avoid_: Volumetric weight, final weight
 
 **Size Class**:
-A named bracket of Parcel dimensions (for example Small, Medium, Large) with its own price.
+A named bracket of Parcel weight and dimensions (for example Small, Medium, Large) with its own price. A Parcel is charged the smallest Size Class it fits within.
 _Avoid_: Box size, package type
 
 **Sale Item**:

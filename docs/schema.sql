@@ -39,6 +39,11 @@ CREATE TABLE routes (
 CREATE TABLE size_classes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL UNIQUE,
+  max_weight_kg numeric NOT NULL CHECK (max_weight_kg > 0),
+  max_length_cm numeric NOT NULL CHECK (max_length_cm > 0),
+  max_width_cm numeric NOT NULL CHECK (max_width_cm > 0),
+  max_height_cm numeric NOT NULL CHECK (max_height_cm > 0),
+  price money_with_currency NOT NULL,
   active boolean NOT NULL DEFAULT true
 );
 
@@ -47,28 +52,6 @@ CREATE TABLE sale_items (
   name text NOT NULL UNIQUE,
   unit_price money_with_currency NOT NULL,
   active boolean NOT NULL DEFAULT true
-);
-
-CREATE TABLE price_list_versions (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  effective_from date NOT NULL UNIQUE
-);
-
-CREATE TABLE price_list_weight_rates (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  version_id uuid NOT NULL REFERENCES price_list_versions,
-  route_id uuid NOT NULL REFERENCES routes,
-  price_per_kg money_with_currency NOT NULL,
-  UNIQUE (version_id, route_id)
-);
-
-CREATE TABLE price_list_size_rates (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  version_id uuid NOT NULL REFERENCES price_list_versions,
-  route_id uuid NOT NULL REFERENCES routes,
-  size_class_id uuid NOT NULL REFERENCES size_classes,
-  price money_with_currency NOT NULL,
-  UNIQUE (version_id, route_id, size_class_id)
 );
 
 CREATE TABLE station_settings (
@@ -95,7 +78,6 @@ CREATE TABLE shipments (
   origin_station_id uuid NOT NULL REFERENCES stations,
   destination_station_id uuid NOT NULL REFERENCES stations,
   route_id uuid NOT NULL REFERENCES routes,
-  price_list_version_id uuid NOT NULL REFERENCES price_list_versions,
   sender_name text NOT NULL,
   sender_phone text NOT NULL,
   receiver_name text NOT NULL,

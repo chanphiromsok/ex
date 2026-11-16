@@ -6,11 +6,8 @@ Money columns use ash_money (KHR). All `inserted_at` are server UTC. Status and 
 - locations: id, name
 - stations: id, location_id, name, active
 - routes: id, origin_location_id, destination_location_id (unique pair)
-- size_classes: id, name, active
+- size_classes: id, name, max_weight_kg, max_length_cm, max_width_cm, max_height_cm, price, active
 - sale_items: id, name, unit_price, active
-- price_list_versions: id, effective_from
-- price_list_weight_rates: id, version_id, route_id, price_per_kg
-- price_list_size_rates: id, version_id, route_id, size_class_id, price
 - station_settings: station_id (unique), cancel_requires_approval, overdue_threshold_days
 - station_setting_changes (append-only): station_id, field, value, changed_by, inserted_at (current value = latest row per field; first row written when the Station is created)
 
@@ -19,7 +16,7 @@ Money columns use ash_money (KHR). All `inserted_at` are server UTC. Status and 
 - user_assignment_changes (append-only): user_id, role, station_id, changed_by, inserted_at (current = latest row per user)
 
 ## Shipments
-- shipments: id, invoice_no (identity sequence, unique), origin_station_id, destination_station_id, route_id, price_list_version_id, sender_name, sender_phone, receiver_name, receiver_phone (normalised digits with country code, indexed), declared_value, collection_code_hash, shipment_total, created_by, inserted_at
+- shipments: id, invoice_no (identity sequence, unique), origin_station_id, destination_station_id, route_id, sender_name, sender_phone, receiver_name, receiver_phone (normalised digits with country code, indexed), declared_value, collection_code_hash, shipment_total, created_by, inserted_at
 - parcels: id, shipment_id, weight_kg, size_class_id, length_cm, width_cm, height_cm, chargeable_amount
 - shipment_sale_items: id, shipment_id, sale_item_id, quantity, unit_price (snapshot)
 
