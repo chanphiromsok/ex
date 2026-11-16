@@ -1,5 +1,13 @@
 import Config
 
+config :ex, token_signing_secret: "OJYtU5iFycDQ4I7gXg8LZO/7/1rVi6pO"
+config :bcrypt_elixir, log_rounds: 1
+
+config :ash,
+  policies: [show_policy_breakdowns?: true],
+  keyset_signing_secret: "UVu6kZKX4IPf/Q2vCfnN8HwXR6W+i4lcZqVFerl02XU",
+  disable_async?: true
+
 # Configure your database
 #
 # The MIX_TEST_PARTITION environment variable can be used

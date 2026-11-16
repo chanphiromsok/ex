@@ -1,5 +1,9 @@
 import Config
 
+config :ash,
+  policies: [show_policy_breakdowns?: true],
+  keyset_signing_secret: "3M53dU9P9TJQVcLCuwTv5kBJbFm3sTPVLauE9gvvVbw"
+
 # Configure your database
 config :ex, Ex.Repo,
   username: "postgres",
@@ -53,7 +57,7 @@ config :ex, ExWeb.Endpoint,
 # different ports.
 
 # Enable dev routes for dashboard and mailbox
-config :ex, dev_routes: true
+config :ex, dev_routes: true, token_signing_secret: "GaIcG2+Rbl6ArHoXYkupF5moSzX+Z/fZ"
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"

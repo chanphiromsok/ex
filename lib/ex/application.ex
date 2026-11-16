@@ -15,7 +15,8 @@ defmodule Ex.Application do
       # Start a worker by calling: Ex.Worker.start_link(arg)
       # {Ex.Worker, arg},
       # Start to serve requests, typically the last entry
-      ExWeb.Endpoint
+      ExWeb.Endpoint,
+      {AshAuthentication.Supervisor, [otp_app: :ex]}
     ]
 
     # See https://elixir.hexdocs.pm/Supervisor.html
