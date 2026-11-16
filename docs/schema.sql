@@ -12,6 +12,7 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 CREATE TYPE user_role AS ENUM ('staff', 'supervisor', 'admin');
 CREATE TYPE shipment_status AS ENUM ('received', 'in_transit', 'arrived', 'collected', 'cancelled');
+CREATE TYPE measurement_type AS ENUM ('kg', 'size');
 CREATE TYPE incident_type AS ENUM ('return_to_sender', 'redirect', 'lost', 'damaged');
 
 -- Reference data ---------------------------------------------------------
@@ -39,10 +40,6 @@ CREATE TABLE routes (
 CREATE TABLE size_classes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL UNIQUE,
-  max_weight_kg numeric NOT NULL CHECK (max_weight_kg > 0),
-  max_length_cm numeric NOT NULL CHECK (max_length_cm > 0),
-  max_width_cm numeric NOT NULL CHECK (max_width_cm > 0),
-  max_height_cm numeric NOT NULL CHECK (max_height_cm > 0),
   price money_with_currency NOT NULL,
   active boolean NOT NULL DEFAULT true
 );
@@ -52,6 +49,11 @@ CREATE TABLE sale_items (
   name text NOT NULL UNIQUE,
   unit_price money_with_currency NOT NULL,
   active boolean NOT NULL DEFAULT true
+);
+
+CREATE TABLE pricing_settings (
+  id boolean PRIMARY KEY DEFAULT true CHECK (id),  -- single row
+  price_per_kg money_with_currency NOT NULL
 );
 
 CREATE TABLE station_settings (
@@ -94,13 +96,15 @@ CREATE INDEX shipments_receiver_phone_idx ON shipments (receiver_phone);
 CREATE TABLE parcels (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   shipment_id uuid NOT NULL REFERENCES shipments,
-  weight_kg numeric(8,2) NOT NULL CHECK (weight_kg > 0),
-  size_class_id uuid NOT NULL REFERENCES size_classes,
-  length_cm numeric(8,1),
-  width_cm numeric(8,1),
-  height_cm numeric(8,1),
+  measurement_type measurement_type NOT NULL,
+  weight_kg numeric(8,2) CHECK (weight_kg > 0),
+  size_class_id uuid REFERENCES size_classes,
   chargeable_amount money_with_currency NOT NULL
 );
+-- measurement_type = 'kg' requires weight_kg; 'size' requires size_class_id
+ALTER TABLE parcels ADD CONSTRAINT parcels_measurement_chk CHECK (
+  (measurement_type = 'kg' AND weight_kg IS NOT NULL AND size_class_id IS NULL) OR
+  (measurement_type = 'size' AND size_class_id IS NOT NULL AND weight_kg IS NULL));
 
 CREATE TABLE shipment_sale_items (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

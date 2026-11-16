@@ -1,5 +1,7 @@
-# Prices are in KHR, one price per Size Class
+# Prices are in KHR: one price per kg, one price per Size Class
 
-All prices and Payments are in KHR with no conversion. Each Size Class has one global price (not per Route or Station); a Parcel is charged the smallest Size Class its weight and dimensions fit. There is no versioned Price List: a Shipment keeps its own price snapshot, so Admin edits only affect new Shipments. Money fields use ash_money so USD can be added later without a schema change.
+All prices and Payments are in KHR with no conversion. For each Parcel staff choose how it is measured: by kg (weight times one global price per kg) or by size (a Size Class with one global price). Prices are not per Route or Station. There is no versioned Price List: a Parcel keeps its own price snapshot, so Admin edits only affect new Shipments. Money fields use ash_money so USD can be added later without a schema change.
 
-Rejected: a versioned Price List with per-kg and per-Route rates and a "higher of weight or size" rule, as too complex for v1. Per-Route pricing can be added later as a separate table.
+Staff choosing the cheaper type is a known risk, accepted for v1; the measurement type is recorded per Parcel so reports can show each staff member's pattern.
+
+Rejected: a versioned Price List with per-Route rates; "higher of weight or size" pricing; Size Classes with weight and dimension limits (too much to enter and maintain).

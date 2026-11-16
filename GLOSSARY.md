@@ -9,7 +9,7 @@ The agreement to carry one Sender's goods from an origin Station to a destinatio
 _Avoid_: Order, booking, consignment
 
 **Parcel**:
-One physical item inside a Shipment, with its own weight and Size Class.
+One physical item inside a Shipment, measured by kg or by Size Class, chosen by staff.
 _Avoid_: Package, piece, box
 
 **Invoice Number**:
@@ -17,7 +17,7 @@ The unique running number of a Shipment, generated on its own, printed on the In
 _Avoid_: Invoice Number, tracking number, ticket
 
 **Invoice**:
-The paper given to the Sender showing the Invoice Number, each Parcel's weight and Size Class, and the Shipment Total.
+The paper given to the Sender showing the Invoice Number, each Parcel's weight or Size Class, and the Shipment Total.
 _Avoid_: Receipt
 
 **Station**:
@@ -125,11 +125,11 @@ _Avoid_: Insured value, COD amount
 ## Pricing
 
 **Chargeable Amount**:
-The price of one Parcel: the price of the smallest Size Class it fits.
+The price of one Parcel: its weight times the price per kg, or its Size Class price, depending on how staff measured it.
 _Avoid_: Volumetric weight, final weight
 
 **Size Class**:
-A named bracket of Parcel weight and dimensions (for example Small, Medium, Large) with its own price. A Parcel is charged the smallest Size Class it fits within.
+A named size (for example Small, Medium, Large) with its own price, chosen by staff for a Parcel measured by size.
 _Avoid_: Box size, package type
 
 **Sale Item**:
