@@ -55,7 +55,7 @@ _Avoid_: Line, trip, leg
 ## Lifecycle
 
 **Status Event**:
-One recorded change in a Shipment's status (received, in transit, arrived, collected, cancelled), with who made it, where, when (server time), and a reason when required. A Shipment's status is its latest Status Event; events are never edited or deleted.
+One recorded change in a Shipment's status (received, in transit, arrived, collected, cancelled), with who made it, when (server time), and a reason when required. A Shipment's status is its latest Status Event; events are never edited or deleted.
 _Avoid_: Status update, state change
 
 **Received**:
