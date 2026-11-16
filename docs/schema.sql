@@ -18,15 +18,18 @@ CREATE TYPE incident_type AS ENUM ('return_to_sender', 'redirect', 'lost', 'dama
 -- Reference data ---------------------------------------------------------
 CREATE TABLE locations (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name text NOT NULL UNIQUE
+  name_en text NOT NULL UNIQUE,
+  name_km text NOT NULL UNIQUE
 );
 
 CREATE TABLE stations (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   location_id uuid NOT NULL REFERENCES locations,
-  name text NOT NULL,
+  name_en text NOT NULL,
+  name_km text NOT NULL,
   active boolean NOT NULL DEFAULT true,
-  UNIQUE (location_id, name)
+  UNIQUE (location_id, name_en),
+  UNIQUE (location_id, name_km)
 );
 
 CREATE TABLE routes (
@@ -39,14 +42,16 @@ CREATE TABLE routes (
 
 CREATE TABLE size_classes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name text NOT NULL UNIQUE,
+  name_en text NOT NULL UNIQUE,
+  name_km text NOT NULL UNIQUE,
   price money_with_currency NOT NULL,
   active boolean NOT NULL DEFAULT true
 );
 
 CREATE TABLE sale_items (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name text NOT NULL UNIQUE,
+  name_en text NOT NULL UNIQUE,
+  name_km text NOT NULL UNIQUE,
   unit_price money_with_currency NOT NULL,
   active boolean NOT NULL DEFAULT true
 );

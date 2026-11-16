@@ -25,7 +25,7 @@ A physical place where staff accept and hand out Parcels. Belongs to a Location.
 _Avoid_: Branch, office, terminal
 
 **Location**:
-A province or city that contains one or more Stations.
+A province or city that contains one or more Stations. Locations, Stations, Size Classes and Sale Items each have an English and a Khmer name.
 _Avoid_: City (as a record)
 
 **Station Staff**:
