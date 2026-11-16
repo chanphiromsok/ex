@@ -147,6 +147,18 @@ CREATE TABLE notes (
   inserted_at timestamptz NOT NULL DEFAULT now()
 );
 
+CREATE TABLE price_changes (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  kind text NOT NULL CHECK (kind IN ('price_per_kg', 'size_class', 'sale_item')),
+  size_class_id uuid REFERENCES size_classes,
+  sale_item_id uuid REFERENCES sale_items,
+  price money_with_currency NOT NULL,           -- price set by this change
+  changed_by uuid NOT NULL REFERENCES users,
+  inserted_at timestamptz NOT NULL DEFAULT now(),
+  CHECK ((kind = 'size_class') = (size_class_id IS NOT NULL)),
+  CHECK ((kind = 'sale_item') = (sale_item_id IS NOT NULL))
+);
+
 CREATE TABLE station_setting_changes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   station_id uuid NOT NULL REFERENCES stations,
@@ -205,6 +217,8 @@ CREATE TRIGGER payments_append_only BEFORE UPDATE OR DELETE ON payments
 CREATE TRIGGER status_events_append_only BEFORE UPDATE OR DELETE ON status_events
   FOR EACH ROW EXECUTE FUNCTION reject_change();
 CREATE TRIGGER notes_append_only BEFORE UPDATE OR DELETE ON notes
+  FOR EACH ROW EXECUTE FUNCTION reject_change();
+CREATE TRIGGER price_changes_append_only BEFORE UPDATE OR DELETE ON price_changes
   FOR EACH ROW EXECUTE FUNCTION reject_change();
 CREATE TRIGGER station_setting_changes_append_only BEFORE UPDATE OR DELETE ON station_setting_changes
   FOR EACH ROW EXECUTE FUNCTION reject_change();
