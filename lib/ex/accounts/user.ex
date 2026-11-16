@@ -38,7 +38,7 @@ defmodule Ex.Accounts.User do
     repo Ex.Repo
 
     references do
-      reference :station, on_delete: :restrict
+      reference :station, on_delete: :restrict, index?: true
     end
 
     check_constraints do
@@ -59,13 +59,34 @@ defmodule Ex.Accounts.User do
 
     routes do
       base "/users"
-      index :read
-      get :read
-      post :register_with_password, route: "/"
-      patch :update_assignment
+
+      index :read do
+        description "Lists users. Needs the `user.manage` permission."
+      end
+
+      get :read do
+        description "Gets one user by id."
+      end
+
+      post :register_with_password do
+        route "/"
+
+        description "Creates a user with a role (and a Station for staff and supervisors). Needs `user.manage`."
+      end
+
+      patch :update_assignment do
+        description "Changes a user's role and Station. The change is recorded in the assignment log."
+      end
 
       post :sign_in_with_password do
         route "/sign-in"
+
+        description """
+        Signs in with email and password. Public.
+
+        Returns `meta.token` (access token, valid 1 hour) and `meta.refresh_token` (single use, 30 days).
+        Send the access token as `Authorization: Bearer <token>`.
+        """
 
         metadata fn _subject, user, _request ->
           %{token: user.__metadata__.token, refresh_token: user.__metadata__.refresh_token}
@@ -74,6 +95,12 @@ defmodule Ex.Accounts.User do
 
       post :refresh do
         route "/refresh"
+
+        description """
+        Exchanges a refresh token for a new access token and a new refresh token. Public.
+
+        Each refresh token works once. Presenting one a second time revokes the whole session.
+        """
 
         metadata fn _subject, user, _request ->
           %{token: user.__metadata__.token, refresh_token: user.__metadata__.refresh_token}

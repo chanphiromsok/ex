@@ -118,5 +118,6 @@ Timings vary run to run with caching; the orders of magnitude do not.
 | `stations` | `location_id` |
 | `role_permissions` | `permission` |
 
-These are only applied to the demo database. They are not in the project's migrations yet;
-in Ash they would be `index?: true` on the relevant `reference`, then `mix ash.codegen add_fk_indexes`.
+They are in the project's migrations (`add_fk_indexes`), declared with `index?: true` on each `reference`
+(plus a `custom_indexes` entry for the composite). The demo's `indexes.sql` / `drop_indexes.sql` mirror them
+so you can still measure the difference on the demo database. If a migration changes them, update both files.

@@ -27,6 +27,11 @@ defmodule ExWeb.Router do
     forward "/", ExWeb.AshJsonApiRouter
   end
 
+  # Load balancer probe: no session, no pipeline, excluded from force_ssl in config/prod.exs.
+  scope "/", ExWeb do
+    get "/health", HealthController, :show
+  end
+
   scope "/", ExWeb do
     pipe_through :browser
 

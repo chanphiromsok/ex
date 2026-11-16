@@ -28,7 +28,9 @@ Postgres does not index foreign key columns. Without an index on the child colum
 re-keying a parent row scans the whole child table, and lookups by that column scan it too.
 
 - **Default:** index every foreign key on a table that will grow (Shipments, Parcels, Payments, status events, logs, tokens).
-- **Fine to skip:** a tiny, stable table (e.g. `stations.location_id`), a parent that is never deleted or re-keyed, or a column already leading a composite index (`(user_id, inserted_at)` covers `user_id`). Say why in the PR.
+- **Fine to skip, say why in the PR:** a column already leading a composite index (`(user_id, inserted_at)` covers `user_id`), or an FK to a parent that is never deleted or re-keyed and is never filtered on (e.g. `created_by_id` / `changed_by_id` pointing at users).
+- **Tiny tables:** we index them anyway (`stations.location_id`, `role_permissions.permission`, ~16 kB each). It costs nothing and keeps `pgbot lint` at 100/100, so there is no exemption by size.
+- **Also index non-FK columns you filter on.** pgbot cannot see these: e.g. `refresh_tokens.family_id` (see below).
 - **Cost:** about 10 bytes per row per index plus a little write overhead.
 
 In Ash, set `index?: true` on the `reference` in the resource's `postgres` block, then run
@@ -36,8 +38,7 @@ In Ash, set `index?: true` on the `reference` in the resource's `postgres` block
 
 ### Current state
 
-`pgbot lint` reports **7 foreign key(s) without a supporting index** on the real schema; they are
-**not yet fixed in the migrations**:
+All foreign keys are indexed (`pgbot lint`: 100/100), added in migration `add_fk_indexes`:
 
 | Child table | Column(s) |
 |---|---|
@@ -46,6 +47,26 @@ In Ash, set `index?: true` on the `reference` in the resource's `postgres` block
 | `users` | `station_id` |
 | `stations` | `location_id` |
 | `role_permissions` | `permission` |
+| `refresh_tokens` | `family_id` where `revoked_at IS NULL` (not an FK; used by replay handling) |
+
+`user_assignment_changes.user_id` is covered by the composite index, declared under `custom_indexes`
+in the resource, which also serves the "latest assignment of a user" lookup.
+
+### Caveats
+
+- The delete speedups below are mostly theoretical today. Every user gets an append-only
+  `user_assignment_changes` row with `ON DELETE RESTRICT`, so users cannot be deleted in the app, and the
+  `refresh_tokens` cascade never fires. The indexes still pay off for lookups and future deletes.
+- Nothing queries `user_assignment_changes` for a user's "latest" assignment yet. If it ever does, order by a
+  tiebreaker as well as `inserted_at` (rows written in one transaction share a timestamp).
+- `refresh_tokens.family_id` (partial index `WHERE revoked_at IS NULL`): replay revocation scans without it
+  (69 ms at 2M rows, 0.04 ms with it). The partial predicate shrinks little, since used tokens are not revoked;
+  the index was 60 MB on the demo's 2M distinct families. Expired tokens are never deleted yet, so the table grows
+  without bound; a cleanup job is still to do.
+- Insert cost, measured on the demo (100k single-row inserts): `refresh_tokens` +10 us/row (+35%),
+  `user_assignment_changes` +7-13 us/row. Under 1% of a request.
+- Before launch, plain `create index` is fine. Once there is production data, build indexes in their own
+  migration with `@disable_ddl_transaction true`, `@disable_migration_lock true` and `concurrently: true`.
 
 ### Measured impact
 

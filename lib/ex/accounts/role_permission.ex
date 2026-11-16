@@ -11,7 +11,7 @@ defmodule Ex.Accounts.RolePermission do
     repo Ex.Repo
 
     references do
-      reference :permission_definition, on_delete: :restrict
+      reference :permission_definition, on_delete: :restrict, index?: true
     end
 
     check_constraints do

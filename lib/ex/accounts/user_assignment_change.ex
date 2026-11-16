@@ -12,8 +12,13 @@ defmodule Ex.Accounts.UserAssignmentChange do
 
     references do
       reference :user, on_delete: :restrict
-      reference :station, on_delete: :restrict
-      reference :changed_by, on_delete: :restrict
+      reference :station, on_delete: :restrict, index?: true
+      reference :changed_by, on_delete: :restrict, index?: true
+    end
+
+    custom_indexes do
+      # Serves the user_id FK and the "latest assignment of a user" lookup.
+      index [:user_id, :inserted_at]
     end
   end
 

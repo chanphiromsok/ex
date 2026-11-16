@@ -50,7 +50,11 @@ if config_env() == :prod do
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
   config :ex, Ex.Repo,
-    # ssl: true,
+    # Managed databases (DigitalOcean) require TLS: set DATABASE_SSL=true.
+    # verify_none encrypts but does not check the server certificate; load the provider's
+    # CA certificate (cacertfile:) and use verify_peer to also authenticate it.
+    ssl:
+      if(System.get_env("DATABASE_SSL") in ~w(true 1), do: [verify: :verify_none], else: false),
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
     # For machines with several cores, consider starting multiple pools of `pool_size`

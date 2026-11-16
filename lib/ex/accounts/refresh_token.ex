@@ -18,7 +18,12 @@ defmodule Ex.Accounts.RefreshToken do
     repo Ex.Repo
 
     references do
-      reference :user, on_delete: :delete
+      reference :user, on_delete: :delete, index?: true
+    end
+
+    custom_indexes do
+      # Replay handling revokes every live token of a family (RefreshTokens.revoke_family_of/1).
+      index [:family_id], where: "revoked_at IS NULL"
     end
   end
 

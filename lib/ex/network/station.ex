@@ -7,14 +7,31 @@ defmodule Ex.Network.Station do
     otp_app: :ex,
     domain: Ex.Network,
     data_layer: AshPostgres.DataLayer,
-    authorizers: [Ash.Policy.Authorizer]
+    authorizers: [Ash.Policy.Authorizer],
+    extensions: [AshJsonApi.Resource]
 
   postgres do
     table "stations"
     repo Ex.Repo
 
     references do
-      reference :location, on_delete: :restrict
+      reference :location, on_delete: :restrict, index?: true
+    end
+  end
+
+  json_api do
+    type "station"
+
+    routes do
+      base "/stations"
+
+      index :read do
+        description "Lists Stations with the Location each is in. Any signed-in user."
+      end
+
+      post :create do
+        description "Creates a Station in a Location. Needs the `reference_data.manage` permission."
+      end
     end
   end
 
