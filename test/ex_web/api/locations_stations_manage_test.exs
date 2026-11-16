@@ -62,6 +62,41 @@ defmodule ExWeb.Api.LocationsStationsManageTest do
       assert shown["data"]["attributes"]["active"] == false
     end
 
+    test "a Station cannot be moved to another Location", %{conn: conn} do
+      station = station!("Fixed")
+      other = location!("Elsewhere")
+
+      conn
+      |> signed_in(user!(:admin))
+      |> patch(
+        "/api/v1/stations/#{station.id}",
+        patch_body("station", station.id, %{location_id: other.id})
+      )
+      |> json_response(400)
+
+      assert Ash.get!(Ex.Network.Station, station.id, authorize?: false).location_id ==
+               station.location_id
+    end
+
+    test "names are unique per Location, not globally", %{conn: conn} do
+      admin = conn |> signed_in(user!(:admin))
+      pp = location!("PP Unique")
+      sr = location!("SR Unique")
+
+      create = fn location, name ->
+        post(admin, "/api/v1/stations", %{
+          data: %{
+            type: "station",
+            attributes: %{name_en: name, name_km: "km " <> name, location_id: location.id}
+          }
+        })
+      end
+
+      assert create.(pp, "Central") |> json_response(201)
+      assert create.(sr, "Central") |> json_response(201)
+      assert create.(pp, "Central") |> json_response(400)
+    end
+
     test "staff cannot change one", %{conn: conn} do
       station = station!("Locked")
 

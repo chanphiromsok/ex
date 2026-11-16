@@ -43,7 +43,7 @@ defmodule Ex.Network.Station do
       end
 
       patch :update do
-        description "Renames, moves or (de)activates a Station. Needs the `reference_data.manage` permission."
+        description "Renames or (de)activates a Station (it cannot move to another Location). Needs the `reference_data.manage` permission."
       end
 
       delete :destroy do
@@ -62,7 +62,7 @@ defmodule Ex.Network.Station do
 
     update :update do
       primary? true
-      accept [:name_en, :name_km, :location_id, :active]
+      accept [:name_en, :name_km, :active]
     end
   end
 
@@ -90,7 +90,7 @@ defmodule Ex.Network.Station do
   end
 
   identities do
-    identity :unique_name_en, [:name_en]
-    identity :unique_name_km, [:name_km]
+    identity :unique_name_en_per_location, [:location_id, :name_en]
+    identity :unique_name_km_per_location, [:location_id, :name_km]
   end
 end
