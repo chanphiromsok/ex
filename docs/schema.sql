@@ -85,7 +85,6 @@ CREATE TABLE shipments (
   receiver_name text NOT NULL,
   receiver_phone text NOT NULL,                 -- normalised digits + country code
   declared_value money_with_currency,
-  collection_code_hash text NOT NULL,
   shipment_total money_with_currency NOT NULL,
   created_by uuid NOT NULL REFERENCES users,
   inserted_at timestamptz NOT NULL DEFAULT now(),

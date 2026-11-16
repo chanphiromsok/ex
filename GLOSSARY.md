@@ -75,12 +75,8 @@ A Status Event ending a Shipment before it leaves the origin Station, always wit
 _Avoid_: Void, delete
 
 **Collection**:
-The final Status Event where the Receiver or someone on their behalf takes the Parcels at the destination Station.
+The final Status Event where the Receiver or someone on their behalf takes the Parcels at the destination Station, after showing a phone number that matches the Receiver's phone on the Shipment.
 _Avoid_: Pickup, delivery
-
-**Collection Code**:
-A code given only to the Sender, who passes it to the Receiver; not printed on any Parcel label.
-_Avoid_: PIN, password
 
 **Overdue Shipment**:
 A Shipment that has stayed Arrived longer than the Station's Overdue Threshold without Collection.
