@@ -1,0 +1,2 @@
+# Dumps are large and regenerable (./demo.sh seed).
+*.dump

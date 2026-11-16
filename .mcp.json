@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "pgbot": {
+      "command": "pgbot",
+      "args": ["mcp"],
+      "env": { "DATABASE_URL": "${PGBOT_DATABASE_URL}" }
+    }
+  }
+}
