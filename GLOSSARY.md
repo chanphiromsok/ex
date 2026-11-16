@@ -70,9 +70,17 @@ _Avoid_: Shipped, dispatched
 The status set by the destination Station when it receives the Shipment.
 _Avoid_: Delivered
 
+**Cancellation Fee**:
+The part of the Sender's payment kept when a Shipment is cancelled: a percentage of the Shipment Total, never more than a maximum amount. Both values are set globally by an Admin and each change is recorded.
+_Avoid_: Penalty, refund fee
+
 **Cancellation**:
-A Status Event ending a Shipment before it leaves the origin Station, always with a reason; may need Supervisor approval depending on Station Setting.
+A Status Event ending a Shipment before it leaves the origin Station, always with a reason; may need Supervisor approval depending on Station Setting. The Sender is refunded what they paid minus the Cancellation Fee.
 _Avoid_: Void, delete
+
+**Receiver Correction**:
+A recorded replacement of the Receiver's name and phone on a Shipment, added only by a Supervisor at the origin Station with a reason; the latest one is the Receiver. The original is never edited.
+_Avoid_: Edit receiver
 
 **Collection**:
 The final Status Event where the Receiver or someone on their behalf takes the Parcels at the destination Station, after showing a phone number that matches the Receiver's phone on the Shipment.
@@ -103,7 +111,7 @@ _Avoid_: Grace period
 ## Payment
 
 **Payment**:
-A recorded movement of money against a Shipment, with method and amount; always paid by the Sender. Never edited; a refund is a separate negative Payment.
+A recorded movement of money against a Shipment, with method and amount; always paid by the Sender. Never edited; a refund is a separate negative Payment, recorded once per cancelled Shipment.
 _Avoid_: Invoice, receipt, transaction
 
 **Shipment Total**:
