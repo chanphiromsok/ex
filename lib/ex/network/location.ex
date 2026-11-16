@@ -14,7 +14,11 @@ defmodule Ex.Network.Location do
     table "locations"
     repo Ex.Repo
 
-    foreign_key_names [{:id, "stations_location_id_fkey", "is still used by a Station"}]
+    foreign_key_names [
+      {:id, "stations_location_id_fkey", "is still used by a Station"},
+      {:id, "routes_origin_location_id_fkey", "is still used by a Route"},
+      {:id, "routes_destination_location_id_fkey", "is still used by a Route"}
+    ]
   end
 
   json_api do

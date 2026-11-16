@@ -1,5 +1,5 @@
 defmodule Ex.Network do
-  @moduledoc "Where goods are sent from and to: Locations and the Stations in them."
+  @moduledoc "Where goods are sent from and to: Locations, the Stations in them and the Routes between Locations."
   use Ash.Domain,
     otp_app: :ex,
     extensions: [AshJsonApi.Domain]
@@ -7,5 +7,6 @@ defmodule Ex.Network do
   resources do
     resource Ex.Network.Location
     resource Ex.Network.Station
+    resource Ex.Network.Route
   end
 end
