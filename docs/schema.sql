@@ -14,6 +14,12 @@ CREATE TYPE user_role AS ENUM ('staff', 'supervisor', 'admin');
 CREATE TYPE shipment_status AS ENUM ('received', 'in_transit', 'arrived', 'collected', 'cancelled');
 CREATE TYPE measurement_type AS ENUM ('kg', 'size');
 CREATE TYPE incident_type AS ENUM ('return_to_sender', 'redirect', 'lost', 'damaged');
+CREATE TYPE payment_kind AS ENUM ('payment', 'refund');
+
+-- KHR only, whole riel (no decimals). Used by CHECKs on every money column.
+CREATE FUNCTION is_whole_khr(m money_with_currency) RETURNS boolean
+  LANGUAGE sql IMMUTABLE AS
+$$ SELECT m IS NULL OR ((m).currency_code = 'KHR' AND (m).amount = trunc((m).amount)) $$;
 
 -- Reference data ---------------------------------------------------------
 CREATE TABLE locations (
@@ -44,7 +50,7 @@ CREATE TABLE size_classes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name_en text NOT NULL UNIQUE,
   name_km text NOT NULL UNIQUE,
-  price money_with_currency NOT NULL,
+  price money_with_currency NOT NULL CHECK (is_whole_khr(price) AND (price).amount > 0),
   active boolean NOT NULL DEFAULT true
 );
 
@@ -52,13 +58,16 @@ CREATE TABLE sale_items (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name_en text NOT NULL UNIQUE,
   name_km text NOT NULL UNIQUE,
-  unit_price money_with_currency NOT NULL,
+  unit_price money_with_currency NOT NULL CHECK (is_whole_khr(unit_price) AND (unit_price).amount > 0),
   active boolean NOT NULL DEFAULT true
 );
 
 CREATE TABLE pricing_settings (
   id boolean PRIMARY KEY DEFAULT true CHECK (id),  -- single row
-  price_per_kg money_with_currency NOT NULL
+  price_per_kg money_with_currency NOT NULL CHECK (is_whole_khr(price_per_kg) AND (price_per_kg).amount > 0),
+  -- Cancellation fee kept on refund = min(round(Shipment Total * percent / 100), cap)
+  cancellation_fee_percent integer NOT NULL DEFAULT 0 CHECK (cancellation_fee_percent BETWEEN 0 AND 100),
+  cancellation_fee_cap money_with_currency NOT NULL CHECK (is_whole_khr(cancellation_fee_cap) AND (cancellation_fee_cap).amount >= 0)
 );
 
 CREATE TABLE station_settings (
@@ -82,20 +91,21 @@ CREATE TABLE users (
 CREATE TABLE shipments (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   invoice_no bigint GENERATED ALWAYS AS IDENTITY UNIQUE,  -- own generator
+  idempotency_key uuid NOT NULL UNIQUE,         -- client-generated; a double submit cannot create two Shipments
   origin_station_id uuid NOT NULL REFERENCES stations,
   destination_station_id uuid NOT NULL REFERENCES stations,
   route_id uuid NOT NULL REFERENCES routes,
   sender_name text NOT NULL,
-  sender_phone text NOT NULL,
+  sender_phone text NOT NULL CHECK (sender_phone ~ '^855[1-9][0-9]{7,8}$'),  -- normalised by one shared function
   receiver_name text NOT NULL,
-  receiver_phone text NOT NULL,                 -- normalised digits + country code
-  declared_value money_with_currency,
-  shipment_total money_with_currency NOT NULL,
+  receiver_phone text NOT NULL CHECK (receiver_phone ~ '^855[1-9][0-9]{7,8}$'),  -- normalised digits + country code
+  declared_value money_with_currency CHECK (is_whole_khr(declared_value) AND (declared_value).amount >= 0),
+  shipment_total money_with_currency NOT NULL CHECK (is_whole_khr(shipment_total) AND (shipment_total).amount > 0),
   created_by uuid NOT NULL REFERENCES users,
   inserted_at timestamptz NOT NULL DEFAULT now(),
   CHECK (origin_station_id <> destination_station_id)
 );
-CREATE INDEX shipments_receiver_phone_idx ON shipments (receiver_phone);
+CREATE INDEX shipments_destination_receiver_idx ON shipments (destination_station_id, receiver_phone);
 
 CREATE TABLE parcels (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -103,7 +113,7 @@ CREATE TABLE parcels (
   measurement_type measurement_type NOT NULL,
   weight_kg numeric(8,2) CHECK (weight_kg > 0),
   size_class_id uuid REFERENCES size_classes,
-  chargeable_amount money_with_currency NOT NULL
+  chargeable_amount money_with_currency NOT NULL CHECK (is_whole_khr(chargeable_amount) AND (chargeable_amount).amount > 0)
 );
 -- measurement_type = 'kg' requires weight_kg; 'size' requires size_class_id
 ALTER TABLE parcels ADD CONSTRAINT parcels_measurement_chk CHECK (
@@ -115,30 +125,43 @@ CREATE TABLE shipment_sale_items (
   shipment_id uuid NOT NULL REFERENCES shipments,
   sale_item_id uuid NOT NULL REFERENCES sale_items,
   quantity integer NOT NULL CHECK (quantity > 0),
-  unit_price money_with_currency NOT NULL       -- snapshot
+  unit_price money_with_currency NOT NULL CHECK (is_whole_khr(unit_price) AND (unit_price).amount > 0)  -- snapshot
 );
 
 -- Append-only ------------------------------------------------------------
-CREATE TABLE payments (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  shipment_id uuid NOT NULL REFERENCES shipments,
-  method text NOT NULL,
-  amount money_with_currency NOT NULL,          -- negative = refund
-  station_id uuid NOT NULL REFERENCES stations,
-  created_by uuid NOT NULL REFERENCES users,
-  inserted_at timestamptz NOT NULL DEFAULT now()
-);
-
 CREATE TABLE status_events (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   shipment_id uuid NOT NULL REFERENCES shipments,
+  seq integer NOT NULL CHECK (seq > 0),          -- 1, 2, 3 ... per Shipment; a second writer with the same seq fails
   status shipment_status NOT NULL,
   station_id uuid NOT NULL REFERENCES stations,  -- Station where it happened
   created_by uuid NOT NULL REFERENCES users,
   reason text,
-  inserted_at timestamptz NOT NULL DEFAULT now()
+  inserted_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (shipment_id, seq)
 );
-CREATE INDEX status_events_shipment_idx ON status_events (shipment_id, inserted_at);
+-- received, collected and cancelled can each happen only once per Shipment
+CREATE UNIQUE INDEX status_events_once_idx ON status_events (shipment_id, status)
+  WHERE status IN ('received', 'collected', 'cancelled');
+CREATE INDEX status_events_cancelled_idx ON status_events (created_by, inserted_at) WHERE status = 'cancelled';
+CREATE INDEX status_events_status_idx ON status_events (status, inserted_at);
+
+CREATE TABLE payments (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  shipment_id uuid NOT NULL REFERENCES shipments,
+  kind payment_kind NOT NULL DEFAULT 'payment',
+  method text NOT NULL,
+  amount money_with_currency NOT NULL CHECK (is_whole_khr(amount)),  -- refund = negative
+  cancellation_event_id uuid REFERENCES status_events,  -- the cancelled event a refund belongs to
+  station_id uuid NOT NULL REFERENCES stations,
+  created_by uuid NOT NULL REFERENCES users,
+  inserted_at timestamptz NOT NULL DEFAULT now(),
+  CHECK ((kind = 'payment' AND (amount).amount > 0 AND cancellation_event_id IS NULL) OR
+         (kind = 'refund'  AND (amount).amount < 0 AND cancellation_event_id IS NOT NULL))
+);
+CREATE UNIQUE INDEX payments_one_refund_idx ON payments (shipment_id) WHERE kind = 'refund';
+CREATE INDEX payments_station_time_idx ON payments (station_id, inserted_at);
+CREATE INDEX payments_staff_time_idx ON payments (created_by, inserted_at);
 
 CREATE TABLE notes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -149,16 +172,29 @@ CREATE TABLE notes (
   inserted_at timestamptz NOT NULL DEFAULT now()
 );
 
+CREATE TABLE receiver_corrections (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  shipment_id uuid NOT NULL REFERENCES shipments,
+  receiver_name text NOT NULL,
+  receiver_phone text NOT NULL CHECK (receiver_phone ~ '^855[1-9][0-9]{7,8}$'),
+  reason text NOT NULL,
+  station_id uuid NOT NULL REFERENCES stations,  -- origin Station; only its Supervisor may add one
+  created_by uuid NOT NULL REFERENCES users,
+  inserted_at timestamptz NOT NULL DEFAULT now()
+);  -- the Receiver of a Shipment is its latest correction, else the original
+
 CREATE TABLE price_changes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  kind text NOT NULL CHECK (kind IN ('price_per_kg', 'size_class', 'sale_item')),
+  kind text NOT NULL CHECK (kind IN ('price_per_kg', 'size_class', 'sale_item', 'cancellation_fee')),
   size_class_id uuid REFERENCES size_classes,
   sale_item_id uuid REFERENCES sale_items,
-  price money_with_currency NOT NULL,           -- price set by this change
+  price money_with_currency NOT NULL,           -- price set by this change (cap for cancellation_fee)
+  percent integer CHECK (percent BETWEEN 0 AND 100),  -- only for cancellation_fee
   changed_by uuid NOT NULL REFERENCES users,
   inserted_at timestamptz NOT NULL DEFAULT now(),
   CHECK ((kind = 'size_class') = (size_class_id IS NOT NULL)),
-  CHECK ((kind = 'sale_item') = (sale_item_id IS NOT NULL))
+  CHECK ((kind = 'sale_item') = (sale_item_id IS NOT NULL)),
+  CHECK ((kind = 'cancellation_fee') = (percent IS NOT NULL))
 );
 
 CREATE TABLE station_setting_changes (
@@ -203,13 +239,22 @@ CREATE TABLE cancellation_requests (
 
 -- Append-only enforcement (ADR-0005) -------------------------------------
 CREATE FUNCTION reject_change() RETURNS trigger LANGUAGE plpgsql AS $$
-BEGIN RAISE EXCEPTION '% is append-only', TG_TABLE_NAME; END $$;
+BEGIN RAISE EXCEPTION '% cannot be changed or deleted', TG_TABLE_NAME; END $$;
 
 CREATE TRIGGER payments_append_only BEFORE UPDATE OR DELETE ON payments
   FOR EACH ROW EXECUTE FUNCTION reject_change();
 CREATE TRIGGER status_events_append_only BEFORE UPDATE OR DELETE ON status_events
   FOR EACH ROW EXECUTE FUNCTION reject_change();
 CREATE TRIGGER notes_append_only BEFORE UPDATE OR DELETE ON notes
+  FOR EACH ROW EXECUTE FUNCTION reject_change();
+CREATE TRIGGER receiver_corrections_append_only BEFORE UPDATE OR DELETE ON receiver_corrections
+  FOR EACH ROW EXECUTE FUNCTION reject_change();
+-- Shipment, Parcels and Sale Item lines are written once, in the create transaction
+CREATE TRIGGER shipments_immutable BEFORE UPDATE OR DELETE ON shipments
+  FOR EACH ROW EXECUTE FUNCTION reject_change();
+CREATE TRIGGER parcels_immutable BEFORE UPDATE OR DELETE ON parcels
+  FOR EACH ROW EXECUTE FUNCTION reject_change();
+CREATE TRIGGER shipment_sale_items_immutable BEFORE UPDATE OR DELETE ON shipment_sale_items
   FOR EACH ROW EXECUTE FUNCTION reject_change();
 CREATE TRIGGER price_changes_append_only BEFORE UPDATE OR DELETE ON price_changes
   FOR EACH ROW EXECUTE FUNCTION reject_change();
