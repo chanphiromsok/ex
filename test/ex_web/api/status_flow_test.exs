@@ -99,6 +99,23 @@ defmodule ExWeb.Api.StatusFlowTest do
     end
   end
 
+  describe "status_history" do
+    test "lists every step oldest first, with labels, without ?include", ctx do
+      ctx.origin |> move(ctx.id, "in-transit") |> json_response(200)
+      ctx.destination |> move(ctx.id, "arrived") |> json_response(200)
+
+      history =
+        ctx.origin
+        |> get("/api/v1/shipments/#{ctx.id}")
+        |> json_response(200)
+        |> get_in(["data", "attributes", "status_history"])
+
+      assert Enum.map(history, & &1["status"]) == ["received", "in_transit", "arrived"]
+      assert Enum.map(history, & &1["seq"]) == [1, 2, 3]
+      assert Enum.map(history, & &1["status_label_en"]) == ["Received", "In transit", "Arrived"]
+    end
+  end
+
   describe "nothing can be skipped or repeated" do
     test "received cannot go straight to arrived", ctx do
       assert ctx.destination |> move(ctx.id, "arrived") |> json_response(400)

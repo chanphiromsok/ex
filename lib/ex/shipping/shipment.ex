@@ -80,7 +80,8 @@ defmodule Ex.Shipping.Shipment do
       :inserted_at,
       :status,
       :status_label_en,
-      :status_label_km
+      :status_label_km,
+      :status_history
     ]
 
     routes do
@@ -285,7 +286,7 @@ defmodule Ex.Shipping.Shipment do
     has_many :parcels, Ex.Shipping.Parcel, public?: true
     has_many :sale_items, Ex.Shipping.ShipmentSaleItem, public?: true
     has_many :payments, Ex.Shipping.Payment, public?: true
-    has_many :status_events, Ex.Shipping.StatusEvent, public?: true
+    has_many :status_events, Ex.Shipping.StatusEvent, public?: true, sort: [seq: :asc]
   end
 
   calculations do
@@ -296,6 +297,10 @@ defmodule Ex.Shipping.Shipment do
     calculate :status_label_km,
               :string,
               {Ex.Shipping.Calculations.StatusLabel, language: :km, field: :status}, public?: true
+
+    calculate :status_history,
+              {:array, :map},
+              Ex.Shipping.Calculations.StatusHistory, public?: true
   end
 
   aggregates do
