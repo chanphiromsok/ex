@@ -56,7 +56,7 @@ defmodule ExWeb.Endpoint do
 
   plug ScalarPlug,
     path: "/api/docs",
-    spec_href: "/api/json/open_api",
+    spec_href: "/api/v1/open_api",
     title: "API Documentation"
 
   plug ExWeb.Router

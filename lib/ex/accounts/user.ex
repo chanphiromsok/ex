@@ -11,22 +11,14 @@ defmodule Ex.Accounts.User do
       log_out_everywhere do
         apply_on_password_change? true
       end
-
-      confirmation :confirm_new_user do
-        monitor_fields [:email]
-        confirm_on_create? true
-        confirm_on_update? false
-        require_interaction? true
-        confirmed_at_field :confirmed_at
-        auto_confirm_actions [:sign_in_with_magic_link, :reset_password_with_token]
-        sender Ex.Accounts.User.Senders.SendNewUserConfirmationEmail
-      end
     end
 
     tokens do
       enabled? true
       token_resource Ex.Accounts.Token
       signing_secret Ex.Secrets
+      # Short, because clients renew it with a refresh token (Ex.Accounts.RefreshTokens).
+      token_lifetime {1, :hours}
       store_all_tokens? true
       require_token_presence_for_authentication? true
     end
@@ -35,13 +27,6 @@ defmodule Ex.Accounts.User do
       password :password do
         identity_field :email
         hash_provider AshAuthentication.BcryptProvider
-
-        resettable do
-          sender Ex.Accounts.User.Senders.SendPasswordResetEmail
-          # these configurations will be the default in a future release
-          password_reset_action_name :reset_password_with_token
-          request_password_reset_action_name :request_password_reset_token
-        end
       end
 
       remember_me :remember_me
@@ -51,10 +36,50 @@ defmodule Ex.Accounts.User do
   postgres do
     table "users"
     repo Ex.Repo
+
+    references do
+      reference :station, on_delete: :restrict
+    end
+
+    check_constraints do
+      check_constraint :station_id, "station_matches_role",
+        check:
+          "(role = 'admin' AND station_id IS NULL) OR (role <> 'admin' AND station_id IS NOT NULL)",
+        message: "Admin has no Station; Station Staff and Supervisor need one"
+
+      check_constraint :role, "role_values",
+        check: "role IN ('staff', 'supervisor', 'admin')",
+        message: "unknown role"
+    end
   end
 
   json_api do
     type "user"
+    default_fields [:email, :role, :station_id, :inserted_at, :permissions]
+
+    routes do
+      base "/users"
+      index :read
+      get :read
+      post :register_with_password, route: "/"
+      patch :update_assignment
+
+      post :sign_in_with_password do
+        route "/sign-in"
+
+        metadata fn _subject, user, _request ->
+          %{token: user.__metadata__.token, refresh_token: user.__metadata__.refresh_token}
+        end
+      end
+
+      post :refresh do
+        route "/refresh"
+
+        metadata fn _subject, user, _request ->
+          %{token: user.__metadata__.token, refresh_token: user.__metadata__.refresh_token}
+        end
+      end
+    end
   end
 
   actions do
@@ -65,6 +90,7 @@ defmodule Ex.Accounts.User do
       argument :subject, :string, allow_nil?: false
       get? true
       prepare AshAuthentication.Preparations.FilterBySubject
+      prepare build(load: [:permissions])
     end
 
     update :change_password do
@@ -108,10 +134,32 @@ defmodule Ex.Accounts.User do
       # validates the provided email and password and generates a token
       prepare AshAuthentication.Strategy.Password.SignInPreparation
 
+      prepare Ex.Accounts.User.Preparations.IssueRefreshToken
+
       metadata :token, :string do
         description "A JWT that can be used to authenticate the user."
         allow_nil? false
       end
+
+      metadata :refresh_token, :string do
+        description "A single-use secret to exchange for a new token via /users/refresh."
+        allow_nil? false
+      end
+    end
+
+    read :refresh do
+      description "Exchange a refresh token for a new access token and a new refresh token."
+      get? true
+
+      argument :refresh_token, :string do
+        allow_nil? false
+        sensitive? true
+      end
+
+      prepare Ex.Accounts.User.Preparations.RefreshSession
+
+      metadata :token, :string, allow_nil?: false
+      metadata :refresh_token, :string, allow_nil?: false
     end
 
     read :sign_in_with_token do
@@ -142,7 +190,8 @@ defmodule Ex.Accounts.User do
     end
 
     create :register_with_password do
-      description "Register a new user with a email and password."
+      description "Create a user with an email, password, role and Station. Admin only."
+      accept [:role, :station_id]
 
       argument :email, :ci_string do
         allow_nil? false
@@ -173,64 +222,42 @@ defmodule Ex.Accounts.User do
       # validates that the password matches the confirmation
       validate AshAuthentication.Strategy.Password.PasswordConfirmationValidation
 
+      validate Ex.Accounts.User.Validations.StationMatchesRole
+      change Ex.Accounts.User.Changes.RecordAssignment
+
       metadata :token, :string do
         description "A JWT that can be used to authenticate the user."
         allow_nil? false
       end
     end
 
-    action :request_password_reset_token do
-      description "Send password reset instructions to a user if they exist."
+    update :update_assignment do
+      description "Change a user's role and Station. Admin only."
+      accept [:role, :station_id]
+      require_atomic? false
 
-      argument :email, :ci_string do
-        allow_nil? false
-      end
-
-      # creates a reset token and invokes the relevant senders
-      run {AshAuthentication.Strategy.Password.RequestPasswordReset, action: :get_by_email}
-    end
-
-    read :get_by_email do
-      description "Looks up a user by their email"
-      get_by :email
-    end
-
-    update :reset_password_with_token do
-      argument :reset_token, :string do
-        allow_nil? false
-        sensitive? true
-      end
-
-      argument :password, :string do
-        description "The proposed password for the user, in plain text."
-        allow_nil? false
-        constraints min_length: 8
-        sensitive? true
-      end
-
-      argument :password_confirmation, :string do
-        description "The proposed password for the user (again), in plain text."
-        allow_nil? false
-        sensitive? true
-      end
-
-      # validates the provided reset token
-      validate AshAuthentication.Strategy.Password.ResetTokenValidation
-
-      # validates that the password matches the confirmation
-      validate AshAuthentication.Strategy.Password.PasswordConfirmationValidation
-
-      # Hashes the provided password
-      change AshAuthentication.Strategy.Password.HashPasswordChange
-
-      # Generates an authentication token for the user
-      change AshAuthentication.GenerateTokenChange
+      validate Ex.Accounts.User.Validations.StationMatchesRole
+      change Ex.Accounts.User.Changes.RecordAssignment
     end
   end
 
   policies do
     bypass AshAuthentication.Checks.AshAuthenticationInteraction do
       authorize_if always()
+    end
+
+    # The action itself checks the password; anyone may attempt to sign in.
+    policy action([:sign_in_with_password, :refresh]) do
+      authorize_if always()
+    end
+
+    policy action(:read) do
+      authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"user.manage"}
+      authorize_if expr(id == ^actor(:id))
+    end
+
+    policy action([:register_with_password, :update_assignment]) do
+      authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"user.manage"}
     end
   end
 
@@ -248,6 +275,28 @@ defmodule Ex.Accounts.User do
     end
 
     attribute :confirmed_at, :utc_datetime_usec
+
+    # Required, no default: every user must be given a role on purpose.
+    attribute :role, Ex.Accounts.Role, allow_nil?: false, public?: true
+    create_timestamp :inserted_at, public?: true
+  end
+
+  relationships do
+    belongs_to :station, Ex.Network.Station, public?: true
+  end
+
+  calculations do
+    # Role defaults, minus Station-bound Permissions for a user with no Station.
+    calculate :permissions,
+              {:array, :string},
+              expr(
+                fragment(
+                  "ARRAY(SELECT p.name FROM permissions p WHERE (NOT p.station_bound OR ? IS NOT NULL) AND EXISTS (SELECT 1 FROM role_permissions rp WHERE rp.role = ? AND rp.permission = p.name) ORDER BY p.name)",
+                  station_id,
+                  role
+                )
+              ),
+              public?: true
   end
 
   identities do

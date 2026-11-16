@@ -1,5 +1,6 @@
 defmodule ExWeb.Router do
   use ExWeb, :router
+  import AshAuthentication.Plug.Helpers
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -12,13 +13,15 @@ defmodule ExWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :retrieve_from_bearer, :ex
+    plug :set_actor, :user
   end
 
-  scope "/api/json" do
+  scope "/api/v1" do
     pipe_through [:api]
 
     forward "/swaggerui", OpenApiSpex.Plug.SwaggerUI,
-      path: "/api/json/open_api",
+      path: "/api/v1/open_api",
       default_model_expand_depth: 4
 
     forward "/", ExWeb.AshJsonApiRouter

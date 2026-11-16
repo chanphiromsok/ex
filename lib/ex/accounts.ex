@@ -3,17 +3,12 @@ defmodule Ex.Accounts do
     otp_app: :ex,
     extensions: [AshJsonApi.Domain]
 
-  json_api do
-    routes do
-      base_route "/users", Ex.Accounts.User do
-        index :read
-        get :read
-      end
-    end
-  end
-
   resources do
     resource Ex.Accounts.Token
+    resource Ex.Accounts.RefreshToken
     resource Ex.Accounts.User
+    resource Ex.Accounts.UserAssignmentChange
+    resource Ex.Accounts.PermissionDefinition
+    resource Ex.Accounts.RolePermission
   end
 end
