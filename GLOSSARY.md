@@ -86,12 +86,8 @@ _Avoid_: PIN, password
 A Shipment that has stayed Arrived longer than the Station's Overdue Threshold without Collection.
 _Avoid_: Abandoned, unclaimed
 
-**Arrival Measurement**:
-The weight and Size Class of a Parcel measured at the destination Station; a new fact, never an edit of the origin's record.
-_Avoid_: Re-weigh, correction
-
 **Fraud Flag**:
-A review item raised when a Shipment looks suspicious, such as an Arrival Measurement that differs from the origin's, or a repeat Shipment soon after a Cancellation. Resolved by an Admin.
+A review item raised when a Shipment looks suspicious, namely a repeat Shipment soon after a Cancellation. Resolved by an Admin.
 _Avoid_: Alert, warning
 
 **Incident**:

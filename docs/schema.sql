@@ -158,16 +158,6 @@ CREATE TABLE status_events (
 );
 CREATE INDEX status_events_shipment_idx ON status_events (shipment_id, inserted_at);
 
-CREATE TABLE arrival_measurements (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  parcel_id uuid NOT NULL REFERENCES parcels,
-  weight_kg numeric(8,2) NOT NULL CHECK (weight_kg > 0),
-  size_class_id uuid NOT NULL REFERENCES size_classes,
-  station_id uuid NOT NULL REFERENCES stations,
-  created_by uuid NOT NULL REFERENCES users,
-  inserted_at timestamptz NOT NULL DEFAULT now()
-);
-
 CREATE TABLE notes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   shipment_id uuid NOT NULL REFERENCES shipments,
@@ -210,7 +200,7 @@ CREATE TABLE incidents (
 CREATE TABLE fraud_flags (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   shipment_id uuid NOT NULL REFERENCES shipments,
-  kind text NOT NULL,                           -- measurement_mismatch | repeat_after_cancel
+  kind text NOT NULL,                           -- repeat_after_cancel
   resolved_by uuid REFERENCES users,
   resolved_at timestamptz,
   inserted_at timestamptz NOT NULL DEFAULT now()
@@ -233,8 +223,6 @@ BEGIN RAISE EXCEPTION '% is append-only', TG_TABLE_NAME; END $$;
 CREATE TRIGGER payments_append_only BEFORE UPDATE OR DELETE ON payments
   FOR EACH ROW EXECUTE FUNCTION reject_change();
 CREATE TRIGGER status_events_append_only BEFORE UPDATE OR DELETE ON status_events
-  FOR EACH ROW EXECUTE FUNCTION reject_change();
-CREATE TRIGGER arrival_measurements_append_only BEFORE UPDATE OR DELETE ON arrival_measurements
   FOR EACH ROW EXECUTE FUNCTION reject_change();
 CREATE TRIGGER notes_append_only BEFORE UPDATE OR DELETE ON notes
   FOR EACH ROW EXECUTE FUNCTION reject_change();

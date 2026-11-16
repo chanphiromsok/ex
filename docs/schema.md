@@ -26,7 +26,6 @@ Money columns use ash_money (KHR). All `inserted_at` are server UTC. Status and 
 ## Append-only
 - payments: shipment_id, method, payer, amount (negative = refund), station_id, created_by
 - status_events: shipment_id, status, station_id, created_by, reason, collector_name, collector_id_number
-- arrival_measurements: parcel_id, weight_kg, size_class_id, station_id, created_by
 - notes: shipment_id, station_id, text, created_by
 
 ## Resolvable
