@@ -105,6 +105,33 @@ defmodule Ex.Shipping.Shipment do
       index :read do
         description "Lists Shipments, newest first by default. Needs the `shipment.read` permission."
       end
+
+      patch :mark_in_transit do
+        route "/:id/in-transit"
+
+        description """
+        The origin Station hands the Shipment to the bus. Only from Received. Needs `shipment.mark_in_transit`,
+        at the Shipment's origin Station.
+        """
+      end
+
+      patch :mark_arrived do
+        route "/:id/arrived"
+
+        description """
+        The destination Station records that the Shipment arrived. Only from In transit. Needs
+        `shipment.mark_arrived`, at the Shipment's destination Station.
+        """
+      end
+
+      patch :collect do
+        route "/:id/collect"
+
+        description """
+        The destination Station hands the Shipment to the Receiver. Only from Arrived, once, and only when the
+        `receiver_phone` given matches the Receiver phone. Needs `shipment.collect`, at the destination Station.
+        """
+      end
     end
   end
 
@@ -162,6 +189,26 @@ defmodule Ex.Shipping.Shipment do
       change Ex.Shipping.Changes.NormalizePhones
       change Ex.Shipping.Changes.PlaceShipment
     end
+
+    update :mark_in_transit do
+      require_atomic? false
+      accept []
+      change {Ex.Shipping.Changes.AdvanceStatus, from: :received, to: :in_transit}
+    end
+
+    update :mark_arrived do
+      require_atomic? false
+      accept []
+      change {Ex.Shipping.Changes.AdvanceStatus, from: :in_transit, to: :arrived}
+    end
+
+    update :collect do
+      require_atomic? false
+      accept []
+      argument :receiver_phone, :string, allow_nil?: false
+      change Ex.Shipping.Changes.MatchReceiverPhone
+      change {Ex.Shipping.Changes.AdvanceStatus, from: :arrived, to: :collected}
+    end
   end
 
   policies do
@@ -171,6 +218,32 @@ defmodule Ex.Shipping.Shipment do
 
     policy action(:create) do
       authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"shipment.create"}
+    end
+
+    # Each rule is its own policy, because Ash needs every policy to pass. Two checks in ONE policy stop at
+    # the first that decides, so the Station check would never run after the permission check passed.
+    policy action(:mark_in_transit) do
+      authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"shipment.mark_in_transit"}
+    end
+
+    policy action(:mark_in_transit) do
+      authorize_if {Ex.Shipping.Checks.AtStation, side: :origin}
+    end
+
+    policy action(:mark_arrived) do
+      authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"shipment.mark_arrived"}
+    end
+
+    policy action(:mark_arrived) do
+      authorize_if {Ex.Shipping.Checks.AtStation, side: :destination}
+    end
+
+    policy action(:collect) do
+      authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"shipment.collect"}
+    end
+
+    policy action(:collect) do
+      authorize_if {Ex.Shipping.Checks.AtStation, side: :destination}
     end
   end
 
