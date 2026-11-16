@@ -14,6 +14,13 @@ defmodule Ex.Pricing.SaleItem do
   postgres do
     table "sale_items"
     repo Ex.Repo
+
+    check_constraints do
+      check_constraint :unit_price, "sale_items_unit_price_whole_positive_khr",
+        check:
+          "(unit_price).currency_code = 'KHR' AND (unit_price).amount > 0 AND (unit_price).amount = trunc((unit_price).amount)",
+        message: "must be a positive whole number of riel"
+    end
   end
 
   json_api do
@@ -31,7 +38,7 @@ defmodule Ex.Pricing.SaleItem do
       end
 
       post :create do
-        description "Creates a Sale Item with a KHR unit price. Needs `reference_data.manage` and `price.manage`."
+        description "Creates a Sale Item with a KHR unit price. Needs `price.manage`."
       end
 
       patch :set_price do
@@ -40,7 +47,7 @@ defmodule Ex.Pricing.SaleItem do
       end
 
       patch :update do
-        description "Renames or (de)activates a Sale Item. Needs `reference_data.manage`."
+        description "Renames or (de)activates a Sale Item. Needs `price.manage`."
       end
     end
   end
@@ -75,15 +82,11 @@ defmodule Ex.Pricing.SaleItem do
   policies do
     policy action_type(:read) do
       forbid_unless actor_present()
-      authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"reference_data.manage"}
+      authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"price.manage"}
       authorize_if expr(active == true)
     end
 
-    policy action([:create, :update, :destroy]) do
-      authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"reference_data.manage"}
-    end
-
-    policy action([:create, :set_price]) do
+    policy action([:create, :update, :set_price]) do
       authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"price.manage"}
     end
   end

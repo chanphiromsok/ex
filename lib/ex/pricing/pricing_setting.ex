@@ -14,6 +14,13 @@ defmodule Ex.Pricing.PricingSetting do
   postgres do
     table "pricing_settings"
     repo Ex.Repo
+
+    check_constraints do
+      check_constraint :price_per_kg, "pricing_settings_price_per_kg_whole_positive_khr",
+        check:
+          "(price_per_kg).currency_code = 'KHR' AND (price_per_kg).amount > 0 AND (price_per_kg).amount = trunc((price_per_kg).amount)",
+        message: "must be a positive whole number of riel"
+    end
   end
 
   json_api do

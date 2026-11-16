@@ -15,6 +15,13 @@ defmodule Ex.Pricing.PriceChange do
     table "price_changes"
     repo Ex.Repo
 
+    check_constraints do
+      check_constraint :kind, "price_changes_kind_matches_foreign_key",
+        check:
+          "(kind = 'size_class') = (size_class_id IS NOT NULL) AND (kind = 'sale_item') = (sale_item_id IS NOT NULL)",
+        message: "the Size Class or Sale Item must match the kind of price"
+    end
+
     references do
       reference :size_class, on_delete: :restrict, index?: true
       reference :sale_item, on_delete: :restrict, index?: true
@@ -66,6 +73,6 @@ defmodule Ex.Pricing.PriceChange do
   relationships do
     belongs_to :size_class, Ex.Pricing.SizeClass, public?: true
     belongs_to :sale_item, Ex.Pricing.SaleItem, public?: true
-    belongs_to :changed_by, Ex.Accounts.User, public?: true
+    belongs_to :changed_by, Ex.Accounts.User, allow_nil?: false, public?: true
   end
 end

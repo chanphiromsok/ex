@@ -14,6 +14,13 @@ defmodule Ex.Pricing.SizeClass do
   postgres do
     table "size_classes"
     repo Ex.Repo
+
+    check_constraints do
+      check_constraint :price, "size_classes_price_whole_positive_khr",
+        check:
+          "(price).currency_code = 'KHR' AND (price).amount > 0 AND (price).amount = trunc((price).amount)",
+        message: "must be a positive whole number of riel"
+    end
   end
 
   json_api do
@@ -31,7 +38,7 @@ defmodule Ex.Pricing.SizeClass do
       end
 
       post :create do
-        description "Creates a Size Class with a KHR price. Needs `reference_data.manage` and `price.manage`."
+        description "Creates a Size Class with a KHR price. Needs `price.manage`."
       end
 
       patch :set_price do
@@ -40,7 +47,7 @@ defmodule Ex.Pricing.SizeClass do
       end
 
       patch :update do
-        description "Renames or (de)activates a Size Class. Needs `reference_data.manage`."
+        description "Renames or (de)activates a Size Class. Needs `price.manage`."
       end
     end
   end
@@ -75,15 +82,11 @@ defmodule Ex.Pricing.SizeClass do
   policies do
     policy action_type(:read) do
       forbid_unless actor_present()
-      authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"reference_data.manage"}
+      authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"price.manage"}
       authorize_if expr(active == true)
     end
 
-    policy action([:create, :update, :destroy]) do
-      authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"reference_data.manage"}
-    end
-
-    policy action([:create, :set_price]) do
+    policy action([:create, :update, :set_price]) do
       authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"price.manage"}
     end
   end
