@@ -8,7 +8,6 @@ defmodule ExWeb.Router do
     plug :put_root_layout, html: {ExWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug ScalarPlug, path: "/api/docs", spec_href: "/api/spec", title: "API Documentation"
   end
 
   pipeline :api do

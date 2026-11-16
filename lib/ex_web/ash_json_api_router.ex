@@ -1,5 +1,5 @@
 defmodule ExWeb.AshJsonApiRouter do
   use AshJsonApi.Router,
-    domains: [],
+    domains: [Ex.Accounts],
     open_api: "/open_api"
 end

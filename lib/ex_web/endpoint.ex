@@ -53,5 +53,11 @@ defmodule ExWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
+
+  plug ScalarPlug,
+    path: "/api/docs",
+    spec_href: "/api/json/open_api",
+    title: "API Documentation"
+
   plug ExWeb.Router
 end

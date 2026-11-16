@@ -4,7 +4,7 @@ defmodule Ex.Accounts.User do
     domain: Ex.Accounts,
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer],
-    extensions: [AshAuthentication]
+    extensions: [AshAuthentication, AshJsonApi.Resource]
 
   authentication do
     add_ons do
@@ -51,6 +51,10 @@ defmodule Ex.Accounts.User do
   postgres do
     table "users"
     repo Ex.Repo
+  end
+
+  json_api do
+    type "user"
   end
 
   actions do
