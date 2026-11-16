@@ -133,6 +133,7 @@ CREATE TABLE status_events (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   shipment_id uuid NOT NULL REFERENCES shipments,
   status shipment_status NOT NULL,
+  station_id uuid NOT NULL REFERENCES stations,  -- Station where it happened
   created_by uuid NOT NULL REFERENCES users,
   reason text,
   inserted_at timestamptz NOT NULL DEFAULT now()
