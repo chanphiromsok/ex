@@ -7,6 +7,7 @@ defmodule Ex.Pricing do
   resources do
     resource Ex.Pricing.SizeClass
     resource Ex.Pricing.SaleItem
+    resource Ex.Pricing.PricingSetting
     resource Ex.Pricing.PriceChange
   end
 end
