@@ -16,7 +16,7 @@ Money columns use ash_money (KHR). All `inserted_at` are server UTC. Status and 
 
 ## Users
 - users: + role (staff|supervisor|admin), station_id (required for staff/supervisor, null for admin)
-- user_assignment_changes (append-only): user_id, old/new role, old/new station_id, changed_by, at
+- user_assignment_changes (append-only): user_id, role, station_id, changed_by, inserted_at (current = latest row per user)
 
 ## Shipments
 - shipments: id, waybill (unique), origin_station_id, destination_station_id, route_id, price_list_version_id, sender_name, sender_phone, receiver_name, receiver_phone (normalised digits with country code, indexed), declared_value, collection_code_hash, shipment_total, created_by, inserted_at

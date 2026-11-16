@@ -189,10 +189,8 @@ CREATE TABLE station_setting_changes (
 CREATE TABLE user_assignment_changes (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL REFERENCES users,
-  old_role user_role,
-  new_role user_role NOT NULL,
-  old_station_id uuid REFERENCES stations,
-  new_station_id uuid REFERENCES stations,
+  role user_role NOT NULL,
+  station_id uuid REFERENCES stations,
   changed_by uuid NOT NULL REFERENCES users,
   inserted_at timestamptz NOT NULL DEFAULT now()
 );
