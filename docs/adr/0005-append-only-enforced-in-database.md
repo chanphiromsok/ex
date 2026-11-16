@@ -7,3 +7,5 @@ All event timestamps are set by the server in UTC; staff cannot supply a time. R
 Parcels and Sale Item lines are created in the same transaction as the Shipment and its first Payment, and are immutable once the Shipment is Received.
 
 Rejected: Ash-level rules only. Anyone with database access could still edit cash records.
+
+Ash: this is enforced both by the resource (no update/destroy action) and by a `custom_statements` trigger in the generated migration. See docs/schema.md.
