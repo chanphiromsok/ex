@@ -75,7 +75,7 @@ A Status Event ending a Shipment before it leaves the origin Station, always wit
 _Avoid_: Void, delete
 
 **Collection**:
-The final Status Event where the Receiver or someone on their behalf takes the Parcels at the destination Station; records the collector's name and, when no Collection Code is given, their ID number.
+The final Status Event where the Receiver or someone on their behalf takes the Parcels at the destination Station.
 _Avoid_: Pickup, delivery
 
 **Collection Code**:

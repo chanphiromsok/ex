@@ -132,8 +132,6 @@ CREATE TABLE status_events (
   station_id uuid NOT NULL REFERENCES stations,
   created_by uuid NOT NULL REFERENCES users,
   reason text,
-  collector_name text,
-  collector_id_number text,
   inserted_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX status_events_shipment_idx ON status_events (shipment_id, inserted_at);
