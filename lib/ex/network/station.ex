@@ -14,6 +14,11 @@ defmodule Ex.Network.Station do
     table "stations"
     repo Ex.Repo
 
+    foreign_key_names [
+      {:id, "users_station_id_fkey", "still has staff assigned"},
+      {:id, "user_assignment_changes_station_id_fkey", "appears in assignment history"}
+    ]
+
     references do
       reference :location, on_delete: :restrict, index?: true
     end
@@ -29,18 +34,35 @@ defmodule Ex.Network.Station do
         description "Lists Stations with the Location each is in. Any signed-in user."
       end
 
+      get :read do
+        description "Shows one Station. Any signed-in user."
+      end
+
       post :create do
         description "Creates a Station in a Location. Needs the `reference_data.manage` permission."
+      end
+
+      patch :update do
+        description "Renames, moves or (de)activates a Station. Needs the `reference_data.manage` permission."
+      end
+
+      delete :destroy do
+        description "Deletes a Station nothing refers to. Needs the `reference_data.manage` permission."
       end
     end
   end
 
   actions do
-    defaults [:read]
+    defaults [:read, :destroy]
 
     create :create do
       primary? true
       accept [:name_en, :name_km, :location_id]
+    end
+
+    update :update do
+      primary? true
+      accept [:name_en, :name_km, :location_id, :active]
     end
   end
 

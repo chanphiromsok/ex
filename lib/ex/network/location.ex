@@ -13,6 +13,8 @@ defmodule Ex.Network.Location do
   postgres do
     table "locations"
     repo Ex.Repo
+
+    foreign_key_names [{:id, "stations_location_id_fkey", "is still used by a Station"}]
   end
 
   json_api do
@@ -25,16 +27,33 @@ defmodule Ex.Network.Location do
         description "Lists Locations (cities and provinces). Any signed-in user."
       end
 
+      get :read do
+        description "Shows one Location. Any signed-in user."
+      end
+
       post :create do
         description "Creates a Location. Needs the `reference_data.manage` permission."
+      end
+
+      patch :update do
+        description "Renames a Location. Needs the `reference_data.manage` permission."
+      end
+
+      delete :destroy do
+        description "Deletes a Location with no Stations. Needs the `reference_data.manage` permission."
       end
     end
   end
 
   actions do
-    defaults [:read]
+    defaults [:read, :destroy]
 
     create :create do
+      primary? true
+      accept [:name_en, :name_km]
+    end
+
+    update :update do
       primary? true
       accept [:name_en, :name_km]
     end
