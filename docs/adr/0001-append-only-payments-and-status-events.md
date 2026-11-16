@@ -8,4 +8,4 @@ A Shipment is Received only when its Payments sum to its Shipment Total. No Ship
 
 ## Consequences
 
-Status and balance are derived (query or projection). Corrections mean cancel and create a new Shipment, so repeat-after-cancel Fraud Flags fire on legitimate corrections too. The ledger must allow multiple payers, since COD may come later.
+Status and balance are derived (query or projection). Corrections mean cancel and create a new Shipment, so repeat-after-cancel Fraud Flags fire on legitimate corrections too. Payments are always from the Sender; there is no payer column (COD is out of scope for good).

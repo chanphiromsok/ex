@@ -111,7 +111,7 @@ _Avoid_: Grace period
 ## Payment
 
 **Payment**:
-A recorded movement of money against a Shipment, with method, payer and amount. Never edited; a refund is a separate negative Payment.
+A recorded movement of money against a Shipment, with method and amount; always paid by the Sender. Never edited; a refund is a separate negative Payment.
 _Avoid_: Invoice, receipt, transaction
 
 **Shipment Total**:

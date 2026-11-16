@@ -133,7 +133,6 @@ CREATE TABLE payments (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   shipment_id uuid NOT NULL REFERENCES shipments,
   method text NOT NULL,
-  payer text NOT NULL,
   amount money_with_currency NOT NULL,          -- negative = refund
   station_id uuid NOT NULL REFERENCES stations,
   created_by uuid NOT NULL REFERENCES users,
