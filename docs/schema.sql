@@ -89,14 +89,9 @@ CREATE TABLE users (
 );
 
 -- Shipments --------------------------------------------------------------
-CREATE TABLE waybill_counters (
-  day date PRIMARY KEY,
-  last_seq integer NOT NULL
-);
-
 CREATE TABLE shipments (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  waybill text NOT NULL UNIQUE,                 -- EX-YYYYMMDD-SEQ
+  invoice_no bigint GENERATED ALWAYS AS IDENTITY UNIQUE,  -- own generator
   origin_station_id uuid NOT NULL REFERENCES stations,
   destination_station_id uuid NOT NULL REFERENCES stations,
   route_id uuid NOT NULL REFERENCES routes,

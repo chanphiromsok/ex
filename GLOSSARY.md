@@ -5,20 +5,20 @@ Express goods carried by bus between our stations. A sender walks into a station
 ## Language
 
 **Shipment**:
-The agreement to carry one Sender's goods from an origin Station to a destination Station. Holds one or more Parcels, one Waybill, and the Payments made against it. Moves and is collected as a whole.
+The agreement to carry one Sender's goods from an origin Station to a destination Station. Holds one or more Parcels, one Invoice Number, and the Payments made against it. Moves and is collected as a whole.
 _Avoid_: Order, booking, consignment
 
 **Parcel**:
 One physical item inside a Shipment, with its own weight and Size Class.
 _Avoid_: Package, piece, box
 
-**Waybill**:
-The unique number identifying a Shipment, printed on the Waybill Slip and on each Parcel label, and used by the receiver to collect.
-_Avoid_: Tracking number, ticket
+**Invoice Number**:
+The unique running number of a Shipment, generated on its own, printed on the Invoice and on each Parcel label, and used by staff to find the Shipment.
+_Avoid_: Invoice Number, tracking number, ticket
 
-**Waybill Slip**:
-The paper given to the Sender showing the Waybill, each Parcel's weight and Size Class, and the Shipment Total.
-_Avoid_: Receipt, invoice
+**Invoice**:
+The paper given to the Sender showing the Invoice Number, each Parcel's weight and Size Class, and the Shipment Total.
+_Avoid_: Receipt
 
 **Station**:
 A physical place where staff accept and hand out Parcels. Belongs to a Location.

@@ -19,7 +19,7 @@ Money columns use ash_money (KHR). All `inserted_at` are server UTC. Status and 
 - user_assignment_changes (append-only): user_id, role, station_id, changed_by, inserted_at (current = latest row per user)
 
 ## Shipments
-- shipments: id, waybill (unique), origin_station_id, destination_station_id, route_id, price_list_version_id, sender_name, sender_phone, receiver_name, receiver_phone (normalised digits with country code, indexed), declared_value, collection_code_hash, shipment_total, created_by, inserted_at
+- shipments: id, invoice_no (identity sequence, unique), origin_station_id, destination_station_id, route_id, price_list_version_id, sender_name, sender_phone, receiver_name, receiver_phone (normalised digits with country code, indexed), declared_value, collection_code_hash, shipment_total, created_by, inserted_at
 - parcels: id, shipment_id, weight_kg, size_class_id, length_cm, width_cm, height_cm, chargeable_amount
 - shipment_sale_items: id, shipment_id, sale_item_id, quantity, unit_price (snapshot)
 
@@ -32,6 +32,3 @@ Money columns use ash_money (KHR). All `inserted_at` are server UTC. Status and 
 - incidents: shipment_id, type, reason, created_by, resolved_by, resolved_at
 - fraud_flags: shipment_id, kind, resolved_by, resolved_at
 - cancellation_requests: shipment_id, requested_by, approved_by, decided_at
-
-## Other
-- waybill_counters: date, last_seq
