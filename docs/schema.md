@@ -12,7 +12,7 @@ Money columns use ash_money (KHR). All `inserted_at` are server UTC. Status and 
 - price_list_weight_rates: id, version_id, route_id, price_per_kg
 - price_list_size_rates: id, version_id, route_id, size_class_id, price
 - station_settings: station_id (unique), cancel_requires_approval, overdue_threshold_days
-- station_setting_changes (append-only): station_id, field, old, new, changed_by, at
+- station_setting_changes (append-only): station_id, field, value, changed_by, inserted_at (current value = latest row per field; first row written when the Station is created)
 
 ## Users
 - users: + role (staff|supervisor|admin), station_id (required for staff/supervisor, null for admin)
