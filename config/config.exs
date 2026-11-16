@@ -76,7 +76,7 @@ config :spark,
 config :ex,
   ecto_repos: [Ex.Repo],
   generators: [timestamp_type: :utc_datetime],
-  ash_domains: [Ex.Accounts, Ex.Network]
+  ash_domains: [Ex.Accounts, Ex.Network, Ex.Pricing]
 
 # Configure the endpoint
 config :ex, ExWeb.Endpoint,
