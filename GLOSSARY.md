@@ -86,10 +86,6 @@ _Avoid_: PIN, password
 A Shipment that has stayed Arrived longer than the Station's Overdue Threshold without Collection.
 _Avoid_: Abandoned, unclaimed
 
-**Fraud Flag**:
-A review item raised when a Shipment looks suspicious, namely a repeat Shipment soon after a Cancellation. Resolved by an Admin.
-_Avoid_: Alert, warning
-
 **Incident**:
 A recorded problem with a Shipment after departure: Return to Sender, Redirect, Lost or Damaged, with a reason. Resolved by an Admin; compensation is handled outside the system.
 _Avoid_: Complaint, claim

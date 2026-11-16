@@ -189,15 +189,6 @@ CREATE TABLE incidents (
   inserted_at timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE TABLE fraud_flags (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  shipment_id uuid NOT NULL REFERENCES shipments,
-  kind text NOT NULL,                           -- repeat_after_cancel
-  resolved_by uuid REFERENCES users,
-  resolved_at timestamptz,
-  inserted_at timestamptz NOT NULL DEFAULT now()
-);
-
 CREATE TABLE cancellation_requests (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   shipment_id uuid NOT NULL REFERENCES shipments,
