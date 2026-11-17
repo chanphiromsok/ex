@@ -23,6 +23,8 @@ async function call(method: string, path: string, body?: unknown): Promise<any> 
   if (!res.ok) {
     const errs: any[] = json?.errors ?? []
     const msg = errs.map((e) => e.detail || e.title).filter(Boolean).join('; ')
+    if (res.status === 403 && (!msg || msg.toLowerCase() === 'forbidden'))
+      throw new Error("You're not allowed to do this. Your role may not include it, or this Shipment isn't at your Station. Ask a Supervisor or Admin.")
     throw new Error(msg || `Request failed (${res.status})`)
   }
   return json
