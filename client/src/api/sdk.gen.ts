@@ -400,7 +400,7 @@ export const patchApiV1StationsById = <ThrowOnError extends boolean = false>(opt
 });
 
 /**
- * Departs the Manifest at its origin Station: every loaded Shipment becomes In transit.
+ * Departs the Manifest at its origin Station: every loaded Shipment becomes In transit. Shipments cancelled, or with a pending Cancellation Request, since loading are taken off instead.
  */
 export const patchApiV1ManifestsByIdDepart = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1ManifestsByIdDepartData, ThrowOnError>): RequestResult<PatchApiV1ManifestsByIdDepartResponses, PatchApiV1ManifestsByIdDepartErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1ManifestsByIdDepartResponses, PatchApiV1ManifestsByIdDepartErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
@@ -466,7 +466,9 @@ export const postApiV1ShipmentNotes = <ThrowOnError extends boolean = false>(opt
 
 /**
  * Scans one Shipment by `invoice_no`. While the Manifest is open (origin Station) it loads the Shipment;
- * once departed (destination Station) it marks the Shipment Arrived. Scanning twice is harmless.
+ * once departed (destination Station) it marks the Shipment Arrived. Scanning twice is harmless. Only
+ * Received Shipments can be loaded, and not one with a pending Cancellation Request (400 until it is
+ * approved or rejected).
  *
  */
 export const patchApiV1ManifestsByIdScan = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1ManifestsByIdScanData, ThrowOnError>): RequestResult<PatchApiV1ManifestsByIdScanResponses, PatchApiV1ManifestsByIdScanErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1ManifestsByIdScanResponses, PatchApiV1ManifestsByIdScanErrors, ThrowOnError>({

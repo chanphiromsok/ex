@@ -3,7 +3,7 @@ defmodule Ex.Shipping.Changes.MoveManifest do
   Departs or arrives a whole Manifest.
 
   * `to: :departed` (origin Station): every Received Shipment on it becomes In transit, through the normal
-    Status Events. Shipments cancelled since loading are taken off. It needs at least one Shipment.
+    Status Events. Shipments cancelled, or with a pending Cancellation Request, since loading are taken off. It needs at least one Shipment.
   * `to: :arrived` (destination Station): closes the Manifest. Shipments not scanned are left In transit and
     show as remaining, so the missing ones are visible.
   """
@@ -49,7 +49,12 @@ defmodule Ex.Shipping.Changes.MoveManifest do
         |> Ash.Query.lock("FOR UPDATE")
         |> Ash.read!(authorize?: false)
 
-      {received, rest} = Enum.split_with(shipments, &(&1.status == :received))
+      {received, rest} =
+        Enum.split_with(
+          shipments,
+          &(&1.status == :received and
+              not Ex.Shipping.Changes.ScanManifest.pending_cancellation?(&1))
+        )
 
       Enum.each(
         rest,

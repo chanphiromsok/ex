@@ -17854,7 +17854,7 @@
       "patch": {
         "callbacks": {},
         "deprecated": false,
-        "description": "Departs the Manifest at its origin Station: every loaded Shipment becomes In transit.",
+        "description": "Departs the Manifest at its origin Station: every loaded Shipment becomes In transit. Shipments cancelled, or with a pending Cancellation Request, since loading are taken off instead.",
         "parameters": [
           {
             "in": "path",
@@ -18536,7 +18536,7 @@
       "patch": {
         "callbacks": {},
         "deprecated": false,
-        "description": "Scans one Shipment by `invoice_no`. While the Manifest is open (origin Station) it loads the Shipment;\nonce departed (destination Station) it marks the Shipment Arrived. Scanning twice is harmless.\n",
+        "description": "Scans one Shipment by `invoice_no`. While the Manifest is open (origin Station) it loads the Shipment;\nonce departed (destination Station) it marks the Shipment Arrived. Scanning twice is harmless. Only\nReceived Shipments can be loaded, and not one with a pending Cancellation Request (400 until it is\napproved or rejected).\n",
         "parameters": [
           {
             "in": "path",

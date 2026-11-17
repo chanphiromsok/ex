@@ -948,7 +948,7 @@ export const patchApiV1StationsByIdMutation = (options?: Partial<Options<PatchAp
 };
 
 /**
- * Departs the Manifest at its origin Station: every loaded Shipment becomes In transit.
+ * Departs the Manifest at its origin Station: every loaded Shipment becomes In transit. Shipments cancelled, or with a pending Cancellation Request, since loading are taken off instead.
  */
 export const patchApiV1ManifestsByIdDepartMutation = (options?: Partial<Options<PatchApiV1ManifestsByIdDepartData>>): UseMutationOptions<PatchApiV1ManifestsByIdDepartResponse, PatchApiV1ManifestsByIdDepartError, Options<PatchApiV1ManifestsByIdDepartData>> => {
     const mutationOptions: UseMutationOptions<PatchApiV1ManifestsByIdDepartResponse, PatchApiV1ManifestsByIdDepartError, Options<PatchApiV1ManifestsByIdDepartData>> = {
@@ -1076,7 +1076,9 @@ export const postApiV1ShipmentNotesMutation = (options?: Partial<Options<PostApi
 
 /**
  * Scans one Shipment by `invoice_no`. While the Manifest is open (origin Station) it loads the Shipment;
- * once departed (destination Station) it marks the Shipment Arrived. Scanning twice is harmless.
+ * once departed (destination Station) it marks the Shipment Arrived. Scanning twice is harmless. Only
+ * Received Shipments can be loaded, and not one with a pending Cancellation Request (400 until it is
+ * approved or rejected).
  *
  */
 export const patchApiV1ManifestsByIdScanMutation = (options?: Partial<Options<PatchApiV1ManifestsByIdScanData>>): UseMutationOptions<PatchApiV1ManifestsByIdScanResponse, PatchApiV1ManifestsByIdScanError, Options<PatchApiV1ManifestsByIdScanData>> => {

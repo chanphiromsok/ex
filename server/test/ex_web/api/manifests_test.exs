@@ -5,6 +5,7 @@ defmodule ExWeb.Api.ManifestsTest do
   """
   use ExWeb.ConnCase, async: true
   import Ex.Fixtures
+  require Ash.Query
 
   setup %{conn: conn} do
     admin = conn |> signed_in(user!(:admin))
@@ -224,6 +225,53 @@ defmodule ExWeb.Api.ManifestsTest do
     test "a bystander Station cannot see the Manifest", ctx do
       id = opened(ctx)
       assert ctx.bystander |> get("/api/v1/manifests/#{id}") |> json_response(404)
+    end
+  end
+
+  describe "a pending Cancellation Request" do
+    defp ask_to_cancel(conn, no) do
+      shipment =
+        Ex.Shipping.Shipment
+        |> Ash.Query.filter(invoice_no == ^no)
+        |> Ash.read_one!(authorize?: false)
+
+      post(conn, "/api/v1/cancellation-requests", %{
+        data: %{
+          type: "cancellation-request",
+          attributes: %{shipment_id: shipment.id, reason: "changed mind"}
+        }
+      })
+      |> json_response(201)
+    end
+
+    test "keeps a Shipment off the Manifest until it is decided", ctx do
+      id = opened(ctx)
+      no = shipment!(ctx.origin, ctx.sr)
+      ask_to_cancel(ctx.origin, no)
+
+      assert ctx.origin |> scan(id, no) |> json_response(400)
+    end
+
+    test "takes an already loaded Shipment off when the bus leaves", ctx do
+      id = opened(ctx)
+      loaded = shipment!(ctx.origin, ctx.sr)
+      asked = shipment!(ctx.origin, ctx.sr)
+      ctx.origin |> scan(id, loaded) |> json_response(200)
+      ctx.origin |> scan(id, asked) |> json_response(200)
+      ask_to_cancel(ctx.origin, asked)
+
+      ctx.origin |> act(id, "depart") |> json_response(200)
+
+      shipments =
+        Ex.Shipping.Shipment
+        |> Ash.Query.filter(invoice_no in ^[loaded, asked])
+        |> Ash.Query.load(:status)
+        |> Ash.read!(authorize?: false)
+        |> Map.new(&{&1.invoice_no, &1})
+
+      assert shipments[loaded].status == :in_transit
+      assert shipments[asked].status == :received
+      assert is_nil(shipments[asked].manifest_id)
     end
   end
 end

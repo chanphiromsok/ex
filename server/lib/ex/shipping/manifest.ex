@@ -81,14 +81,16 @@ defmodule Ex.Shipping.Manifest do
 
         description """
         Scans one Shipment by `invoice_no`. While the Manifest is open (origin Station) it loads the Shipment;
-        once departed (destination Station) it marks the Shipment Arrived. Scanning twice is harmless.
+        once departed (destination Station) it marks the Shipment Arrived. Scanning twice is harmless. Only
+        Received Shipments can be loaded, and not one with a pending Cancellation Request (400 until it is
+        approved or rejected).
         """
       end
 
       patch :depart do
         route "/:id/depart"
 
-        description "Departs the Manifest at its origin Station: every loaded Shipment becomes In transit."
+        description "Departs the Manifest at its origin Station: every loaded Shipment becomes In transit. Shipments cancelled, or with a pending Cancellation Request, since loading are taken off instead."
       end
 
       patch :arrive do

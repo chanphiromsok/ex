@@ -13,7 +13,7 @@ defmodule Ex.Shipping.Changes.ScanManifest do
   use Ash.Resource.Change
 
   alias Ex.Accounts.Checks.HasPermission
-  alias Ex.Shipping.{Manifest, Shipment, Status}
+  alias Ex.Shipping.{CancellationRequest, Manifest, Shipment, Status}
   require Ash.Query
 
   @impl true
@@ -108,6 +108,10 @@ defmodule Ex.Shipping.Changes.ScanManifest do
         {:error,
          "Shipment #{no} is #{Status.label_en(shipment.status)}; only Received Shipments can be loaded"}
 
+      pending_cancellation?(shipment) ->
+        {:error,
+         "Shipment #{no} has a pending Cancellation Request; it must be approved or rejected before it can be loaded"}
+
       shipment.manifest_id not in [nil, manifest.id] ->
         {:error, "Shipment #{no} is already on another Manifest"}
 
@@ -123,5 +127,12 @@ defmodule Ex.Shipping.Changes.ScanManifest do
     if HasPermission.match?(actor, nil, permission: permission),
       do: :ok,
       else: {:error, "you do not have the #{permission} permission"}
+  end
+
+  @doc false
+  def pending_cancellation?(%{id: shipment_id}) do
+    CancellationRequest
+    |> Ash.Query.filter(shipment_id == ^shipment_id and status == :pending)
+    |> Ash.exists?(authorize?: false)
   end
 end
