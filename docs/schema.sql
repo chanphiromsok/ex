@@ -221,6 +221,48 @@ CREATE TABLE user_assignment_changes (
   inserted_at timestamp(6) NOT NULL DEFAULT (now() AT TIME ZONE 'utc')
 );
 
+-- Permissions (data, editable by an Admin; see docs/adr/0006) --------------
+-- Names are also an Ash enum in code (policies name them); rows come from migrations,
+-- and a test checks the two lists match.
+CREATE TABLE permissions (
+  name text PRIMARY KEY,                        -- 'shipment.create', 'cancellation.approve', ...
+  station_bound boolean NOT NULL,               -- acts on a Shipment/Payment/Cancellation at a Station; never effective for an Admin
+  description text NOT NULL
+);
+
+-- Default Permissions of a role. Roles stay an enum on users.
+CREATE TABLE role_permissions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  role text NOT NULL CHECK (role IN ('staff','supervisor','admin')),
+  permission text NOT NULL REFERENCES permissions,
+  UNIQUE (role, permission)
+);
+
+-- Per-user override. No row = the role default applies. Delete the row to reset.
+CREATE TABLE user_permissions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES users,
+  permission text NOT NULL REFERENCES permissions,
+  granted boolean NOT NULL,                     -- true = grant, false = deny (deny beats the role default)
+  UNIQUE (user_id, permission)
+);
+
+-- Effective permission = COALESCE(user override, role default), minus station_bound ones for users with no Station.
+-- Computed in one SQL calculation on User and loaded onto the actor (see docs/schema.md).
+
+-- One append-only log for both tables above, written in the same transaction as the change.
+CREATE TABLE permission_changes (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  role text CHECK (role IN ('staff','supervisor','admin')),
+  user_id uuid REFERENCES users,
+  permission text NOT NULL REFERENCES permissions,
+  effect text NOT NULL CHECK (effect IN ('grant','deny','clear')),  -- clear = row removed (role default again / default removed)
+  changed_by_id uuid NOT NULL REFERENCES users,
+  inserted_at timestamp(6) NOT NULL DEFAULT (now() AT TIME ZONE 'utc'),
+  CHECK (num_nonnulls(role, user_id) = 1)       -- a role change or a user change, never both
+);
+CREATE INDEX permission_changes_user_idx ON permission_changes (user_id, inserted_at DESC);
+
 -- Resolvable -------------------------------------------------------------
 CREATE TABLE incidents (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -265,6 +307,8 @@ CREATE TRIGGER shipment_sale_items_immutable BEFORE UPDATE OR DELETE ON shipment
 CREATE TRIGGER price_changes_append_only BEFORE UPDATE OR DELETE ON price_changes
   FOR EACH ROW EXECUTE FUNCTION reject_change();
 CREATE TRIGGER station_setting_changes_append_only BEFORE UPDATE OR DELETE ON station_setting_changes
+  FOR EACH ROW EXECUTE FUNCTION reject_change();
+CREATE TRIGGER permission_changes_append_only BEFORE UPDATE OR DELETE ON permission_changes
   FOR EACH ROW EXECUTE FUNCTION reject_change();
 CREATE TRIGGER user_assignment_changes_append_only BEFORE UPDATE OR DELETE ON user_assignment_changes
   FOR EACH ROW EXECUTE FUNCTION reject_change();

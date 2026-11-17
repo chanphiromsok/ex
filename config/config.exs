@@ -7,6 +7,10 @@
 # General application configuration
 import Config
 
+# We only use KHR and never convert currencies (see ADR-0003), so no exchange rate service.
+config :ex_money,
+  auto_start_exchange_rate_service: false
+
 config :mime,
   extensions: %{"json" => "application/vnd.api+json"},
   types: %{"application/vnd.api+json" => ["json"]}
@@ -72,7 +76,7 @@ config :spark,
 config :ex,
   ecto_repos: [Ex.Repo],
   generators: [timestamp_type: :utc_datetime],
-  ash_domains: [Ex.Accounts]
+  ash_domains: [Ex.Accounts, Ex.Network, Ex.Pricing, Ex.Shipping]
 
 # Configure the endpoint
 config :ex, ExWeb.Endpoint,

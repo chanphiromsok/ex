@@ -40,6 +40,18 @@ _Avoid_: Manager
 A company-wide user who maintains reference data and Station Settings. Has no Station and cannot take Payments, receive, cancel or collect Shipments.
 _Avoid_: Super user, manager
 
+**Permission**:
+A named thing a user may do, such as creating a Shipment or approving a Cancellation. The list of Permissions is fixed by the application, because code must check each one; which role gets which is data.
+_Avoid_: Right, privilege, scope
+
+**Default Permissions**:
+The Permissions a user gets from their role when nothing else is set for them. An Admin can change them without a deploy, and every change is recorded.
+_Avoid_: Base rights
+
+**Permission Override**:
+A setting an Admin makes for one user and one Permission: grant it, deny it, or reset it to the role's default. Every change is recorded. A denied Permission is refused even if the role has it by default.
+_Avoid_: Exception, revoke (use deny)
+
 **Sender**:
 The person who hands goods over at the origin Station; name and phone on the Shipment, not an account.
 _Avoid_: Customer, client, user
