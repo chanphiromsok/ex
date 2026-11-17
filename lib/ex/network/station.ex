@@ -55,6 +55,12 @@ defmodule Ex.Network.Station do
         """
       end
 
+      patch :set_overdue_threshold do
+        route "/:id/overdue-threshold"
+
+        description "Sets how many hours after departure a Shipment is Overdue at this destination Station, and logs it. Needs `station_setting.manage`."
+      end
+
       delete :destroy do
         description "Deletes a Station nothing refers to. Needs the `reference_data.manage` permission."
       end
@@ -79,6 +85,12 @@ defmodule Ex.Network.Station do
       accept [:cancellation_requires_approval]
       change {Ex.Pricing.Changes.LogSetting, kind: :station_cancellation_approval}
     end
+
+    update :set_overdue_threshold do
+      require_atomic? false
+      accept [:overdue_threshold_hours]
+      change {Ex.Pricing.Changes.LogSetting, kind: :station_overdue_threshold}
+    end
   end
 
   policies do
@@ -86,7 +98,7 @@ defmodule Ex.Network.Station do
       authorize_if actor_present()
     end
 
-    policy action(:set_cancellation_approval) do
+    policy action([:set_cancellation_approval, :set_overdue_threshold]) do
       authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"station_setting.manage"}
     end
 
@@ -99,6 +111,13 @@ defmodule Ex.Network.Station do
     uuid_primary_key :id
     attribute :name_en, :string, allow_nil?: false, public?: true
     attribute :name_km, :string, allow_nil?: false, public?: true
+
+    attribute :overdue_threshold_hours, :integer,
+      allow_nil?: false,
+      default: 48,
+      public?: true,
+      constraints: [min: 1, max: 720]
+
     attribute :active, :boolean, allow_nil?: false, default: true, public?: true
 
     attribute :cancellation_requires_approval, :boolean,

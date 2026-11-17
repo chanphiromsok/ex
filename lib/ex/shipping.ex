@@ -11,5 +11,6 @@ defmodule Ex.Shipping do
     resource Ex.Shipping.ShipmentNote
     resource Ex.Shipping.ReceiverCorrection
     resource Ex.Shipping.CancellationRequest
+    resource Ex.Shipping.Incident
   end
 end

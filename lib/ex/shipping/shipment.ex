@@ -107,6 +107,12 @@ defmodule Ex.Shipping.Shipment do
         description "Shows one Shipment (the invoice). Needs the `shipment.read` permission."
       end
 
+      index :overdue do
+        route "/overdue"
+
+        description "Overdue Shipments: past their destination Station's Overdue Threshold since departure. Optional `destination_station_id`."
+      end
+
       index :read do
         description "Lists Shipments, newest first by default. Needs the `shipment.read` permission."
       end
@@ -142,6 +148,18 @@ defmodule Ex.Shipping.Shipment do
 
   actions do
     defaults [:read]
+
+    read :overdue do
+      description "In Transit or Arrived Shipments past the destination Station's Overdue Threshold."
+      argument :destination_station_id, :uuid
+
+      filter expr(
+               status in [:in_transit, :arrived] and
+                 departed_at < ago(destination_station.overdue_threshold_hours, :hour) and
+                 (is_nil(^arg(:destination_station_id)) or
+                    destination_station_id == ^arg(:destination_station_id))
+             )
+    end
 
     create :create do
       primary? true
@@ -327,6 +345,11 @@ defmodule Ex.Shipping.Shipment do
 
     first :latest_correction_name, :receiver_corrections, :name do
       sort inserted_at: :desc
+    end
+
+    first :departed_at, :status_events, :inserted_at do
+      public? true
+      filter expr(status == :in_transit)
     end
 
     first :status, :status_events, :status do

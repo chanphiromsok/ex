@@ -3,7 +3,7 @@ defmodule Ex.Pricing.Changes.LogSetting do
   After the action succeeds, appends an `Ex.Pricing.SettingChange` recording what was set and by whom.
   Same transaction as the change itself, so a setting and its log row are saved together or not at all.
 
-  Option `:kind` is `:cancellation_fee` or `:station_cancellation_approval`.
+  Option `:kind` is `:cancellation_fee`, `:station_cancellation_approval` or `:station_overdue_threshold`.
   """
   use Ash.Resource.Change
 
@@ -17,6 +17,9 @@ defmodule Ex.Pricing.Changes.LogSetting do
 
           :station_cancellation_approval ->
             %{station_id: record.id, requires_approval: record.cancellation_requires_approval}
+
+          :station_overdue_threshold ->
+            %{station_id: record.id, hours: record.overdue_threshold_hours}
         end
 
       Ash.create!(

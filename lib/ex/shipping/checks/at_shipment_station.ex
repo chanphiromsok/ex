@@ -14,7 +14,10 @@ defmodule Ex.Shipping.Checks.AtShipmentStation do
     with shipment_id when not is_nil(shipment_id) <-
            Ash.Changeset.get_attribute(changeset, :shipment_id),
          {:ok, shipment} <- Ash.get(Ex.Shipping.Shipment, shipment_id, authorize?: false) do
-      station_id == Map.fetch!(shipment, :"#{opts[:side]}_station_id")
+      case opts[:side] do
+        :either -> station_id in [shipment.origin_station_id, shipment.destination_station_id]
+        side -> station_id == Map.fetch!(shipment, :"#{side}_station_id")
+      end
     else
       _ -> false
     end

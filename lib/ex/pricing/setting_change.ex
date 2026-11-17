@@ -62,7 +62,7 @@ defmodule Ex.Pricing.SettingChange do
 
     create :record do
       primary? true
-      accept [:kind, :station_id, :percent, :cap, :requires_approval, :changed_by_id]
+      accept [:kind, :station_id, :percent, :cap, :requires_approval, :hours, :changed_by_id]
     end
   end
 
@@ -78,11 +78,14 @@ defmodule Ex.Pricing.SettingChange do
     attribute :kind, :atom,
       allow_nil?: false,
       public?: true,
-      constraints: [one_of: [:cancellation_fee, :station_cancellation_approval]]
+      constraints: [
+        one_of: [:cancellation_fee, :station_cancellation_approval, :station_overdue_threshold]
+      ]
 
     attribute :percent, :integer, public?: true
     attribute :cap, AshMoney.Types.Money, public?: true
     attribute :requires_approval, :boolean, public?: true
+    attribute :hours, :integer, public?: true
     create_timestamp :inserted_at, public?: true
   end
 
