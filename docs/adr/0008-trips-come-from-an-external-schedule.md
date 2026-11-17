@@ -4,8 +4,10 @@ Supersedes the "no Bus Trips, no manifest" part of ADR-0002 (the rest of 0002 st
 
 The company already owns the bus schedule in an external service. We do not store Trip master data. A thin adapter (`Ex.Schedule`, one function `departures(route, date)`, called with `Req`, short cache) reads the departures for a Route and a date.
 
-A Shipment gets an optional `external_trip_id` when it is created or later, before the Trip departs. At the same time we copy a snapshot onto it (departure time, bus plate, driver), because the external service can change or delete a Trip and an Invoice or history must not change with it. If the service is down the Shipment is still created, without a Trip.
+A **Manifest** is our own record, one per Trip and origin/destination Station pair (`external_trip_id`), opened by origin staff from the schedule. It copies the Trip's departure time, bus plate and driver as a snapshot, because the external service can change or delete a Trip and our history must not change with it. A Shipment points at its Manifest with `manifest_id` (null until scanned on). If the service is down a Shipment is still created; only opening a Manifest needs the schedule.
 
-A **Manifest** is our own record, one per `external_trip_id`, created when the first Shipment is attached. It lists the Shipments on that Trip and records what only we can know: who loaded it, who unloaded it, status (open, departed, arrived), and the missing and unexpected checks on arrival. Departing or arriving a Manifest writes the normal Status Events for each Shipment, so ADR-0001 and ADR-0005 still hold.
+Flow: staff scan each Shipment's Invoice Number onto an open Manifest (origin Station; only Received Shipments on the same Station pair, on no other Manifest). Departing writes In Transit Status Events for every loaded Shipment at once. At the destination Station each scan marks that Shipment Arrived; Shipments never scanned stay In Transit and show as `remaining_count`. All status changes go through the normal Status Events, so ADR-0001 and ADR-0005 still hold.
+
+Until the real service is connected, `Ex.Schedule.Mock` (config `:schedule`) answers with four departures a day.
 
 Decided for v1: one Shipment goes on exactly one Trip, and the Manifest works at Shipment level (a line shows the Parcel count). Per-Parcel tracking is still rejected, as in ADR-0002.

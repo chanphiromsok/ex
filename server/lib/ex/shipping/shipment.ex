@@ -22,6 +22,7 @@ defmodule Ex.Shipping.Shipment do
       reference :origin_station, on_delete: :restrict, index?: true
       reference :destination_station, on_delete: :restrict, index?: true
       reference :route, on_delete: :restrict, index?: true
+      reference :manifest, on_delete: :restrict, index?: true
       reference :created_by, on_delete: :restrict, index?: true
     end
 
@@ -75,6 +76,7 @@ defmodule Ex.Shipping.Shipment do
       :origin_station_id,
       :destination_station_id,
       :route_id,
+      :manifest_id,
       :sender_name,
       :sender_phone,
       :receiver_name,
@@ -220,6 +222,12 @@ defmodule Ex.Shipping.Shipment do
       change Ex.Shipping.Changes.PlaceShipment
     end
 
+    # Internal: the Manifest scan puts a Shipment on a Manifest or takes it off. Not exposed over the API.
+    update :set_manifest do
+      require_atomic? false
+      accept [:manifest_id]
+    end
+
     update :mark_in_transit do
       require_atomic? false
       accept []
@@ -334,6 +342,7 @@ defmodule Ex.Shipping.Shipment do
     belongs_to :origin_station, Ex.Network.Station, allow_nil?: false, public?: true
     belongs_to :destination_station, Ex.Network.Station, allow_nil?: false, public?: true
     belongs_to :route, Ex.Network.Route, allow_nil?: false, public?: true
+    belongs_to :manifest, Ex.Shipping.Manifest, public?: true
     belongs_to :created_by, Ex.Accounts.User, allow_nil?: false, public?: true
 
     has_many :parcels, Ex.Shipping.Parcel, public?: true
