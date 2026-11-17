@@ -8,5 +8,7 @@ defmodule Ex.Shipping do
     resource Ex.Shipping.ShipmentSaleItem
     resource Ex.Shipping.StatusEvent
     resource Ex.Shipping.Payment
+    resource Ex.Shipping.ShipmentNote
+    resource Ex.Shipping.ReceiverCorrection
   end
 end

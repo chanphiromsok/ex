@@ -62,6 +62,8 @@ defmodule Ex.Shipping.Shipment do
       :sale_items,
       :payments,
       :status_events,
+      :notes,
+      :receiver_corrections,
       :origin_station,
       :destination_station
     ]
@@ -75,6 +77,8 @@ defmodule Ex.Shipping.Shipment do
       :sender_phone,
       :receiver_name,
       :receiver_phone,
+      :current_receiver_name,
+      :current_receiver_phone,
       :declared_value,
       :shipment_total,
       :inserted_at,
@@ -287,9 +291,22 @@ defmodule Ex.Shipping.Shipment do
     has_many :sale_items, Ex.Shipping.ShipmentSaleItem, public?: true
     has_many :payments, Ex.Shipping.Payment, public?: true
     has_many :status_events, Ex.Shipping.StatusEvent, public?: true, sort: [seq: :asc]
+    has_many :notes, Ex.Shipping.ShipmentNote, public?: true, sort: [inserted_at: :asc]
+
+    has_many :receiver_corrections, Ex.Shipping.ReceiverCorrection,
+      public?: true,
+      sort: [inserted_at: :asc]
   end
 
   calculations do
+    # The Receiver is the latest Receiver Correction, or the original Receiver when there is none.
+    calculate :current_receiver_phone, :string, expr(latest_correction_phone || receiver_phone),
+      public?: true,
+      filterable?: true
+
+    calculate :current_receiver_name, :string, expr(latest_correction_name || receiver_name),
+      public?: true
+
     calculate :status_label_en,
               :string,
               {Ex.Shipping.Calculations.StatusLabel, language: :en, field: :status}, public?: true
@@ -304,6 +321,14 @@ defmodule Ex.Shipping.Shipment do
   end
 
   aggregates do
+    first :latest_correction_phone, :receiver_corrections, :phone do
+      sort inserted_at: :desc
+    end
+
+    first :latest_correction_name, :receiver_corrections, :name do
+      sort inserted_at: :desc
+    end
+
     first :status, :status_events, :status do
       public? true
       sort seq: :desc
