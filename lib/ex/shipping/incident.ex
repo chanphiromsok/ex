@@ -74,13 +74,6 @@ defmodule Ex.Shipping.Incident do
     policy action(:resolve) do
       authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"incident.resolve"}
     end
-
-    policy action(:resolve) do
-      authorize_if expr(
-                     shipment.origin_station_id == ^actor(:station_id) or
-                       shipment.destination_station_id == ^actor(:station_id)
-                   )
-    end
   end
 
   attributes do

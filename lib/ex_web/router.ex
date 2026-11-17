@@ -17,12 +17,20 @@ defmodule ExWeb.Router do
     plug :set_actor, :user
   end
 
+  pipeline :require_actor do
+    plug ExWeb.Plugs.RequireActor
+  end
+
   scope "/api/v1" do
     pipe_through [:api]
 
     forward "/swaggerui", OpenApiSpex.Plug.SwaggerUI,
       path: "/api/v1/open_api",
       default_model_expand_depth: 4
+  end
+
+  scope "/api/v1" do
+    pipe_through [:api, :require_actor]
 
     forward "/", ExWeb.AshJsonApiRouter
   end

@@ -33,7 +33,7 @@ A user who works at one Station and serves walk-in customers.
 _Avoid_: Agent, clerk, operator
 
 **Supervisor**:
-Station Staff who may approve Cancellations at their Station.
+Station Staff who may approve Cancellations at their Station. An Admin may approve a Cancellation at any Station.
 _Avoid_: Manager
 
 **Admin**:
@@ -87,7 +87,7 @@ The part of the Sender's payment kept when a Shipment is cancelled: a percentage
 _Avoid_: Penalty, refund fee
 
 **Cancellation**:
-A Status Event ending a Shipment before it leaves the origin Station, always with a reason; may need Supervisor approval depending on Station Setting. The Sender is refunded what they paid minus the Cancellation Fee.
+A Status Event ending a Shipment before it leaves the origin Station, always with a reason; may need Supervisor (or Admin) approval depending on Station Setting. The approver is never the person who asked. The Sender is refunded what they paid minus the Cancellation Fee.
 _Avoid_: Void, delete
 
 **Receiver Correction**:
@@ -123,7 +123,7 @@ _Avoid_: Grace period
 ## Payment
 
 **Payment**:
-A recorded movement of money against a Shipment, with method and amount; always paid by the Sender. Never edited; a refund is a separate negative Payment, recorded once per cancelled Shipment.
+A recorded movement of money against a Shipment, with method and amount; always paid by the Sender. Never edited; a refund is a separate negative Payment, recorded once per cancelled Shipment, against the staff member who took the original Payment.
 _Avoid_: Invoice, receipt, transaction
 
 **Shipment Total**:

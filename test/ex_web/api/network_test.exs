@@ -33,10 +33,14 @@ defmodule ExWeb.Api.NetworkTest do
       assert json_response(conn, 403)
     end
 
-    test "anonymous callers see none", %{conn: conn} do
+    test "anonymous callers get 401, and sign-in stays open", %{conn: conn} do
       location!("Hidden")
       conn = put_req_header(conn, "accept", "application/vnd.api+json")
-      assert json_response(get(conn, "/api/v1/locations"), 200)["data"] == []
+
+      assert %{"errors" => [%{"status" => "401"}]} =
+               json_response(get(conn, "/api/v1/locations"), 401)
+
+      assert get(conn, "/api/v1/open_api").status == 200
     end
   end
 

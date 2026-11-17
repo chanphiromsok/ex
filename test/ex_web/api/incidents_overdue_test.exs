@@ -1,7 +1,7 @@
 defmodule ExWeb.Api.IncidentsOverdueTest do
   @moduledoc """
-  Incidents are reported after departure and resolved by a Supervisor; Overdue Shipments follow each
-  destination Station's own Overdue Threshold.
+  Incidents are reported after departure and resolved by an Admin; Overdue Shipments are Arrived ones
+  waiting longer than the destination Station's own Overdue Threshold (in days).
   """
   use ExWeb.ConnCase, async: true
   import Ex.Fixtures
@@ -77,11 +77,18 @@ defmodule ExWeb.Api.IncidentsOverdueTest do
     conn |> get("/api/v1/shipments/overdue#{query}") |> json_response(200) |> Map.fetch!("data")
   end
 
-  defp backdate_departure(id, hours) do
+  defp arrive(conn, id) do
+    patch(conn, "/api/v1/shipments/#{id}/arrived", %{
+      data: %{type: "shipment", id: id, attributes: %{}}
+    })
+    |> json_response(200)
+  end
+
+  defp backdate_arrival(id, hours) do
     Ex.Repo.query!("ALTER TABLE status_events DISABLE TRIGGER status_events_append_only")
 
     Ex.Repo.query!(
-      "UPDATE status_events SET inserted_at = now() AT TIME ZONE 'utc' - make_interval(hours => $2) WHERE shipment_id = $1 AND status = 'in_transit'",
+      "UPDATE status_events SET inserted_at = now() AT TIME ZONE 'utc' - make_interval(hours => $2) WHERE shipment_id = $1 AND status = 'arrived'",
       [Ecto.UUID.dump!(id), hours]
     )
   end
@@ -99,7 +106,7 @@ defmodule ExWeb.Api.IncidentsOverdueTest do
       ctx.stranger |> report(ctx.id) |> json_response(403)
     end
 
-    test "a Supervisor at either Station resolves it once, with a resolution", ctx do
+    test "only an Admin resolves it, once, with a resolution", ctx do
       depart(ctx.origin, ctx.id)
       %{"data" => %{"id" => iid}} = ctx.origin |> report(ctx.id) |> json_response(201)
 
@@ -111,44 +118,78 @@ defmodule ExWeb.Api.IncidentsOverdueTest do
 
       resolve.(ctx.destination, %{resolution: "paid"}) |> json_response(403)
       resolve.(ctx.other_supervisor, %{resolution: "paid"}) |> json_response(403)
-      resolve.(ctx.dest_supervisor, %{}) |> json_response(400)
+      resolve.(ctx.dest_supervisor, %{resolution: "paid"}) |> json_response(403)
+      resolve.(ctx.admin, %{}) |> json_response(400)
 
       assert %{"data" => %{"attributes" => %{"status" => "resolved"}}} =
-               resolve.(ctx.dest_supervisor, %{resolution: "paid"}) |> json_response(200)
+               resolve.(ctx.admin, %{resolution: "paid"}) |> json_response(200)
 
-      resolve.(ctx.dest_supervisor, %{resolution: "again"}) |> json_response(400)
+      resolve.(ctx.admin, %{resolution: "again"}) |> json_response(400)
     end
   end
 
   describe "overdue" do
-    test "is empty until the destination threshold has passed since departure", ctx do
+    test "only Arrived Shipments count, from the day they arrived", ctx do
       assert overdue(ctx.destination) == []
       depart(ctx.origin, ctx.id)
       assert overdue(ctx.destination) == []
 
-      backdate_departure(ctx.id, 49)
+      arrive(ctx.destination, ctx.id)
+      assert overdue(ctx.destination) == []
+
+      backdate_arrival(ctx.id, 47)
+      assert overdue(ctx.destination) == []
+
+      backdate_arrival(ctx.id, 49)
       assert [%{"id" => id}] = overdue(ctx.destination)
       assert id == ctx.id
     end
 
+    test "a Shipment still In Transit is never Overdue", ctx do
+      depart(ctx.origin, ctx.id)
+      Ex.Repo.query!("ALTER TABLE status_events DISABLE TRIGGER status_events_append_only")
+
+      Ex.Repo.query!(
+        "UPDATE status_events SET inserted_at = now() AT TIME ZONE 'utc' - interval '10 days' WHERE shipment_id = $1",
+        [Ecto.UUID.dump!(ctx.id)]
+      )
+
+      Ex.Repo.query!("ALTER TABLE status_events ENABLE TRIGGER status_events_append_only")
+      assert overdue(ctx.admin) == []
+    end
+
     test "each destination Station's own threshold applies", ctx do
       depart(ctx.origin, ctx.id)
-      backdate_departure(ctx.id, 30)
+      arrive(ctx.destination, ctx.id)
+      backdate_arrival(ctx.id, 30)
       assert overdue(ctx.destination) == []
 
       patch(ctx.admin, "/api/v1/stations/#{ctx.sr.id}/overdue-threshold", %{
-        data: %{type: "station", id: ctx.sr.id, attributes: %{overdue_threshold_hours: 24}}
+        data: %{type: "station", id: ctx.sr.id, attributes: %{overdue_threshold_days: 1}}
       })
       |> json_response(200)
 
       assert [_] = overdue(ctx.destination)
-      assert [_] = overdue(ctx.destination, "?destination_station_id=#{ctx.sr.id}")
-      assert [] = overdue(ctx.destination, "?destination_station_id=#{ctx.pp.id}")
+    end
+
+    test "staff see their own Station; an Admin sees all and can filter", ctx do
+      depart(ctx.origin, ctx.id)
+      arrive(ctx.destination, ctx.id)
+      backdate_arrival(ctx.id, 49)
+
+      assert [_] = overdue(ctx.destination)
+      assert [_] = overdue(ctx.dest_supervisor)
+      assert [] = overdue(ctx.stranger)
+      assert [] = overdue(ctx.origin)
+
+      assert [_] = overdue(ctx.admin)
+      assert [_] = overdue(ctx.admin, "?destination_station_id=#{ctx.sr.id}")
+      assert [] = overdue(ctx.admin, "?destination_station_id=#{ctx.pp.id}")
     end
 
     test "only an admin changes a threshold", ctx do
       patch(ctx.dest_supervisor, "/api/v1/stations/#{ctx.sr.id}/overdue-threshold", %{
-        data: %{type: "station", id: ctx.sr.id, attributes: %{overdue_threshold_hours: 1}}
+        data: %{type: "station", id: ctx.sr.id, attributes: %{overdue_threshold_days: 1}}
       })
       |> json_response(403)
     end

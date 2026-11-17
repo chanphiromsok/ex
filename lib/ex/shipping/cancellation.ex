@@ -37,7 +37,7 @@ defmodule Ex.Shipping.Cancellation do
       paid = Enum.reduce(payments, Money.new(:KHR, 0), &Money.add!(&1.amount, &2))
       fee = fee(shipment.shipment_total, paid)
       refund = Money.sub!(paid, fee)
-      refund_payment(shipment, payments, refund, event, actor)
+      refund_payment(shipment, payments, refund, event)
 
       {:ok, %{fee: fee, refund: refund}}
     else
@@ -66,7 +66,7 @@ defmodule Ex.Shipping.Cancellation do
 
   defp min_money(a, b), do: if(Money.compare!(a, b) == :gt, do: b, else: a)
 
-  defp refund_payment(shipment, payments, refund, event, actor) do
+  defp refund_payment(shipment, payments, refund, event) do
     if Money.positive?(refund) do
       first = Enum.min_by(payments, & &1.inserted_at, DateTime)
 
@@ -78,7 +78,7 @@ defmodule Ex.Shipping.Cancellation do
           method: first.method,
           amount: Money.mult!(refund, -1),
           station_id: shipment.origin_station_id,
-          created_by_id: actor.id,
+          created_by_id: first.created_by_id,
           status_event_id: event.id
         },
         authorize?: false

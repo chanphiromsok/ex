@@ -113,6 +113,7 @@ defmodule Ex.Shipping.CancellationRequest do
     end
 
     policy action([:approve, :reject]) do
+      authorize_if actor_attribute_equals(:role, :admin)
       authorize_if expr(station_id == ^actor(:station_id))
     end
 

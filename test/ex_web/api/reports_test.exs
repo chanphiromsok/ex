@@ -90,15 +90,13 @@ defmodule ExWeb.Api.ReportsTest do
       id = send_shipment(ctx.pp_staff, ctx.sr, "5")
       cancel(ctx.pp_staff, ctx.pp_supervisor, id)
 
-      # A refund counts against whoever recorded it (the approving Supervisor), as the ledger says.
+      # A refund counts against the staff member who took the original payment, so net cash is what they hold.
       rows = report(ctx.pp_supervisor, "cash")
       assert [taken] = Enum.filter(rows, &(&1["email"] == ctx.pp_staff_email))
       assert taken["cash_taken"] == "15000"
-      assert taken["net_cash"] == "15000"
-      assert [refunded] = Enum.reject(rows, &(&1["email"] == ctx.pp_staff_email))
-      assert refunded["cash_refunded"] == "5000"
-      assert refunded["net_cash"] == "-5000"
-      assert Enum.sum(for r <- rows, do: String.to_integer(r["net_cash"])) == 10_000
+      assert taken["cash_refunded"] == "5000"
+      assert taken["net_cash"] == "10000"
+      assert [] = Enum.reject(rows, &(&1["email"] == ctx.pp_staff_email))
     end
 
     test "non-cash payments are left out", ctx do
