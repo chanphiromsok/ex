@@ -14,10 +14,23 @@ export type Session = {
 }
 
 const KEY = 'ex.session'
+// The access token lives one hour (server side), so the cookie expires with it.
+const MAX_AGE_SECONDS = 60 * 60
+
+function readCookie(): string | null {
+  const hit = document.cookie.split('; ').find((c) => c.startsWith(`${KEY}=`))
+  return hit ? decodeURIComponent(hit.slice(KEY.length + 1)) : null
+}
+
+function writeCookie(value: string | null) {
+  const secure = window.location.protocol === 'https:' ? '; Secure' : ''
+  const body = value === null ? '; Max-Age=0' : `; Max-Age=${MAX_AGE_SECONDS}`
+  document.cookie = `${KEY}=${value === null ? '' : encodeURIComponent(value)}; Path=/; SameSite=Lax${body}${secure}`
+}
 
 export function getSession(): Session | null {
   try {
-    const raw = localStorage.getItem(KEY)
+    const raw = readCookie()
     return raw ? (JSON.parse(raw) as Session) : null
   } catch {
     return null
@@ -26,10 +39,11 @@ export function getSession(): Session | null {
 
 function setSession(session: Session | null) {
   try {
-    if (session) localStorage.setItem(KEY, JSON.stringify(session))
-    else localStorage.removeItem(KEY)
+    writeCookie(session ? JSON.stringify(session) : null)
+    // Sessions used to live in localStorage; clear any left over from before.
+    localStorage.removeItem(KEY)
   } catch {
-    // storage blocked: the session just won't survive a reload
+    // cookies blocked: the session just won't survive a reload
   }
 }
 
