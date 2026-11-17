@@ -244,6 +244,16 @@ defmodule Ex.Shipping.Shipment do
       authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"shipment.read"}
     end
 
+    # A Station sees only Shipments it sends or receives; an Admin has no Station and sees all.
+    policy action_type(:read) do
+      authorize_if actor_attribute_equals(:role, :admin)
+
+      authorize_if expr(
+                     origin_station_id == ^actor(:station_id) or
+                       destination_station_id == ^actor(:station_id)
+                   )
+    end
+
     # The Overdue list is limited to the caller's own Station; an Admin has no Station and sees all.
     policy action(:overdue) do
       authorize_if actor_attribute_equals(:role, :admin)

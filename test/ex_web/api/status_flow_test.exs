@@ -179,10 +179,24 @@ defmodule ExWeb.Api.StatusFlowTest do
       assert ctx.origin |> move(ctx.id, "arrived") |> response(403)
     end
 
-    test "a third Station can do neither", ctx do
-      assert ctx.other |> move(ctx.id, "in-transit") |> response(403)
+    test "a third Station can do neither, and cannot even see the Shipment", ctx do
+      assert ctx.other |> move(ctx.id, "in-transit") |> response(404)
       ctx.origin |> move(ctx.id, "in-transit") |> json_response(200)
-      assert ctx.other |> move(ctx.id, "arrived") |> response(403)
+      assert ctx.other |> move(ctx.id, "arrived") |> response(404)
+    end
+
+    test "a third Station's Shipment list leaves it out, origin and destination list it", ctx do
+      ids = fn conn ->
+        conn
+        |> get("/api/v1/shipments")
+        |> json_response(200)
+        |> Map.fetch!("data")
+        |> Enum.map(& &1["id"])
+      end
+
+      assert ctx.id in ids.(ctx.origin)
+      assert ctx.id in ids.(ctx.destination)
+      refute ctx.id in ids.(ctx.other)
     end
 
     test "only the destination collects, and only with the Receiver's phone", ctx do
