@@ -1,0 +1,40 @@
+# Local/test stack: the app plus Postgres. `docker compose up --build`
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ex
+      POSTGRES_PASSWORD: ex
+      POSTGRES_DB: ex
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ex"]
+      interval: 3s
+      retries: 20
+
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PHX_SERVER: "true"
+      PHX_HOST: localhost
+      PORT: "4000"
+      DATABASE_URL: ecto://ex:ex@db/ex
+      POOL_SIZE: "3"
+      # Memory: load code on first use (about 100 MB less than loading every module at boot) and use
+      # a tighter allocator. Scheduler count is left at the default (one per CPU).
+      RELEASE_MODE: interactive
+      ERL_FLAGS: "+MBas aobf +MHas aobf +MMmcs 0"
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-local-only-secret-key-base-local-only-secret-key-base-local-only-0000}
+      TOKEN_SIGNING_SECRET: ${TOKEN_SIGNING_SECRET:-local-only-token-signing-secret}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@gmail.com}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-12345678}
+    ports:
+      - "4001:4000"
+    command: sh -c "/app/bin/ex eval Ex.Release.migrate && /app/bin/ex eval Ex.Release.seed && /app/bin/server"
+
+volumes:
+  pgdata:
