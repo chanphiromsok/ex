@@ -173,6 +173,24 @@ defmodule ExWeb.Api.CancellationTest do
     end
   end
 
+  describe "approval after departure or by an Admin" do
+    test "an Admin cannot approve, and approval is invalid once In Transit", ctx do
+      id = send_shipment(ctx.staff, ctx.sr)
+      %{"data" => %{"id" => rid}} = ctx.staff |> request_cancel(id) |> json_response(201)
+
+      ctx.admin |> decide(rid, "approve") |> json_response(403)
+
+      ctx.staff
+      |> patch("/api/v1/shipments/#{id}/in-transit", %{
+        data: %{type: "shipment", id: id, attributes: %{}}
+      })
+      |> json_response(200)
+
+      ctx.supervisor |> decide(rid, "approve") |> json_response(400)
+      assert status(ctx.staff, id) == "in_transit"
+    end
+  end
+
   describe "fee" do
     test "is capped, and a 100% fee refunds nothing", ctx do
       set_fee(ctx.admin, 50, "2000") |> json_response(201)
