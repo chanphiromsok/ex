@@ -1,4 +1,7 @@
 # Local/test stack: the app plus Postgres. `docker compose up --build`
+# Pinned so the stack (and its pgdata volume) keeps the name it had before the app moved into server/.
+name: ex
+
 services:
   db:
     image: postgres:17-alpine

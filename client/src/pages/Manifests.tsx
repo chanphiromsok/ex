@@ -245,7 +245,7 @@ function Detail({ id, session, stations, onBack }: { id: string; session: Sessio
       </div>
       <Card
         title="Shipments"
-        description={`${shipments.length} loaded${m.status === 'departed' ? `, ${m.remaining_count ?? 0} still to unload` : ''}`}
+        description={`${shipments.length} loaded${m.status !== 'open' && (m.remaining_count ?? 0) > 0 ? `, ${m.remaining_count} ${m.status === 'arrived' ? 'never unloaded' : 'still to unload'}` : ''}`}
         flush
       >
         {shipments.length === 0 ? (
