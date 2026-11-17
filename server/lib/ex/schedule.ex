@@ -3,22 +3,23 @@ defmodule Ex.Schedule do
   The bus schedule. The company keeps its departures in an external service (ADR-0008); this module is
   the only place that talks to it. Which implementation runs is set by `config :ex, :schedule`.
 
-  A departure is a map: `%{trip_id, origin_location_id, destination_location_id, departs_at, bus_plate,
-  driver_name}`. Until the real service is connected, `Ex.Schedule.Mock` answers.
+  A departure is a map: `%{trip_id, origin_station_id, destination_station_id, departs_at, departed, bus_label,
+  driver_name}` (our Station ids). Until the real service is connected, `Ex.Schedule.Mock` answers.
   """
 
   @type departure :: %{
           trip_id: String.t(),
-          origin_location_id: Ecto.UUID.t(),
-          destination_location_id: Ecto.UUID.t(),
+          origin_station_id: Ecto.UUID.t(),
+          destination_station_id: Ecto.UUID.t(),
           departs_at: DateTime.t(),
-          bus_plate: String.t() | nil,
+          departed: boolean,
+          bus_label: String.t() | nil,
           driver_name: String.t() | nil
         }
 
   @callback departures(
-              origin_location_id :: Ecto.UUID.t(),
-              destination_location_id :: Ecto.UUID.t(),
+              origin_station_id :: Ecto.UUID.t(),
+              destination_station_id :: Ecto.UUID.t(),
               Date.t()
             ) ::
               {:ok, [departure]} | {:error, term}

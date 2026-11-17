@@ -43,7 +43,7 @@ defmodule Ex.Shipping.Manifest do
       :destination_station_id,
       :route_id,
       :departs_at,
-      :bus_plate,
+      :bus_label,
       :driver_name,
       :status,
       :departed_at,
@@ -143,17 +143,14 @@ defmodule Ex.Shipping.Manifest do
                  authorize?: false
                ),
              {:ok, trips} <-
-               Ex.Schedule.departures(
-                 origin.location_id,
-                 destination.location_id,
-                 input.arguments.date
-               ) do
+               Ex.Schedule.departures(origin.id, destination.id, input.arguments.date) do
           {:ok,
            for t <- trips do
              %{
                trip_id: t.trip_id,
                departs_at: t.departs_at,
-               bus_plate: t.bus_plate,
+               bus_label: t.bus_label,
+               departed: t.departed,
                driver_name: t.driver_name
              }
            end}
@@ -195,7 +192,7 @@ defmodule Ex.Shipping.Manifest do
 
     attribute :external_trip_id, :string, allow_nil?: false, public?: true
     attribute :departs_at, :utc_datetime_usec, allow_nil?: false, public?: true
-    attribute :bus_plate, :string, public?: true
+    attribute :bus_label, :string, public?: true
     attribute :driver_name, :string, public?: true
 
     attribute :status, Ex.Shipping.ManifestStatus,

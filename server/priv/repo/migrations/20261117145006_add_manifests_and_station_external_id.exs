@@ -1,4 +1,4 @@
-defmodule Ex.Repo.Migrations.AddManifests do
+defmodule Ex.Repo.Migrations.AddManifestsAndStationExternalId do
   @moduledoc """
   Updates resources based on their most recent snapshots.
 
@@ -12,7 +12,7 @@ defmodule Ex.Repo.Migrations.AddManifests do
       add :id, :uuid, null: false, default: fragment("gen_random_uuid()"), primary_key: true
       add :external_trip_id, :text, null: false
       add :departs_at, :utc_datetime_usec, null: false
-      add :bus_plate, :text
+      add :bus_label, :text
       add :driver_name, :text
       add :status, :text, null: false, default: "open"
       add :departed_at, :utc_datetime_usec
@@ -91,9 +91,23 @@ defmodule Ex.Repo.Migrations.AddManifests do
     end
 
     create index(:shipments, [:manifest_id])
+
+    alter table(:stations) do
+      add :external_id, :text
+    end
+
+    create unique_index(:stations, [:external_id], name: "stations_unique_external_id_index")
   end
 
   def down do
+    drop_if_exists unique_index(:stations, [:external_id],
+                     name: "stations_unique_external_id_index"
+                   )
+
+    alter table(:stations) do
+      remove :external_id
+    end
+
     drop_if_exists index(:shipments, [:manifest_id])
 
     drop constraint(:shipments, "shipments_manifest_id_fkey")

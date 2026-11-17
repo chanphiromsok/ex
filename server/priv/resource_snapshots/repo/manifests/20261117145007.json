@@ -15,14 +15,14 @@
     {
       "allow_nil?": false,
       "default": "nil",
-      "generated?": true,
+      "generated?": false,
       "precision": null,
       "primary_key?": false,
       "references": null,
       "scale": null,
       "size": null,
-      "source": "invoice_no",
-      "type": "bigserial"
+      "source": "external_trip_id",
+      "type": "text"
     },
     {
       "allow_nil?": false,
@@ -33,12 +33,36 @@
       "references": null,
       "scale": null,
       "size": null,
-      "source": "idempotency_key",
-      "type": "uuid"
+      "source": "departs_at",
+      "type": "utc_datetime_usec"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "bus_label",
+      "type": "text"
+    },
+    {
+      "allow_nil?": true,
+      "default": "nil",
+      "generated?": false,
+      "precision": null,
+      "primary_key?": false,
+      "references": null,
+      "scale": null,
+      "size": null,
+      "source": "driver_name",
+      "type": "text"
     },
     {
       "allow_nil?": false,
-      "default": "\"received\"",
+      "default": "\"open\"",
       "generated?": false,
       "precision": null,
       "primary_key?": false,
@@ -57,20 +81,8 @@
       "references": null,
       "scale": null,
       "size": null,
-      "source": "sender_name",
-      "type": "text"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "sender_phone",
-      "type": "text"
+      "source": "departed_at",
+      "type": "utc_datetime_usec"
     },
     {
       "allow_nil?": true,
@@ -81,44 +93,8 @@
       "references": null,
       "scale": null,
       "size": null,
-      "source": "receiver_name",
-      "type": "text"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "receiver_phone",
-      "type": "text"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "declared_value",
-      "type": "money_with_currency"
-    },
-    {
-      "allow_nil?": false,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": null,
-      "scale": null,
-      "size": null,
-      "source": "shipment_total",
-      "type": "money_with_currency"
+      "source": "arrived_at",
+      "type": "utc_datetime_usec"
     },
     {
       "allow_nil?": false,
@@ -153,7 +129,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "shipments_origin_station_id_fkey",
+        "name": "manifests_origin_station_id_fkey",
         "on_delete": "restrict",
         "on_update": null,
         "primary_key?": true,
@@ -186,7 +162,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "shipments_destination_station_id_fkey",
+        "name": "manifests_destination_station_id_fkey",
         "on_delete": "restrict",
         "on_update": null,
         "primary_key?": true,
@@ -219,7 +195,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "shipments_route_id_fkey",
+        "name": "manifests_route_id_fkey",
         "on_delete": "restrict",
         "on_update": null,
         "primary_key?": true,
@@ -229,39 +205,6 @@
       "scale": null,
       "size": null,
       "source": "route_id",
-      "type": "uuid"
-    },
-    {
-      "allow_nil?": true,
-      "default": "nil",
-      "generated?": false,
-      "precision": null,
-      "primary_key?": false,
-      "references": {
-        "deferrable": false,
-        "destination_attribute": "id",
-        "destination_attribute_default": null,
-        "destination_attribute_generated": null,
-        "index?": true,
-        "index_where": null,
-        "match_tenant?": false,
-        "match_type": null,
-        "match_with": null,
-        "multitenancy": {
-          "attribute": null,
-          "global": null,
-          "strategy": null
-        },
-        "name": "shipments_manifest_id_fkey",
-        "on_delete": "restrict",
-        "on_update": null,
-        "primary_key?": true,
-        "schema": "public",
-        "table": "manifests"
-      },
-      "scale": null,
-      "size": null,
-      "source": "manifest_id",
       "type": "uuid"
     },
     {
@@ -285,7 +228,7 @@
           "global": null,
           "strategy": null
         },
-        "name": "shipments_created_by_id_fkey",
+        "name": "manifests_created_by_id_fkey",
         "on_delete": "restrict",
         "on_update": null,
         "primary_key?": true,
@@ -299,106 +242,9 @@
     }
   ],
   "base_filter": null,
-  "check_constraints": [
-    {
-      "attribute": [
-        "sender_phone"
-      ],
-      "base_filter": null,
-      "check": "sender_phone ~ '^855[1-9][0-9]{7,8}$'",
-      "name": "shipments_sender_phone_format"
-    },
-    {
-      "attribute": [
-        "receiver_phone"
-      ],
-      "base_filter": null,
-      "check": "receiver_phone ~ '^855[1-9][0-9]{7,8}$'",
-      "name": "shipments_receiver_phone_format"
-    },
-    {
-      "attribute": [
-        "destination_station_id"
-      ],
-      "base_filter": null,
-      "check": "origin_station_id <> destination_station_id",
-      "name": "shipments_stations_differ"
-    },
-    {
-      "attribute": [
-        "shipment_total"
-      ],
-      "base_filter": null,
-      "check": "(shipment_total).currency_code = 'KHR' AND (shipment_total).amount > 0 AND (shipment_total).amount = trunc((shipment_total).amount)",
-      "name": "shipments_total_whole_positive_khr"
-    },
-    {
-      "attribute": [
-        "declared_value"
-      ],
-      "base_filter": null,
-      "check": "declared_value IS NULL OR ((declared_value).currency_code = 'KHR' AND (declared_value).amount >= 0 AND (declared_value).amount = trunc((declared_value).amount))",
-      "name": "shipments_declared_value_whole_khr"
-    }
-  ],
+  "check_constraints": [],
   "create_table_options": null,
   "custom_indexes": [
-    {
-      "all_tenants?": false,
-      "concurrently": false,
-      "error_fields": [
-        "destination_station_id",
-        "receiver_phone"
-      ],
-      "fields": [
-        {
-          "type": "atom",
-          "value": "destination_station_id"
-        },
-        {
-          "type": "atom",
-          "value": "receiver_phone"
-        }
-      ],
-      "include": null,
-      "include_base_filter?": true,
-      "message": null,
-      "name": null,
-      "nulls_distinct": true,
-      "prefix": null,
-      "table": null,
-      "unique": false,
-      "using": null,
-      "where": null
-    },
-    {
-      "all_tenants?": false,
-      "concurrently": false,
-      "error_fields": [
-        "destination_station_id",
-        "status"
-      ],
-      "fields": [
-        {
-          "type": "atom",
-          "value": "destination_station_id"
-        },
-        {
-          "type": "atom",
-          "value": "status"
-        }
-      ],
-      "include": null,
-      "include_base_filter?": true,
-      "message": null,
-      "name": null,
-      "nulls_distinct": true,
-      "prefix": null,
-      "table": null,
-      "unique": false,
-      "using": null,
-      "where": null
-    },
     {
       "all_tenants?": false,
       "concurrently": false,
@@ -426,37 +272,59 @@
       "unique": false,
       "using": null,
       "where": null
+    },
+    {
+      "all_tenants?": false,
+      "concurrently": false,
+      "error_fields": [
+        "destination_station_id",
+        "status"
+      ],
+      "fields": [
+        {
+          "type": "atom",
+          "value": "destination_station_id"
+        },
+        {
+          "type": "atom",
+          "value": "status"
+        }
+      ],
+      "include": null,
+      "include_base_filter?": true,
+      "message": null,
+      "name": null,
+      "nulls_distinct": true,
+      "prefix": null,
+      "table": null,
+      "unique": false,
+      "using": null,
+      "where": null
     }
   ],
   "custom_statements": [],
   "has_create_action": true,
-  "hash": "EC69E4DECCFA0B778A0E97F112F52B21A8D3D67AEE067159A1193B9DC7F4CE22",
+  "hash": "93DB853B70E8A477596D92DE2F3E1260404260D8F9C3BC89C68068F2EFA02964",
   "identities": [
     {
       "all_tenants?": false,
       "base_filter": null,
-      "index_name": "shipments_unique_idempotency_key_index",
+      "index_name": "manifests_one_per_trip_index",
       "keys": [
         {
           "type": "atom",
-          "value": "idempotency_key"
-        }
-      ],
-      "name": "unique_idempotency_key",
-      "nils_distinct?": true,
-      "where": null
-    },
-    {
-      "all_tenants?": false,
-      "base_filter": null,
-      "index_name": "shipments_unique_invoice_no_index",
-      "keys": [
+          "value": "external_trip_id"
+        },
         {
           "type": "atom",
-          "value": "invoice_no"
+          "value": "origin_station_id"
+        },
+        {
+          "type": "atom",
+          "value": "destination_station_id"
         }
       ],
-      "name": "unique_invoice_no",
+      "name": "one_per_trip",
       "nils_distinct?": true,
       "where": null
     }
@@ -468,6 +336,6 @@
   },
   "repo": "Elixir.Ex.Repo",
   "schema": null,
-  "table": "shipments",
+  "table": "manifests",
   "temporal": null
 }

@@ -20,6 +20,11 @@ if System.get_env("PHX_SERVER") do
   config :ex, ExWeb.Endpoint, server: true
 end
 
+if url = System.get_env("SCHEDULE_URL") do
+  config :ex, :schedule, Ex.Schedule.Http
+  config :ex, Ex.Schedule.Http, base_url: url, token: System.get_env("SCHEDULE_TOKEN")
+end
+
 config :ex, ExWeb.Endpoint, http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 
 if config_env() == :dev do

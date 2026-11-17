@@ -25,7 +25,7 @@ defmodule Ex.Shipping.Changes.OpenManifest do
         |> Ash.Changeset.force_change_attribute(:route_id, route.id)
         |> Ash.Changeset.force_change_attribute(:created_by_id, actor.id)
         |> Ash.Changeset.force_change_attribute(:departs_at, trip.departs_at)
-        |> Ash.Changeset.force_change_attribute(:bus_plate, trip.bus_plate)
+        |> Ash.Changeset.force_change_attribute(:bus_label, trip.bus_label)
         |> Ash.Changeset.force_change_attribute(:driver_name, trip.driver_name)
       else
         {:error, field, message} ->
@@ -67,12 +67,15 @@ defmodule Ex.Shipping.Changes.OpenManifest do
 
   defp fetch_trip(trip_id, origin, destination) do
     case Ex.Schedule.get(trip_id) do
-      {:ok, %{origin_location_id: o, destination_location_id: d} = trip}
-      when o == origin.location_id and d == destination.location_id ->
+      {:ok, %{departed: true}} ->
+        {:error, :external_trip_id, "has already departed"}
+
+      {:ok, %{origin_station_id: o, destination_station_id: d} = trip}
+      when o == origin.id and d == destination.id ->
         {:ok, trip}
 
       {:ok, _other_route} ->
-        {:error, :external_trip_id, "does not run on the Route from your Station to that Station"}
+        {:error, :external_trip_id, "does not run from your Station to that Station"}
 
       {:error, :not_found} ->
         {:error, :external_trip_id, "is not a known Trip"}

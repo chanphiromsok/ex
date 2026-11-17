@@ -38,6 +38,7 @@ CREATE TABLE stations (
   name_en text NOT NULL,
   name_km text NOT NULL,
   active boolean NOT NULL DEFAULT true,
+  external_id text UNIQUE, -- the Station's id in the external schedule service
   UNIQUE (location_id, name_en),
   UNIQUE (location_id, name_km)
 );

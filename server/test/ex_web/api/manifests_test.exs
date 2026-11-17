@@ -33,7 +33,7 @@ defmodule ExWeb.Api.ManifestsTest do
     bystander = build_conn() |> signed_in(user!(:staff, station!("Bystander")))
 
     {:ok, [trip | _]} =
-      Ex.Schedule.departures(pp.location_id, sr.location_id, Date.utc_today())
+      Ex.Schedule.departures(pp.id, sr.id, Date.utc_today())
 
     %{
       origin: origin,
@@ -119,7 +119,7 @@ defmodule ExWeb.Api.ManifestsTest do
       body = ctx.origin |> open(ctx.trip.trip_id, ctx.sr) |> json_response(201)
       attrs = body["data"]["attributes"]
       assert attrs["status"] == "open"
-      assert attrs["bus_plate"] == ctx.trip.bus_plate
+      assert attrs["bus_label"] == ctx.trip.bus_label
       assert attrs["origin_station_id"] == ctx.pp.id
 
       again = ctx.origin |> open(ctx.trip.trip_id, ctx.sr) |> json_response(201)
@@ -133,7 +133,7 @@ defmodule ExWeb.Api.ManifestsTest do
 
     test "a Station with no Route to the destination cannot open one", ctx do
       {:ok, [t | _]} =
-        Ex.Schedule.departures(ctx.sr.location_id, ctx.pp.location_id, Date.utc_today())
+        Ex.Schedule.departures(ctx.sr.id, ctx.pp.id, Date.utc_today())
 
       assert ctx.destination |> open(t.trip_id, ctx.pp) |> json_response(400)
     end
@@ -185,7 +185,7 @@ defmodule ExWeb.Api.ManifestsTest do
       id = opened(ctx)
 
       {:ok, [_, later | _]} =
-        Ex.Schedule.departures(ctx.pp.location_id, ctx.sr.location_id, Date.utc_today())
+        Ex.Schedule.departures(ctx.pp.id, ctx.sr.id, Date.utc_today())
 
       second =
         ctx.origin |> open(later.trip_id, ctx.sr) |> json_response(201) |> get_in(["data", "id"])

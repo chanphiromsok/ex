@@ -72,12 +72,12 @@ defmodule Ex.Network.Station do
 
     create :create do
       primary? true
-      accept [:name_en, :name_km, :location_id]
+      accept [:name_en, :name_km, :location_id, :external_id]
     end
 
     update :update do
       primary? true
-      accept [:name_en, :name_km, :active]
+      accept [:name_en, :name_km, :active, :external_id]
     end
 
     update :set_cancellation_approval do
@@ -118,6 +118,9 @@ defmodule Ex.Network.Station do
       public?: true,
       constraints: [min: 1, max: 90]
 
+    # This Station's id in the external schedule service; null until an admin sets it.
+    attribute :external_id, :string, public?: true
+
     attribute :active, :boolean, allow_nil?: false, default: true, public?: true
 
     attribute :cancellation_requires_approval, :boolean,
@@ -134,6 +137,7 @@ defmodule Ex.Network.Station do
   end
 
   identities do
+    identity :unique_external_id, [:external_id]
     identity :unique_name_en_per_location, [:location_id, :name_en]
     identity :unique_name_km_per_location, [:location_id, :name_km]
   end
