@@ -62,7 +62,15 @@ _Avoid_: Consignee, customer
 
 **Route**:
 The ordered origin Location to destination Location pair a Shipment travels on; owns no price of its own.
-_Avoid_: Line, trip, leg
+_Avoid_: Line, leg
+
+**Trip**:
+One bus departure on a Route at a time, owned by the external schedule service; we only keep its id and a snapshot (departure time, bus plate, driver) on each Shipment.
+_Avoid_: Route, journey
+
+**Manifest**:
+Our record for one Trip: the Shipments loaded on it, who loaded and unloaded it, and what is missing or unexpected on arrival. One Manifest per Trip, many Shipments per Manifest.
+_Avoid_: Trip sheet, load list
 
 ## Lifecycle
 
