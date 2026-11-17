@@ -2,6 +2,7 @@ import {
   AlarmClock,
   Ban,
   Building2,
+  ClipboardList,
   ChartColumn,
   FileX,
   Network,
@@ -18,6 +19,7 @@ import {
 export const SCREEN_META: Record<string, { icon: LucideIcon; blurb: string }> = {
   'new-shipment': { icon: PackagePlus, blurb: 'Take Parcels and Payment, issue an Invoice Number.' },
   shipments: { icon: Search, blurb: 'Find a Shipment by Invoice Number or phone and move it on.' },
+  manifests: { icon: ClipboardList, blurb: 'Open a Trip, load Shipments, mark the bus left, unload on arrival.' },
   overdue: { icon: AlarmClock, blurb: 'Arrived Shipments waiting too long for Collection.' },
   cancellations: { icon: Ban, blurb: 'Cancellation requests and their decisions.' },
   incidents: { icon: TriangleAlert, blurb: 'Lost, damaged, redirected or returned Shipments.' },
