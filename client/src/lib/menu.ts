@@ -1,7 +1,11 @@
 // Sidebar menu. An item shows when the signed-in user holds ANY of its permissions,
 // so Permission Overrides change the menu without code changes.
+import type { FileRoutesByTo } from '#/routeTree.gen'
+
 export type MenuItem = {
   slug: string
+  /** The screen's URL; typed so a renamed route is a compile error here. */
+  to: keyof FileRoutesByTo
   label: string
   permissions: string[]
 }
@@ -12,10 +16,10 @@ export const MENU: MenuGroup[] = [
   {
     title: 'Counter',
     items: [
-      { slug: 'new-shipment', label: 'New Shipment', permissions: ['shipment.create'] },
-      { slug: 'shipments', label: 'Shipments', permissions: ['shipment.read'] },
-      { slug: 'manifests', label: 'Manifests', permissions: ['shipment.mark_in_transit', 'shipment.read'] },
-      { slug: 'overdue', label: 'Overdue', permissions: ['shipment.read'] },
+      { slug: 'new-shipment', to: '/new-shipment', label: 'New Shipment', permissions: ['shipment.create'] },
+      { slug: 'shipments', to: '/shipments', label: 'Shipments', permissions: ['shipment.read'] },
+      { slug: 'manifests', to: '/manifests', label: 'Manifests', permissions: ['shipment.mark_in_transit', 'shipment.read'] },
+      { slug: 'overdue', to: '/overdue', label: 'Overdue', permissions: ['shipment.read'] },
     ],
   },
   {
@@ -23,26 +27,27 @@ export const MENU: MenuGroup[] = [
     items: [
       {
         slug: 'cancellations',
+        to: '/cancellations',
         label: 'Cancellations',
         permissions: ['cancellation.request', 'cancellation.approve'],
       },
-      { slug: 'incidents', label: 'Incidents', permissions: ['incident.report', 'incident.resolve'] },
+      { slug: 'incidents', to: '/incidents', label: 'Incidents', permissions: ['incident.report', 'incident.resolve'] },
     ],
   },
   {
     title: 'Reports',
     items: [
-      { slug: 'cash-report', label: 'Cash Report', permissions: ['report.cash'] },
-      { slug: 'cancellation-report', label: 'Cancellation Report', permissions: ['report.cancellation'] },
+      { slug: 'cash-report', to: '/cash-report', label: 'Cash Report', permissions: ['report.cash'] },
+      { slug: 'cancellation-report', to: '/cancellation-report', label: 'Cancellation Report', permissions: ['report.cancellation'] },
     ],
   },
   {
     title: 'Admin',
     items: [
-      { slug: 'pricing', label: 'Pricing', permissions: ['price.manage'] },
-      { slug: 'network', label: 'Stations & Routes', permissions: ['reference_data.manage'] },
-      { slug: 'station-settings', label: 'Station Settings', permissions: ['station_setting.manage'] },
-      { slug: 'users', label: 'Users', permissions: ['user.manage'] },
+      { slug: 'pricing', to: '/pricing', label: 'Pricing', permissions: ['price.manage'] },
+      { slug: 'network', to: '/network', label: 'Stations & Routes', permissions: ['reference_data.manage'] },
+      { slug: 'station-settings', to: '/station-settings', label: 'Station Settings', permissions: ['station_setting.manage'] },
+      { slug: 'users', to: '/users', label: 'Users', permissions: ['user.manage'] },
     ],
   },
 ]

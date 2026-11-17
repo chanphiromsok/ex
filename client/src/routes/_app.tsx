@@ -43,8 +43,7 @@ function Shell() {
                   <li key={i.slug}>
                     <Link
                       id={`menu-${i.slug}`}
-                      to="/$page"
-                      params={{ page: i.slug }}
+                      to={i.to}
                       onClick={() => setOpen(false)}
                       className="group relative flex h-9 items-center gap-2.5 rounded-md px-2.5 text-sm text-on-rail/80 transition-colors duration-150 hover:bg-rail-line/60 hover:text-on-rail"
                       activeProps={{ className: '!bg-rail-line !text-on-rail font-medium' }}

@@ -24,8 +24,7 @@ function Home() {
                 return (
                   <li key={i.slug} className="border-t border-thread first:border-t-0">
                     <Link
-                      to="/$page"
-                      params={{ page: i.slug }}
+                      to={i.to}
                       className="group flex items-center gap-3.5 px-5 py-3.5 transition-colors hover:bg-clay-wash/50"
                     >
                       {Icon && (

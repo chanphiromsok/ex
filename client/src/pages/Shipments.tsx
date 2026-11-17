@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -18,13 +19,12 @@ import { Textarea } from '@/components/ui/textarea'
 
 const stationName = (stations: Rec[] | undefined, id?: string) => stations?.find((s) => s.id === id)?.name_en ?? '—'
 
-export function Shipments({ session }: { session: Session }) {
-  const [showDone, setShowDone] = useState(false)
+export function Shipments({ showDone, onShowDone }: { showDone: boolean; onShowDone: (v: boolean) => void }) {
+  const navigate = useNavigate()
   const shipments = useQuery(
     listQuery(showDone ? '/shipments' : '/shipments?filter[status][in][]=received&filter[status][in][]=in_transit&filter[status][in][]=arrived'),
   )
   const stations = useQuery(listQuery('/stations'))
-  const [selected, setSelected] = useState<string | null>(null)
 
   const columns = useMemo<ColumnDef<Rec, any>[]>(
     () => [
@@ -80,14 +80,12 @@ export function Shipments({ session }: { session: Session }) {
     [stations.data],
   )
 
-  if (selected) return <Detail id={selected} session={session} onBack={() => setSelected(null)} />
-
   const rows = shipments.data ?? []
   return (
     <Page title="Shipments" subtitle={shipments.isSuccess ? `${rows.length.toLocaleString('en-US')} ${showDone ? 'on record' : 'still moving'}` : undefined}
       action={
         <label className="flex items-center gap-2 text-sm text-ink-soft">
-          <input id="show-completed" type="checkbox" checked={showDone} onChange={(e) => setShowDone(e.target.checked)} />
+          <input id="show-completed" type="checkbox" checked={showDone} onChange={(e) => onShowDone(e.target.checked)} />
           Show completed
         </label>
       }
@@ -102,7 +100,7 @@ export function Shipments({ session }: { session: Session }) {
           empty="No Shipments yet."
           search={{ id: 'search', placeholder: 'Invoice, name or phone number', label: 'Find a Shipment', autoFocus: true }}
           initialSort={[{ id: 'received', desc: true }]}
-          onRowClick={(s) => setSelected(s.id)}
+          onRowClick={(s) => navigate({ to: '/shipments/$id', params: { id: s.id } })}
           rowLabel={(s) => `Open Invoice #${s.invoice_no}`}
         />
       </Card>
@@ -136,7 +134,9 @@ const correctSchema = z.object({ name: required('Enter the new Receiver name.'),
 const incidentSchema = z.object({ kind: z.enum(['damaged', 'lost', 'redirect', 'return_to_sender']), note: z.string().trim() })
 const cancelSchema = z.object({ reason: required('A reason is required to cancel.') })
 
-function Detail({ id, session, onBack }: { id: string; session: Session; onBack: () => void }) {
+export function ShipmentDetail({ id, session }: { id: string; session: Session }) {
+  const navigate = useNavigate()
+  const onBack = () => navigate({ to: '/shipments', search: { done: undefined } })
   const qc = useQueryClient()
   const shipment = useQuery(recordQuery(`/shipments/${id}?include=parcels,sale_items,payments,status_events,notes,receiver_corrections`))
   const saleItems = useQuery(listQuery('/sale-items'))

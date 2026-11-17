@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import { Bus, PackageCheck, Plus, ScanLine } from 'lucide-react'
 import { create, update, when, type Rec } from '#/lib/api'
@@ -25,8 +26,7 @@ function StatusPill({ status }: { status: string }) {
 }
 
 export function Manifests({ session }: { session: Session }) {
-  const [selected, setSelected] = useState<string | null>(null)
-  const [opening, setOpening] = useState(false)
+  const navigate = useNavigate()
   const manifests = useQuery(listQuery('/manifests'))
   const stations = useQuery(listQuery('/stations'))
 
@@ -59,26 +59,12 @@ export function Manifests({ session }: { session: Session }) {
     [stations.data],
   )
 
-  if (selected) return <Detail id={selected} session={session} stations={stations.data} onBack={() => setSelected(null)} />
-  if (opening)
-    return (
-      <OpenManifest
-        stations={stations.data ?? []}
-        session={session}
-        onBack={() => setOpening(false)}
-        onOpened={(id) => {
-          setOpening(false)
-          setSelected(id)
-        }}
-      />
-    )
-
   const canOpen = session.permissions.includes('shipment.mark_in_transit')
   return (
     <Page
       title="Manifests"
       subtitle="One list per bus trip: what is loaded at the origin and unloaded at the destination."
-      action={canOpen ? <Button id="open-manifest" icon={<Plus className="size-4" />} onClick={() => setOpening(true)}>Open a Manifest</Button> : undefined}
+      action={canOpen ? <Button id="open-manifest" icon={<Plus className="size-4" />} onClick={() => navigate({ to: '/manifests/new' })}>Open a Manifest</Button> : undefined}
     >
       <Err error={manifests.error} />
       <Card flush>
@@ -90,7 +76,7 @@ export function Manifests({ session }: { session: Session }) {
           empty="No Manifests yet."
           search={{ id: 'manifest-search', placeholder: 'Bus or Station', label: 'Find a Manifest' }}
           initialSort={[{ id: 'departs', desc: true }]}
-          onRowClick={(m) => setSelected(m.id)}
+          onRowClick={(m) => navigate({ to: '/manifests/$id', params: { id: m.id } })}
           rowLabel={(m) => `Open the ${clock(m.departs_at)} Manifest`}
         />
       </Card>
@@ -98,17 +84,11 @@ export function Manifests({ session }: { session: Session }) {
   )
 }
 
-function OpenManifest({
-  stations,
-  session,
-  onBack,
-  onOpened,
-}: {
-  stations: Rec[]
-  session: Session
-  onBack: () => void
-  onOpened: (id: string) => void
-}) {
+export function OpenManifest({ session }: { session: Session }) {
+  const navigate = useNavigate()
+  const stations = useQuery(listQuery('/stations')).data ?? []
+  const onBack = () => navigate({ to: '/manifests' })
+  const onOpened = (id: string) => navigate({ to: '/manifests/$id', params: { id }, replace: true })
   const [destination, setDestination] = useState('')
   const [date, setDate] = useState(today())
   const options = stations.filter((s) => s.id !== session.stationId && s.active !== false).map((s) => ({ value: s.id, label: s.name_en, hint: s.name_km }))
@@ -174,7 +154,10 @@ function OpenManifest({
   )
 }
 
-function Detail({ id, session, stations, onBack }: { id: string; session: Session; stations?: Rec[]; onBack: () => void }) {
+export function ManifestDetail({ id, session }: { id: string; session: Session }) {
+  const navigate = useNavigate()
+  const stations = useQuery(listQuery('/stations')).data
+  const onBack = () => navigate({ to: '/manifests' })
   const qc = useQueryClient()
   const path = `/manifests/${id}?include=shipments`
   const manifest = useQuery(recordQuery(path))

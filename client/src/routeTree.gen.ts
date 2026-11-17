@@ -12,7 +12,23 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
-import { Route as AppPageRouteImport } from './routes/_app/$page'
+import { Route as AppCancellationReportRouteImport } from './routes/_app/cancellation-report'
+import { Route as AppCancellationsRouteImport } from './routes/_app/cancellations'
+import { Route as AppCashReportRouteImport } from './routes/_app/cash-report'
+import { Route as AppIncidentsRouteImport } from './routes/_app/incidents'
+import { Route as AppManifestsRouteImport } from './routes/_app/manifests'
+import { Route as AppNetworkRouteImport } from './routes/_app/network'
+import { Route as AppNewShipmentRouteImport } from './routes/_app/new-shipment'
+import { Route as AppOverdueRouteImport } from './routes/_app/overdue'
+import { Route as AppPricingRouteImport } from './routes/_app/pricing'
+import { Route as AppShipmentsRouteImport } from './routes/_app/shipments'
+import { Route as AppStationSettingsRouteImport } from './routes/_app/station-settings'
+import { Route as AppUsersRouteImport } from './routes/_app/users'
+import { Route as AppManifestsIndexRouteImport } from './routes/_app/manifests.index'
+import { Route as AppManifestsIdRouteImport } from './routes/_app/manifests.$id'
+import { Route as AppManifestsNewRouteImport } from './routes/_app/manifests.new'
+import { Route as AppShipmentsIndexRouteImport } from './routes/_app/shipments.index'
+import { Route as AppShipmentsIdRouteImport } from './routes/_app/shipments.$id'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -28,35 +44,218 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
-const AppPageRoute = AppPageRouteImport.update({
-  id: '/$page',
-  path: '/$page',
+const AppCancellationReportRoute = AppCancellationReportRouteImport.update({
+  id: '/cancellation-report',
+  path: '/cancellation-report',
   getParentRoute: () => AppRoute,
+} as any)
+const AppCancellationsRoute = AppCancellationsRouteImport.update({
+  id: '/cancellations',
+  path: '/cancellations',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCashReportRoute = AppCashReportRouteImport.update({
+  id: '/cash-report',
+  path: '/cash-report',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppIncidentsRoute = AppIncidentsRouteImport.update({
+  id: '/incidents',
+  path: '/incidents',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppManifestsRoute = AppManifestsRouteImport.update({
+  id: '/manifests',
+  path: '/manifests',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNetworkRoute = AppNetworkRouteImport.update({
+  id: '/network',
+  path: '/network',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNewShipmentRoute = AppNewShipmentRouteImport.update({
+  id: '/new-shipment',
+  path: '/new-shipment',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOverdueRoute = AppOverdueRouteImport.update({
+  id: '/overdue',
+  path: '/overdue',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPricingRoute = AppPricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppShipmentsRoute = AppShipmentsRouteImport.update({
+  id: '/shipments',
+  path: '/shipments',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppStationSettingsRoute = AppStationSettingsRouteImport.update({
+  id: '/station-settings',
+  path: '/station-settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppUsersRoute = AppUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppManifestsIndexRoute = AppManifestsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppManifestsRoute,
+} as any)
+const AppManifestsIdRoute = AppManifestsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppManifestsRoute,
+} as any)
+const AppManifestsNewRoute = AppManifestsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AppManifestsRoute,
+} as any)
+const AppShipmentsIndexRoute = AppShipmentsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppShipmentsRoute,
+} as any)
+const AppShipmentsIdRoute = AppShipmentsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppShipmentsRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
-  '/$page': typeof AppPageRoute
+  '/cancellation-report': typeof AppCancellationReportRoute
+  '/cancellations': typeof AppCancellationsRoute
+  '/cash-report': typeof AppCashReportRoute
+  '/incidents': typeof AppIncidentsRoute
+  '/manifests': typeof AppManifestsRouteWithChildren
+  '/network': typeof AppNetworkRoute
+  '/new-shipment': typeof AppNewShipmentRoute
+  '/overdue': typeof AppOverdueRoute
+  '/pricing': typeof AppPricingRoute
+  '/shipments': typeof AppShipmentsRouteWithChildren
+  '/station-settings': typeof AppStationSettingsRoute
+  '/users': typeof AppUsersRoute
+  '/manifests/$id': typeof AppManifestsIdRoute
+  '/manifests/new': typeof AppManifestsNewRoute
+  '/shipments/$id': typeof AppShipmentsIdRoute
+  '/manifests/': typeof AppManifestsIndexRoute
+  '/shipments/': typeof AppShipmentsIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
-  '/$page': typeof AppPageRoute
+  '/cancellation-report': typeof AppCancellationReportRoute
+  '/cancellations': typeof AppCancellationsRoute
+  '/cash-report': typeof AppCashReportRoute
+  '/incidents': typeof AppIncidentsRoute
+  '/network': typeof AppNetworkRoute
+  '/new-shipment': typeof AppNewShipmentRoute
+  '/overdue': typeof AppOverdueRoute
+  '/pricing': typeof AppPricingRoute
+  '/station-settings': typeof AppStationSettingsRoute
+  '/users': typeof AppUsersRoute
   '/': typeof AppIndexRoute
+  '/manifests/$id': typeof AppManifestsIdRoute
+  '/manifests/new': typeof AppManifestsNewRoute
+  '/shipments/$id': typeof AppShipmentsIdRoute
+  '/manifests': typeof AppManifestsIndexRoute
+  '/shipments': typeof AppShipmentsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
-  '/_app/$page': typeof AppPageRoute
+  '/_app/cancellation-report': typeof AppCancellationReportRoute
+  '/_app/cancellations': typeof AppCancellationsRoute
+  '/_app/cash-report': typeof AppCashReportRoute
+  '/_app/incidents': typeof AppIncidentsRoute
+  '/_app/manifests': typeof AppManifestsRouteWithChildren
+  '/_app/network': typeof AppNetworkRoute
+  '/_app/new-shipment': typeof AppNewShipmentRoute
+  '/_app/overdue': typeof AppOverdueRoute
+  '/_app/pricing': typeof AppPricingRoute
+  '/_app/shipments': typeof AppShipmentsRouteWithChildren
+  '/_app/station-settings': typeof AppStationSettingsRoute
+  '/_app/users': typeof AppUsersRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/manifests/$id': typeof AppManifestsIdRoute
+  '/_app/manifests/new': typeof AppManifestsNewRoute
+  '/_app/shipments/$id': typeof AppShipmentsIdRoute
+  '/_app/manifests/': typeof AppManifestsIndexRoute
+  '/_app/shipments/': typeof AppShipmentsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/$page'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/cancellation-report'
+    | '/cancellations'
+    | '/cash-report'
+    | '/incidents'
+    | '/manifests'
+    | '/network'
+    | '/new-shipment'
+    | '/overdue'
+    | '/pricing'
+    | '/shipments'
+    | '/station-settings'
+    | '/users'
+    | '/manifests/$id'
+    | '/manifests/new'
+    | '/shipments/$id'
+    | '/manifests/'
+    | '/shipments/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/$page' | '/'
-  id: '__root__' | '/_app' | '/login' | '/_app/$page' | '/_app/'
+  to:
+    | '/login'
+    | '/cancellation-report'
+    | '/cancellations'
+    | '/cash-report'
+    | '/incidents'
+    | '/network'
+    | '/new-shipment'
+    | '/overdue'
+    | '/pricing'
+    | '/station-settings'
+    | '/users'
+    | '/'
+    | '/manifests/$id'
+    | '/manifests/new'
+    | '/shipments/$id'
+    | '/manifests'
+    | '/shipments'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/login'
+    | '/_app/cancellation-report'
+    | '/_app/cancellations'
+    | '/_app/cash-report'
+    | '/_app/incidents'
+    | '/_app/manifests'
+    | '/_app/network'
+    | '/_app/new-shipment'
+    | '/_app/overdue'
+    | '/_app/pricing'
+    | '/_app/shipments'
+    | '/_app/station-settings'
+    | '/_app/users'
+    | '/_app/'
+    | '/_app/manifests/$id'
+    | '/_app/manifests/new'
+    | '/_app/shipments/$id'
+    | '/_app/manifests/'
+    | '/_app/shipments/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -87,23 +286,187 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/_app/$page': {
-      id: '/_app/$page'
-      path: '/$page'
-      fullPath: '/$page'
-      preLoaderRoute: typeof AppPageRouteImport
+    '/_app/cancellation-report': {
+      id: '/_app/cancellation-report'
+      path: '/cancellation-report'
+      fullPath: '/cancellation-report'
+      preLoaderRoute: typeof AppCancellationReportRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/_app/cancellations': {
+      id: '/_app/cancellations'
+      path: '/cancellations'
+      fullPath: '/cancellations'
+      preLoaderRoute: typeof AppCancellationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/cash-report': {
+      id: '/_app/cash-report'
+      path: '/cash-report'
+      fullPath: '/cash-report'
+      preLoaderRoute: typeof AppCashReportRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/incidents': {
+      id: '/_app/incidents'
+      path: '/incidents'
+      fullPath: '/incidents'
+      preLoaderRoute: typeof AppIncidentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/manifests': {
+      id: '/_app/manifests'
+      path: '/manifests'
+      fullPath: '/manifests'
+      preLoaderRoute: typeof AppManifestsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/network': {
+      id: '/_app/network'
+      path: '/network'
+      fullPath: '/network'
+      preLoaderRoute: typeof AppNetworkRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/new-shipment': {
+      id: '/_app/new-shipment'
+      path: '/new-shipment'
+      fullPath: '/new-shipment'
+      preLoaderRoute: typeof AppNewShipmentRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/overdue': {
+      id: '/_app/overdue'
+      path: '/overdue'
+      fullPath: '/overdue'
+      preLoaderRoute: typeof AppOverdueRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/pricing': {
+      id: '/_app/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof AppPricingRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/shipments': {
+      id: '/_app/shipments'
+      path: '/shipments'
+      fullPath: '/shipments'
+      preLoaderRoute: typeof AppShipmentsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/station-settings': {
+      id: '/_app/station-settings'
+      path: '/station-settings'
+      fullPath: '/station-settings'
+      preLoaderRoute: typeof AppStationSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/users': {
+      id: '/_app/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AppUsersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/manifests/': {
+      id: '/_app/manifests/'
+      path: '/'
+      fullPath: '/manifests/'
+      preLoaderRoute: typeof AppManifestsIndexRouteImport
+      parentRoute: typeof AppManifestsRoute
+    }
+    '/_app/manifests/$id': {
+      id: '/_app/manifests/$id'
+      path: '/$id'
+      fullPath: '/manifests/$id'
+      preLoaderRoute: typeof AppManifestsIdRouteImport
+      parentRoute: typeof AppManifestsRoute
+    }
+    '/_app/manifests/new': {
+      id: '/_app/manifests/new'
+      path: '/new'
+      fullPath: '/manifests/new'
+      preLoaderRoute: typeof AppManifestsNewRouteImport
+      parentRoute: typeof AppManifestsRoute
+    }
+    '/_app/shipments/': {
+      id: '/_app/shipments/'
+      path: '/'
+      fullPath: '/shipments/'
+      preLoaderRoute: typeof AppShipmentsIndexRouteImport
+      parentRoute: typeof AppShipmentsRoute
+    }
+    '/_app/shipments/$id': {
+      id: '/_app/shipments/$id'
+      path: '/$id'
+      fullPath: '/shipments/$id'
+      preLoaderRoute: typeof AppShipmentsIdRouteImport
+      parentRoute: typeof AppShipmentsRoute
     }
   }
 }
 
+interface AppManifestsRouteChildren {
+  AppManifestsIdRoute: typeof AppManifestsIdRoute
+  AppManifestsNewRoute: typeof AppManifestsNewRoute
+  AppManifestsIndexRoute: typeof AppManifestsIndexRoute
+}
+
+const AppManifestsRouteChildren: AppManifestsRouteChildren = {
+  AppManifestsIdRoute: AppManifestsIdRoute,
+  AppManifestsNewRoute: AppManifestsNewRoute,
+  AppManifestsIndexRoute: AppManifestsIndexRoute,
+}
+
+const AppManifestsRouteWithChildren = AppManifestsRoute._addFileChildren(
+  AppManifestsRouteChildren,
+)
+
+interface AppShipmentsRouteChildren {
+  AppShipmentsIdRoute: typeof AppShipmentsIdRoute
+  AppShipmentsIndexRoute: typeof AppShipmentsIndexRoute
+}
+
+const AppShipmentsRouteChildren: AppShipmentsRouteChildren = {
+  AppShipmentsIdRoute: AppShipmentsIdRoute,
+  AppShipmentsIndexRoute: AppShipmentsIndexRoute,
+}
+
+const AppShipmentsRouteWithChildren = AppShipmentsRoute._addFileChildren(
+  AppShipmentsRouteChildren,
+)
+
 interface AppRouteChildren {
-  AppPageRoute: typeof AppPageRoute
+  AppCancellationReportRoute: typeof AppCancellationReportRoute
+  AppCancellationsRoute: typeof AppCancellationsRoute
+  AppCashReportRoute: typeof AppCashReportRoute
+  AppIncidentsRoute: typeof AppIncidentsRoute
+  AppManifestsRoute: typeof AppManifestsRouteWithChildren
+  AppNetworkRoute: typeof AppNetworkRoute
+  AppNewShipmentRoute: typeof AppNewShipmentRoute
+  AppOverdueRoute: typeof AppOverdueRoute
+  AppPricingRoute: typeof AppPricingRoute
+  AppShipmentsRoute: typeof AppShipmentsRouteWithChildren
+  AppStationSettingsRoute: typeof AppStationSettingsRoute
+  AppUsersRoute: typeof AppUsersRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppPageRoute: AppPageRoute,
+  AppCancellationReportRoute: AppCancellationReportRoute,
+  AppCancellationsRoute: AppCancellationsRoute,
+  AppCashReportRoute: AppCashReportRoute,
+  AppIncidentsRoute: AppIncidentsRoute,
+  AppManifestsRoute: AppManifestsRouteWithChildren,
+  AppNetworkRoute: AppNetworkRoute,
+  AppNewShipmentRoute: AppNewShipmentRoute,
+  AppOverdueRoute: AppOverdueRoute,
+  AppPricingRoute: AppPricingRoute,
+  AppShipmentsRoute: AppShipmentsRouteWithChildren,
+  AppStationSettingsRoute: AppStationSettingsRoute,
+  AppUsersRoute: AppUsersRoute,
   AppIndexRoute: AppIndexRoute,
 }
 
