@@ -46,7 +46,8 @@ defmodule Ex.Shipping.Changes.AdvanceStatus do
             authorize?: false
           )
 
-          {:ok, shipment}
+          # The database trigger has already copied the new status onto the row; mirror it on the struct.
+          {:ok, %{shipment | status: opts[:to]}}
         end)
       else
         Ash.Changeset.add_error(changeset,

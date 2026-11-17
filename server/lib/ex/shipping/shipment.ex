@@ -27,6 +27,8 @@ defmodule Ex.Shipping.Shipment do
 
     custom_indexes do
       index [:destination_station_id, :receiver_phone]
+      index [:destination_station_id, :status]
+      index [:origin_station_id, :status]
     end
 
     check_constraints do
@@ -302,6 +304,14 @@ defmodule Ex.Shipping.Shipment do
 
     attribute :idempotency_key, :uuid, allow_nil?: false, public?: true
 
+    # Copy of the latest Status Event, kept by the `status_events_set_shipment_status` trigger in the same
+    # transaction as each event, so lists can filter and index on it. The ledger stays the source of truth.
+    attribute :status, Ex.Shipping.Status,
+      allow_nil?: false,
+      default: :received,
+      writable?: false,
+      public?: true
+
     attribute :sender_name, :string,
       allow_nil?: true,
       public?: true,
@@ -376,11 +386,6 @@ defmodule Ex.Shipping.Shipment do
     first :arrived_at, :status_events, :inserted_at do
       public? true
       filter expr(status == :arrived)
-    end
-
-    first :status, :status_events, :status do
-      public? true
-      sort seq: :desc
     end
   end
 

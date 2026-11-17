@@ -49,6 +49,30 @@ defmodule Ex.Shipping.StatusEvent do
 
         down "DROP TRIGGER IF EXISTS status_events_append_only ON status_events"
       end
+
+      # Keep shipments.status equal to the newest event, in the same transaction as the insert.
+      statement :set_shipment_status_function do
+        up """
+        CREATE FUNCTION status_events_set_shipment_status() RETURNS trigger AS $$
+        BEGIN
+          UPDATE shipments SET status = NEW.status WHERE id = NEW.shipment_id;
+          RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql
+        """
+
+        down "DROP FUNCTION IF EXISTS status_events_set_shipment_status()"
+      end
+
+      statement :set_shipment_status do
+        up """
+        CREATE TRIGGER status_events_set_shipment_status
+        AFTER INSERT ON status_events
+        FOR EACH ROW EXECUTE FUNCTION status_events_set_shipment_status()
+        """
+
+        down "DROP TRIGGER IF EXISTS status_events_set_shipment_status ON status_events"
+      end
     end
   end
 
