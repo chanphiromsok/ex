@@ -1,79 +1,161 @@
-import { useState, type ReactNode } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
+import { AlertCircle, ArrowLeft, LoaderCircle } from 'lucide-react'
+import { Button as UIButton } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
-export const input = 'w-full rounded border border-slate-300 bg-white px-3 py-1.5 text-sm outline-none transition focus:border-slate-500'
-export const btn = 'rounded bg-slate-900 px-3 py-1.5 text-sm text-white transition hover:bg-slate-700 disabled:opacity-50'
-export const btn2 = 'rounded border border-slate-300 px-3 py-1.5 text-sm transition hover:bg-slate-100 disabled:opacity-50'
-
-export function Page({ title, children, action }: { title: string; children: ReactNode; action?: ReactNode }) {
+/** shadcn Button plus a busy spinner and a leading icon. */
+export function Button({
+  busy = false,
+  icon,
+  children,
+  disabled,
+  type = 'button',
+  ...props
+}: ComponentProps<typeof UIButton> & { busy?: boolean; icon?: ReactNode }) {
   return (
-    <div className="mx-auto max-w-5xl space-y-5">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{title}</h1>
-        {action}
-      </div>
+    <UIButton type={type} disabled={disabled || busy} aria-busy={busy || undefined} {...props}>
+      {busy ? <LoaderCircle aria-hidden className="size-4 animate-spin" /> : icon}
       {children}
+    </UIButton>
+  )
+}
+
+export function Page({
+  title,
+  subtitle,
+  action,
+  onBack,
+  backLabel = 'Back',
+  children,
+}: {
+  title: ReactNode
+  subtitle?: ReactNode
+  action?: ReactNode
+  onBack?: () => void
+  backLabel?: string
+  children: ReactNode
+}) {
+  return (
+    <div className="mx-auto max-w-[1180px] px-5 pt-6 pb-20 sm:px-8 lg:px-10">
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          className="no-print mb-3 inline-flex items-center gap-1.5 rounded-md text-[13px] font-medium text-ink-soft transition-colors hover:text-ink"
+        >
+          <ArrowLeft aria-hidden className="size-3.5" />
+          {backLabel}
+        </button>
+      )}
+      <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="font-serif text-[28px] leading-tight font-normal tracking-[-0.015em] text-balance">{title}</h1>
+          {subtitle && <p className="mt-1 text-sm text-ink-soft">{subtitle}</p>}
+        </div>
+        {action && <div className="no-print flex items-center gap-2">{action}</div>}
+      </header>
+      <div className="space-y-5">{children}</div>
     </div>
   )
 }
 
-export function Card({ children, title }: { children: ReactNode; title?: string }) {
+export function Card({
+  title,
+  description,
+  actions,
+  flush = false,
+  id,
+  className,
+  children,
+}: {
+  title?: ReactNode
+  description?: ReactNode
+  actions?: ReactNode
+  flush?: boolean
+  id?: string
+  className?: string
+  children: ReactNode
+}) {
   return (
-    <section className="space-y-3 rounded-lg border border-slate-200 bg-white p-4">
-      {title && <h2 className="text-sm font-medium text-slate-500">{title}</h2>}
-      {children}
+    <section id={id} className={cn('overflow-hidden rounded-weave border border-thread bg-surface', className)}>
+      {(title || actions) && (
+        <header className="flex flex-wrap items-start justify-between gap-3 border-b border-thread px-5 py-3.5">
+          <div className="min-w-0">
+            {title && <h2 className="text-[15px] font-semibold tracking-[-0.01em]">{title}</h2>}
+            {description && <p className="mt-0.5 text-[13px] text-ink-soft">{description}</p>}
+          </div>
+          {actions && <div className="flex items-center gap-2">{actions}</div>}
+        </header>
+      )}
+      <div className={flush ? '' : 'space-y-4 p-5'}>{children}</div>
     </section>
   )
 }
 
-export function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <label className="block space-y-1 text-sm">
-      <span className="text-slate-600">{label}</span>
-      {children}
-    </label>
-  )
+/** Footer strip of a Card. */
+export function Tray({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cn('border-t border-thread bg-ground/60 px-5 py-4', className)}>{children}</div>
 }
 
-export function Err({ error }: { error: unknown }) {
+export function errorText(error: unknown): string {
+  if (!error) return ''
+  if (error instanceof Error) return error.message
+  return String(error)
+}
+
+export function Err({ error, id }: { error: unknown; id?: string }) {
   if (!error) return null
-  return <p role="alert" className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{(error as Error).message}</p>
-}
-
-export function Table({ head, rows, empty = 'Nothing here yet.' }: { head: string[]; rows: ReactNode[][]; empty?: string }) {
-  if (rows.length === 0) return <p className="text-sm text-slate-500">{empty}</p>
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left text-sm">
-        <thead className="text-xs uppercase text-slate-500">
-          <tr>{head.map((h) => <th key={h} className="px-2 py-1.5 font-medium">{h}</th>)}</tr>
-        </thead>
-        <tbody>
-          {rows.map((r, i) => (
-            <tr key={i} className="border-t border-slate-100">
-              {r.map((c, j) => <td key={j} className="px-2 py-1.5">{c}</td>)}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div
+      id={id}
+      role="alert"
+      className="flex items-start gap-2.5 rounded-weave border border-madder/25 bg-madder-wash px-3.5 py-2.5 text-sm text-madder-deep"
+    >
+      <AlertCircle aria-hidden className="mt-0.5 size-4 shrink-0" />
+      <span>{errorText(error)}</span>
     </div>
   )
 }
 
-// Runs an async action, tracking busy + error state for a button/form.
-export function useAction<T extends unknown[]>(fn: (...a: T) => Promise<unknown>, after?: () => void) {
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<unknown>(null)
-  const run = async (...a: T) => {
-    setBusy(true)
-    setError(null)
-    try {
-      await fn(...a)
-      after?.()
-    } catch (e) {
-      setError(e)
-    } finally {
-      setBusy(false)
-    }
-  }
-  return { run, busy, error }
+export function Bilingual({ en, km, className }: { en: ReactNode; km?: ReactNode; className?: string }) {
+  return (
+    <span className={cn('block', className)}>
+      <span className="block text-ink">{en}</span>
+      {km && (
+        <span lang="km" className="block text-[12.5px] leading-snug text-ink-faint">
+          {km}
+        </span>
+      )}
+    </span>
+  )
+}
+
+export function Num({ children, className }: { children: ReactNode; className?: string }) {
+  return <span className={cn('tabular whitespace-nowrap', className)}>{children}</span>
+}
+
+const tones = {
+  neutral: 'bg-sunk text-ink-soft',
+  clay: 'bg-clay-wash text-clay',
+  turmeric: 'bg-turmeric-wash text-turmeric-ink',
+  madder: 'bg-madder-wash text-madder-deep',
+  leaf: 'bg-leaf-wash text-leaf',
+}
+
+export function Pill({ tone = 'neutral', children }: { tone?: keyof typeof tones; children: ReactNode }) {
+  return (
+    <span className={cn('inline-flex h-6 items-center rounded-full px-2.5 text-xs font-medium whitespace-nowrap', tones[tone])}>
+      {children}
+    </span>
+  )
+}
+
+/** A label/value pair for read-only detail blocks. */
+export function Detail({ label, children }: { label: ReactNode; children: ReactNode }) {
+  return (
+    <div>
+      <dt className="text-xs font-medium text-ink-faint">{label}</dt>
+      <dd className="mt-0.5">{children}</dd>
+    </div>
+  )
 }

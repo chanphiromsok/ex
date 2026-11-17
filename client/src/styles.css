@@ -1,6 +1,181 @@
 @import 'tailwindcss';
+@import 'tw-animate-css';
+@import '@fontsource-variable/inter-tight';
+@import '@fontsource-variable/source-serif-4';
+@import '@fontsource-variable/kantumruy-pro';
 
-body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
+/*
+ * Claude-style palette: warm ivory ground, white work surfaces with soft
+ * hairlines, near-black ink and one clay accent. A light sidebar sits on a
+ * slightly deeper ivory. Headings are set in a serif; UI text stays sans.
+ * Madder is reserved for money going out, errors and cancellation; turmeric
+ * for things waiting on someone; leaf for done.
+ */
+@theme {
+  --font-sans: 'Inter Tight Variable', 'Kantumruy Pro Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Source Serif 4 Variable', 'Kantumruy Pro Variable', ui-serif, Georgia, serif;
+  --font-khmer: 'Kantumruy Pro Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --color-ground: oklch(0.982 0.005 95);
+  --color-surface: oklch(1 0 0);
+  --color-sunk: oklch(0.958 0.008 92);
+  --color-thread: oklch(0.912 0.01 90);
+  --color-thread-strong: oklch(0.84 0.012 88);
+
+  --color-ink: oklch(0.2 0.004 100);
+  --color-ink-soft: oklch(0.4 0.006 95);
+  --color-ink-faint: oklch(0.54 0.008 92);
+
+  --color-clay: oklch(0.56 0.14 40);
+  --color-clay-deep: oklch(0.49 0.13 40);
+  --color-clay-wash: oklch(0.95 0.025 50);
+
+  --color-rail: oklch(0.962 0.008 92);
+  --color-rail-line: oklch(0.925 0.011 90);
+  --color-on-rail: var(--color-ink);
+  --color-on-rail-soft: var(--color-ink-soft);
+
+  --color-madder: oklch(0.52 0.17 25);
+  --color-madder-deep: oklch(0.45 0.16 25);
+  --color-madder-wash: oklch(0.96 0.022 25);
+
+  --color-turmeric: oklch(0.76 0.13 80);
+  --color-turmeric-ink: oklch(0.48 0.1 70);
+  --color-turmeric-wash: oklch(0.965 0.035 88);
+
+  --color-leaf: oklch(0.52 0.09 155);
+  --color-leaf-wash: oklch(0.96 0.022 155);
+
+  --radius-weave: 10px;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* shadcn/ui semantic tokens, mapped onto the Krama palette above. */
+@theme inline {
+  --color-background: var(--color-surface);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-surface);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-surface);
+  --color-popover-foreground: var(--color-ink);
+  --color-primary: var(--color-clay);
+  --color-primary-foreground: oklch(1 0 0);
+  --color-secondary: var(--color-sunk);
+  --color-secondary-foreground: var(--color-ink);
+  --color-muted: var(--color-sunk);
+  --color-muted-foreground: var(--color-ink-soft);
+  --color-accent: var(--color-sunk);
+  --color-accent-foreground: var(--color-ink);
+  --color-destructive: var(--color-madder);
+  --color-border: var(--color-thread);
+  --color-input: var(--color-thread-strong);
+  --color-ring: var(--color-clay);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 10px;
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-ink);
+  --border: var(--color-thread);
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-ground);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: oklch(0.88 0.06 45);
+    color: var(--color-ink);
+  }
+
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-thread);
+  }
+
+  /* shadcn primitives (data-slot) draw their own focus ring. */
+  :focus-visible:not([data-slot]) {
+    outline: 2px solid var(--color-clay);
+    outline-offset: 2px;
+  }
+
+  input,
+  select,
+  textarea {
+    caret-color: var(--color-clay);
+  }
+
+  button:not(:disabled),
+  [role='button'],
+  select:not(:disabled),
+  summary {
+    cursor: pointer;
+  }
+
+  /* Khmer script needs more leading than Latin to keep its subscripts clear. */
+  h1,
+  .font-serif {
+    font-optical-sizing: auto;
+  }
+
+  :lang(km) {
+    font-family: var(--font-khmer);
+    line-height: 1.7;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-thread-strong) transparent;
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: 'tnum', 'lnum';
+}
+
+@utility weave-hatch {
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 3px,
+    oklch(1 0 0 / 0.28) 3px 4px
+  );
+}
+
+@media print {
+  body {
+    background: white;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

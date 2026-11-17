@@ -67,4 +67,4 @@ export async function remove(path: string): Promise<void> {
 
 export const money = (m?: Money | null) =>
   m ? `${Number(m.amount).toLocaleString('en-US')} ${m.currency === 'KHR' ? '៛' : m.currency}` : '—'
-export const when = (iso?: string | null) => (iso ? new Date(iso).toLocaleString() : '—')
+export { when } from './date'

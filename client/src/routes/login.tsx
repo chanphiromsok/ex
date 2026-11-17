@@ -1,6 +1,13 @@
-import { useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router'
 import { getSession, signIn } from '#/lib/auth'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { Button, Err } from '#/components/kit'
+import { FormField } from '#/components/form'
+import { Input } from '@/components/ui/input'
+import { BrandMark } from '#/components/nav'
 
 export const Route = createFileRoute('/login')({
   ssr: false,
@@ -10,40 +17,62 @@ export const Route = createFileRoute('/login')({
   component: Login,
 })
 
+const schema = z.object({
+  email: z.email('Enter a valid email address.'),
+  password: z.string().min(1, 'Enter your password.'),
+})
+type Values = z.infer<typeof schema>
+
 function Login() {
   const navigate = useNavigate()
-  const [error, setError] = useState<string | null>(null)
-  const [busy, setBusy] = useState(false)
-
-  async function submit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    const data = new FormData(e.currentTarget)
-    setBusy(true)
-    setError(null)
-    try {
-      await signIn(String(data.get('email')), String(data.get('password')))
-      await navigate({ to: '/' })
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Sign-in failed')
-    } finally {
-      setBusy(false)
-    }
-  }
+  const login = useMutation({
+    mutationFn: ({ email, password }: Values) => signIn(email, password),
+    onSuccess: () => navigate({ to: '/' }),
+  })
+  const form = useForm<Values>({ resolver: zodResolver(schema), defaultValues: { email: '', password: '' } })
 
   return (
-    <main className="grid min-h-screen place-items-center bg-slate-50">
-      <form id="login-form" onSubmit={submit} className="w-80 space-y-4 rounded-xl bg-white p-6 shadow">
-        <h1 className="text-lg font-semibold">Express Portal</h1>
-        <input id="email" name="email" type="email" required placeholder="Email" autoComplete="username"
-          className="w-full rounded border border-slate-300 px-3 py-2" />
-        <input id="password" name="password" type="password" required placeholder="Password" autoComplete="current-password"
-          className="w-full rounded border border-slate-300 px-3 py-2" />
-        {error && <p id="login-error" className="text-sm text-red-600">{error}</p>}
-        <button id="login-submit" disabled={busy}
-          className="w-full rounded bg-slate-900 py-2 text-white transition hover:bg-slate-700 disabled:opacity-50">
-          {busy ? 'Signing in…' : 'Sign in'}
-        </button>
-      </form>
+    <main className="grid min-h-screen lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <section className="relative hidden overflow-hidden border-r border-rail-line bg-rail px-12 py-12 text-on-rail lg:flex lg:flex-col lg:justify-between">
+        <div className="flex items-center gap-2.5">
+          <BrandMark className="size-6 text-clay" />
+          <span className="font-serif text-lg font-medium">Express Cargo</span>
+        </div>
+        <div className="max-w-sm">
+          <p className="font-serif text-[34px] leading-[1.15] font-normal tracking-[-0.015em] text-balance">Every Shipment, from counter to Collection.</p>
+        </div>
+        {/* The four warp stripes of the status weave, as a quiet signature. */}
+        <div aria-hidden className="grid grid-cols-4 gap-1.5">
+          <span className="h-2.5 rounded-[3px] bg-clay" />
+          <span className="h-2.5 rounded-[3px] bg-clay" />
+          <span className="h-2.5 rounded-[3px] bg-clay weave-hatch" />
+          <span className="h-2.5 rounded-[3px] bg-thread-strong" />
+        </div>
+      </section>
+
+      <section className="flex items-center justify-center bg-ground px-5 py-16">
+        <form id="login-form" noValidate onSubmit={form.handleSubmit((v) => login.mutate(v))} className="w-full max-w-[360px]">
+          <div className="mb-8 flex items-center gap-2.5 lg:hidden">
+            <BrandMark className="size-6 text-clay" />
+            <span className="font-serif text-lg font-medium">Express Cargo</span>
+          </div>
+          <h1 className="font-serif text-[28px] font-normal tracking-[-0.015em]">Sign in</h1>
+          <p className="mt-1 text-sm text-ink-soft">Use the staff account your admin gave you.</p>
+
+          <div className="mt-7 space-y-4">
+            <FormField control={form.control} name="email" label="Email" id="email">
+              {(field) => <Input {...field} type="email" autoComplete="username" autoFocus className="h-10" />}
+            </FormField>
+            <FormField control={form.control} name="password" label="Password" id="password">
+              {(field) => <Input {...field} type="password" autoComplete="current-password" className="h-10" />}
+            </FormField>
+            {login.isError && <Err id="login-error" error={login.error} />}
+            <Button id="login-submit" type="submit" busy={login.isPending} className="h-10 w-full">
+              {login.isPending ? 'Signing in…' : 'Sign in'}
+            </Button>
+          </div>
+        </form>
+      </section>
     </main>
   )
 }

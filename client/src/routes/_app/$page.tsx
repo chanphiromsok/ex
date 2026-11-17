@@ -36,5 +36,5 @@ export const Route = createFileRoute('/_app/$page')({
 function Page() {
   const { item, session } = Route.useRouteContext()
   const screen = SCREENS[item.slug]
-  return screen ? <>{screen(session)}</> : <p className="text-slate-500">No screen for {item.label}.</p>
+  return screen ? <>{screen(session)}</> : <p className="text-ink-soft">No screen for {item.label}.</p>
 }

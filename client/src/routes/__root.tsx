@@ -1,8 +1,11 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
+import type { QueryClient } from '@tanstack/react-query'
+import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router'
 
+import { Toaster } from '@/components/ui/sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import appCss from '../styles.css?url'
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
       {
@@ -13,7 +16,7 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'Express Portal',
+        title: 'Express Cargo',
       },
     ],
     links: [
@@ -33,8 +36,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
-
+        <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
+        <Toaster position="bottom-right" richColors={false} closeButton />
         <Scripts />
       </body>
     </html>
