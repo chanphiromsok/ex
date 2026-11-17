@@ -65,7 +65,7 @@ The ordered origin Location to destination Location pair a Shipment travels on; 
 _Avoid_: Line, leg
 
 **Trip**:
-One bus departure on a Route at a time, owned by the external schedule service; we only keep its id and a snapshot (departure time, bus label, driver) on the Manifest.
+One bus departure on a Route at a time, owned by the external schedule service; we only keep its id and a snapshot (departure time, bus label) on the Manifest.
 _Avoid_: Route, journey
 
 **Manifest**:

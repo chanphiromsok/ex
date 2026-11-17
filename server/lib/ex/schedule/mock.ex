@@ -1,14 +1,13 @@
 defmodule Ex.Schedule.Mock do
   @moduledoc """
   Stand-in for the external schedule service: four departures a day (Cambodia time) on every pair of
-  Stations, with a fixed bus plate and driver per slot. A trip id carries everything needed to rebuild
+  Stations, with a fixed bus plate per slot. A trip id carries everything needed to rebuild
   the departure, so `get/1` needs no storage. Replace with the real client when the service is known.
   """
   @behaviour Ex.Schedule
 
   @times ["0730", "1000", "1300", "1600"]
   @plates ["2A-1234", "2B-5678", "3C-9012", "2D-3456"]
-  @drivers ["Sok Vibol", "Chea Sophal", "Meas Rith", "Kong Dara"]
   # Cambodia is UTC+7 all year.
   @utc_offset_seconds 7 * 3600
 
@@ -44,8 +43,7 @@ defmodule Ex.Schedule.Mock do
       destination_station_id: destination,
       departs_at: departs_at,
       departed: false,
-      bus_label: Enum.at(@plates, slot),
-      driver_name: Enum.at(@drivers, slot)
+      bus_label: Enum.at(@plates, slot)
     }
   end
 end

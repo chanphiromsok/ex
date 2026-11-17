@@ -45,7 +45,7 @@ defmodule Ex.Schedule.HttpTest do
     assert trip.trip_id == "92AVNA3w"
     assert trip.origin_station_id == pp.id and trip.destination_station_id == sr.id
     assert trip.bus_label == "Hyundai Universe"
-    assert trip.departed == false and is_nil(trip.driver_name)
+    assert trip.departed == false
     assert trip.departs_at == ~U[2026-09-26 00:30:00Z]
   end
 

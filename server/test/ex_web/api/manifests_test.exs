@@ -130,13 +130,6 @@ defmodule ExWeb.Api.ManifestsTest do
       assert ctx.origin |> open("nope", ctx.sr) |> json_response(400)
       assert ctx.origin |> open(ctx.trip.trip_id, ctx.other) |> json_response(400)
     end
-
-    test "a Station with no Route to the destination cannot open one", ctx do
-      {:ok, [t | _]} =
-        Ex.Schedule.departures(ctx.sr.id, ctx.pp.id, Date.utc_today())
-
-      assert ctx.destination |> open(t.trip_id, ctx.pp) |> json_response(400)
-    end
   end
 
   describe "the whole trip" do

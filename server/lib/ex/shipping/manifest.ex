@@ -1,7 +1,7 @@
 defmodule Ex.Shipping.Manifest do
   @moduledoc """
   One Manifest per Trip (ADR-0008): the Shipments loaded on one bus departure. The Trip itself lives in the
-  external schedule; we keep its id and a snapshot (departure time, bus plate, driver) and record what only
+  external schedule; we keep its id and a snapshot (departure time, bus label) and record what only
   we know: who opened it, which Shipments were scanned on, and how many have arrived.
 
   Open at the origin Station, scan Shipments on, depart (every Shipment becomes In transit), then at the
@@ -22,7 +22,6 @@ defmodule Ex.Shipping.Manifest do
     references do
       reference :origin_station, on_delete: :restrict, index?: true
       reference :destination_station, on_delete: :restrict, index?: true
-      reference :route, on_delete: :restrict, index?: true
       reference :created_by, on_delete: :restrict, index?: true
     end
 
@@ -41,10 +40,8 @@ defmodule Ex.Shipping.Manifest do
       :external_trip_id,
       :origin_station_id,
       :destination_station_id,
-      :route_id,
       :departs_at,
       :bus_label,
-      :driver_name,
       :status,
       :departed_at,
       :arrived_at,
@@ -150,8 +147,7 @@ defmodule Ex.Shipping.Manifest do
                trip_id: t.trip_id,
                departs_at: t.departs_at,
                bus_label: t.bus_label,
-               departed: t.departed,
-               driver_name: t.driver_name
+               departed: t.departed
              }
            end}
         else
@@ -193,7 +189,6 @@ defmodule Ex.Shipping.Manifest do
     attribute :external_trip_id, :string, allow_nil?: false, public?: true
     attribute :departs_at, :utc_datetime_usec, allow_nil?: false, public?: true
     attribute :bus_label, :string, public?: true
-    attribute :driver_name, :string, public?: true
 
     attribute :status, Ex.Shipping.ManifestStatus,
       allow_nil?: false,
@@ -210,7 +205,6 @@ defmodule Ex.Shipping.Manifest do
   relationships do
     belongs_to :origin_station, Ex.Network.Station, allow_nil?: false, public?: true
     belongs_to :destination_station, Ex.Network.Station, allow_nil?: false, public?: true
-    belongs_to :route, Ex.Network.Route, allow_nil?: false, public?: true
     belongs_to :created_by, Ex.Accounts.User, allow_nil?: false, public?: true
 
     has_many :shipments, Ex.Shipping.Shipment, public?: true

@@ -13,7 +13,6 @@ defmodule Ex.Repo.Migrations.AddManifestsAndStationExternalId do
       add :external_trip_id, :text, null: false
       add :departs_at, :utc_datetime_usec, null: false
       add :bus_label, :text
-      add :driver_name, :text
       add :status, :text, null: false, default: "open"
       add :departed_at, :utc_datetime_usec
       add :arrived_at, :utc_datetime_usec
@@ -48,15 +47,6 @@ defmodule Ex.Repo.Migrations.AddManifestsAndStationExternalId do
            )
 
     alter table(:manifests) do
-      add :route_id,
-          references(:routes,
-            column: :id,
-            name: "manifests_route_id_fkey",
-            type: :uuid,
-            prefix: "public",
-            on_delete: :restrict
-          ), null: false
-
       add :created_by_id,
           references(:users,
             column: :id,
@@ -70,8 +60,6 @@ defmodule Ex.Repo.Migrations.AddManifestsAndStationExternalId do
     create index(:manifests, [:origin_station_id])
 
     create index(:manifests, [:destination_station_id])
-
-    create index(:manifests, [:route_id])
 
     create index(:manifests, [:created_by_id])
 
@@ -122,15 +110,11 @@ defmodule Ex.Repo.Migrations.AddManifestsAndStationExternalId do
 
     drop_if_exists index(:manifests, [:created_by_id])
 
-    drop_if_exists index(:manifests, [:route_id])
-
     drop_if_exists index(:manifests, [:destination_station_id])
 
     drop_if_exists index(:manifests, [:origin_station_id])
 
     drop constraint(:manifests, "manifests_created_by_id_fkey")
-
-    drop constraint(:manifests, "manifests_route_id_fkey")
 
     drop constraint(:manifests, "manifests_destination_station_id_fkey")
 
@@ -138,7 +122,6 @@ defmodule Ex.Repo.Migrations.AddManifestsAndStationExternalId do
 
     alter table(:manifests) do
       remove :created_by_id
-      remove :route_id
     end
 
     drop_if_exists unique_index(

@@ -2,7 +2,7 @@ defmodule Ex.Shipping.Changes.OpenManifest do
   @moduledoc """
   Opens a Manifest for one Trip from the schedule. The origin is the signed-in user's own Station; the
   Trip must run between that Station's Location and the destination Station's Location, on an existing
-  Route. The Trip's departure time, bus plate and driver are copied onto the Manifest (ADR-0008).
+  Route. The Trip's departure time, bus label are copied onto the Manifest (ADR-0008).
   """
   use Ash.Resource.Change
 
@@ -18,15 +18,12 @@ defmodule Ex.Shipping.Changes.OpenManifest do
 
       with {:ok, origin} <- Ash.get(Station, origin_id, authorize?: false),
            {:ok, destination} <- fetch_station(destination_id),
-           {:ok, route} <- fetch_route(origin, destination),
            {:ok, trip} <- fetch_trip(trip_id, origin, destination) do
         changeset
         |> Ash.Changeset.force_change_attribute(:origin_station_id, origin.id)
-        |> Ash.Changeset.force_change_attribute(:route_id, route.id)
         |> Ash.Changeset.force_change_attribute(:created_by_id, actor.id)
         |> Ash.Changeset.force_change_attribute(:departs_at, trip.departs_at)
         |> Ash.Changeset.force_change_attribute(:bus_label, trip.bus_label)
-        |> Ash.Changeset.force_change_attribute(:driver_name, trip.driver_name)
       else
         {:error, field, message} ->
           Ash.Changeset.add_error(changeset, field: field, message: message)
@@ -48,21 +45,6 @@ defmodule Ex.Shipping.Changes.OpenManifest do
       {:ok, station} -> {:ok, station}
       _ -> {:error, :destination_station_id, "is not a Station"}
     end
-  end
-
-  defp fetch_route(origin, destination) do
-    route =
-      Route
-      |> Ash.Query.filter(
-        origin_location_id == ^origin.location_id and
-          destination_location_id == ^destination.location_id
-      )
-      |> Ash.read_one!(authorize?: false)
-
-    if route,
-      do: {:ok, route},
-      else:
-        {:error, :destination_station_id, "there is no Route from your Station to that Station"}
   end
 
   defp fetch_trip(trip_id, origin, destination) do

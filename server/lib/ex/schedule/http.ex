@@ -78,8 +78,7 @@ defmodule Ex.Schedule.Http do
         destination_station_id: destination_id,
         departs_at: departs_at,
         departed: trip["is_departed"] == true,
-        bus_label: get_in(trip, ["bus", "model"]),
-        driver_name: nil
+        bus_label: get_in(trip, ["bus", "model"])
       }
     else
       _ -> nil
