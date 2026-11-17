@@ -3,7 +3,7 @@ defmodule Ex.Shipping.Payment do
   Money taken for a Shipment. Append-only (ADR-0005): no update or destroy action, and Postgres
   rejects UPDATE and DELETE. A refund is a second row, never an edit.
 
-  This ticket creates only the first Payment, inside the Shipment's transaction.
+  The first Payment is made with the Shipment; one refund per Shipment may follow a cancellation.
   """
   use Ash.Resource,
     otp_app: :ex,
@@ -20,6 +20,14 @@ defmodule Ex.Shipping.Payment do
       reference :shipment, on_delete: :restrict, index?: true
       reference :station, on_delete: :restrict, index?: true
       reference :created_by, on_delete: :restrict, index?: true
+      reference :status_event, on_delete: :restrict, index?: true
+    end
+
+    custom_indexes do
+      index [:shipment_id],
+        unique: true,
+        where: "kind = 'refund'",
+        name: "payments_one_refund_idx"
     end
 
     check_constraints do
@@ -63,7 +71,16 @@ defmodule Ex.Shipping.Payment do
 
     create :record do
       primary? true
-      accept [:shipment_id, :kind, :method, :amount, :station_id, :created_by_id]
+
+      accept [
+        :shipment_id,
+        :kind,
+        :method,
+        :amount,
+        :station_id,
+        :created_by_id,
+        :status_event_id
+      ]
     end
   end
 
@@ -95,5 +112,7 @@ defmodule Ex.Shipping.Payment do
     belongs_to :shipment, Ex.Shipping.Shipment, allow_nil?: false, public?: true
     belongs_to :station, Ex.Network.Station, allow_nil?: false, public?: true
     belongs_to :created_by, Ex.Accounts.User, allow_nil?: false, public?: true
+    # Set on a refund: the cancelled Status Event it belongs to.
+    belongs_to :status_event, Ex.Shipping.StatusEvent, public?: true
   end
 end

@@ -10,5 +10,6 @@ defmodule Ex.Shipping do
     resource Ex.Shipping.Payment
     resource Ex.Shipping.ShipmentNote
     resource Ex.Shipping.ReceiverCorrection
+    resource Ex.Shipping.CancellationRequest
   end
 end

@@ -9,5 +9,7 @@ defmodule Ex.Pricing do
     resource Ex.Pricing.SaleItem
     resource Ex.Pricing.PricingSetting
     resource Ex.Pricing.PriceChange
+    resource Ex.Pricing.CancellationFeeSetting
+    resource Ex.Pricing.SettingChange
   end
 end

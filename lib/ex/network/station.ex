@@ -46,6 +46,15 @@ defmodule Ex.Network.Station do
         description "Renames or (de)activates a Station (it cannot move to another Location). Needs the `reference_data.manage` permission."
       end
 
+      patch :set_cancellation_approval do
+        route "/:id/cancellation-approval"
+
+        description """
+        Sets whether cancelling a Shipment sent from this Station needs a Supervisor's approval, and logs it.
+        Needs the `station_setting.manage` permission (Admin).
+        """
+      end
+
       delete :destroy do
         description "Deletes a Station nothing refers to. Needs the `reference_data.manage` permission."
       end
@@ -64,6 +73,12 @@ defmodule Ex.Network.Station do
       primary? true
       accept [:name_en, :name_km, :active]
     end
+
+    update :set_cancellation_approval do
+      require_atomic? false
+      accept [:cancellation_requires_approval]
+      change {Ex.Pricing.Changes.LogSetting, kind: :station_cancellation_approval}
+    end
   end
 
   policies do
@@ -71,7 +86,11 @@ defmodule Ex.Network.Station do
       authorize_if actor_present()
     end
 
-    policy action_type([:create, :update, :destroy]) do
+    policy action(:set_cancellation_approval) do
+      authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"station_setting.manage"}
+    end
+
+    policy action([:create, :update, :destroy]) do
       authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"reference_data.manage"}
     end
   end
@@ -81,6 +100,12 @@ defmodule Ex.Network.Station do
     attribute :name_en, :string, allow_nil?: false, public?: true
     attribute :name_km, :string, allow_nil?: false, public?: true
     attribute :active, :boolean, allow_nil?: false, default: true, public?: true
+
+    attribute :cancellation_requires_approval, :boolean,
+      allow_nil?: false,
+      default: true,
+      public?: true
+
     create_timestamp :inserted_at
     update_timestamp :updated_at
   end
