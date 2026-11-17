@@ -40,6 +40,19 @@ export type StatusEventFilterShipmentId = {
     not_eq?: string;
 };
 
+export type ManifestFilterShipmentCount = {
+    eq?: number;
+    greater_than?: number;
+    greater_than_or_equal?: number;
+    in?: Array<number>;
+    is_distinct_from?: number;
+    is_nil?: boolean;
+    is_not_distinct_from?: number;
+    less_than?: number;
+    less_than_or_equal?: number;
+    not_eq?: number;
+};
+
 /**
  * A "Resource object" representing a report-row
  */
@@ -58,6 +71,24 @@ export type ReportRow = {
         [key: string]: never;
     };
     type: string;
+};
+
+export type ManifestFilterBusLabel = {
+    contains?: string;
+    eq?: string;
+    greater_than?: string;
+    greater_than_or_equal?: string;
+    ilike?: string;
+    in?: Array<string>;
+    is_distinct_from?: string;
+    is_nil?: boolean;
+    is_not_distinct_from?: string;
+    less_than?: string;
+    less_than_or_equal?: string;
+    like?: string;
+    not_eq?: string;
+    string_ends_with?: string;
+    string_starts_with?: string;
 };
 
 export type ShipmentFilterReceiverPhone = {
@@ -692,6 +723,19 @@ export type PricingSettingFilterPricePerKg = {
     };
 };
 
+export type ShipmentFilterManifestId = {
+    eq?: string;
+    greater_than?: string;
+    greater_than_or_equal?: string;
+    in?: Array<string>;
+    is_distinct_from?: string;
+    is_nil?: boolean;
+    is_not_distinct_from?: string;
+    less_than?: string;
+    less_than_or_equal?: string;
+    not_eq?: string;
+};
+
 export type StationFilterLocationId = {
     eq?: string;
     greater_than?: string;
@@ -825,6 +869,32 @@ export type ShipmentFilterCurrentReceiverName = {
     string_starts_with?: string;
 };
 
+export type ManifestFilterRemainingCount = {
+    eq?: number;
+    greater_than?: number;
+    greater_than_or_equal?: number;
+    in?: Array<number>;
+    is_distinct_from?: number;
+    is_nil?: boolean;
+    is_not_distinct_from?: number;
+    less_than?: number;
+    less_than_or_equal?: number;
+    not_eq?: number;
+};
+
+export type ManifestFilterStatus = {
+    eq?: 'open' | 'departed' | 'arrived';
+    greater_than?: 'open' | 'departed' | 'arrived';
+    greater_than_or_equal?: 'open' | 'departed' | 'arrived';
+    in?: Array<'open' | 'departed' | 'arrived'>;
+    is_distinct_from?: 'open' | 'departed' | 'arrived';
+    is_nil?: boolean;
+    is_not_distinct_from?: 'open' | 'departed' | 'arrived';
+    less_than?: 'open' | 'departed' | 'arrived';
+    less_than_or_equal?: 'open' | 'departed' | 'arrived';
+    not_eq?: 'open' | 'departed' | 'arrived';
+};
+
 export type StatusEventFilterCreatedById = {
     eq?: string;
     greater_than?: string;
@@ -855,6 +925,19 @@ export type CancellationRequestFilterInsertedAt = {
  * Filters the query to results matching the given filter object
  */
 export type IncidentFilter = unknown;
+
+export type ManifestFilterArrivedAt = {
+    eq?: unknown;
+    greater_than?: unknown;
+    greater_than_or_equal?: unknown;
+    in?: Array<unknown>;
+    is_distinct_from?: unknown;
+    is_nil?: boolean;
+    is_not_distinct_from?: unknown;
+    less_than?: unknown;
+    less_than_or_equal?: unknown;
+    not_eq?: unknown;
+};
 
 export type CancellationRequestFilterFee = {
     eq?: {
@@ -894,6 +977,19 @@ export type CancellationRequestFilterFee = {
         amount: string;
         currency: string;
     };
+};
+
+export type ManifestFilterArrivedCount = {
+    eq?: number;
+    greater_than?: number;
+    greater_than_or_equal?: number;
+    in?: Array<number>;
+    is_distinct_from?: number;
+    is_nil?: boolean;
+    is_not_distinct_from?: number;
+    less_than?: number;
+    less_than_or_equal?: number;
+    not_eq?: number;
 };
 
 /**
@@ -1331,6 +1427,19 @@ export type ShipmentFilterCreatedById = {
     not_eq?: string;
 };
 
+export type ManifestFilterId = {
+    eq?: string;
+    greater_than?: string;
+    greater_than_or_equal?: string;
+    in?: Array<string>;
+    is_distinct_from?: string;
+    is_nil?: boolean;
+    is_not_distinct_from?: string;
+    less_than?: string;
+    less_than_or_equal?: string;
+    not_eq?: string;
+};
+
 /**
  * A "Resource object" representing a cancellation-fee-setting
  */
@@ -1756,6 +1865,24 @@ export type Parcel = {
     type: string;
 };
 
+export type ManifestFilterExternalTripId = {
+    contains?: string;
+    eq?: string;
+    greater_than?: string;
+    greater_than_or_equal?: string;
+    ilike?: string;
+    in?: Array<string>;
+    is_distinct_from?: string;
+    is_nil?: boolean;
+    is_not_distinct_from?: string;
+    less_than?: string;
+    less_than_or_equal?: string;
+    like?: string;
+    not_eq?: string;
+    string_ends_with?: string;
+    string_starts_with?: string;
+};
+
 /**
  * Filters the query to results matching the given filter object
  */
@@ -1868,6 +1995,19 @@ export type PriceChangeFilterInsertedAt = {
     less_than?: unknown;
     less_than_or_equal?: unknown;
     not_eq?: unknown;
+};
+
+export type ManifestFilterDestinationStationId = {
+    eq?: string;
+    greater_than?: string;
+    greater_than_or_equal?: string;
+    in?: Array<string>;
+    is_distinct_from?: string;
+    is_nil?: boolean;
+    is_not_distinct_from?: string;
+    less_than?: string;
+    less_than_or_equal?: string;
+    not_eq?: string;
 };
 
 export type ShipmentNoteFilterCreatedById = {
@@ -2153,6 +2293,10 @@ export type Shipment = {
         /**
          * Field included by default.
          */
+        manifest_id?: string | null | unknown;
+        /**
+         * Field included by default.
+         */
         origin_station_id: string;
         /**
          * Field included by default.
@@ -2220,6 +2364,18 @@ export type Shipment = {
         destination_station?: {
             /**
              * An identifier for destination_station
+             */
+            data?: {
+                id: string;
+                meta?: {
+                    [key: string]: unknown;
+                };
+                type: string;
+            } | null;
+        };
+        manifest?: {
+            /**
+             * An identifier for manifest
              */
             data?: {
                 id: string;
@@ -2868,6 +3024,19 @@ export type ShipmentFilterReceiverName = {
     string_starts_with?: string;
 };
 
+export type ManifestFilterCreatedById = {
+    eq?: string;
+    greater_than?: string;
+    greater_than_or_equal?: string;
+    in?: Array<string>;
+    is_distinct_from?: string;
+    is_nil?: boolean;
+    is_not_distinct_from?: string;
+    less_than?: string;
+    less_than_or_equal?: string;
+    not_eq?: string;
+};
+
 export type ParcelFilterShipmentId = {
     eq?: string;
     greater_than?: string;
@@ -2960,6 +3129,19 @@ export type ShipmentSaleItem = {
  */
 export type UserFilter = unknown;
 
+export type ManifestFilterDepartsAt = {
+    eq?: unknown;
+    greater_than?: unknown;
+    greater_than_or_equal?: unknown;
+    in?: Array<unknown>;
+    is_distinct_from?: unknown;
+    is_nil?: boolean;
+    is_not_distinct_from?: unknown;
+    less_than?: unknown;
+    less_than_or_equal?: unknown;
+    not_eq?: unknown;
+};
+
 export type RouteFilterDestinationLocationId = {
     eq?: string;
     greater_than?: string;
@@ -3010,6 +3192,10 @@ export type Station = {
         /**
          * Field included by default.
          */
+        external_id?: string | null | unknown;
+        /**
+         * Field included by default.
+         */
         location_id: string;
         /**
          * Field included by default.
@@ -3040,6 +3226,121 @@ export type Station = {
                 };
                 type: string;
             } | null;
+        };
+    };
+    type: string;
+};
+
+/**
+ * A "Resource object" representing a manifest
+ */
+export type Manifest = {
+    /**
+     * An attributes object for a manifest
+     */
+    attributes?: {
+        /**
+         * Field included by default.
+         */
+        arrived_at?: unknown;
+        /**
+         * Field included by default.
+         */
+        arrived_count?: number | unknown;
+        /**
+         * Field included by default.
+         */
+        bus_label?: string | null | unknown;
+        created_by_id: string;
+        /**
+         * Field included by default.
+         */
+        departed_at?: unknown;
+        /**
+         * Field included by default.
+         */
+        departs_at: unknown;
+        /**
+         * Field included by default.
+         */
+        destination_station_id: string;
+        /**
+         * Field included by default.
+         */
+        external_trip_id: string;
+        /**
+         * Field included by default.
+         */
+        inserted_at: unknown;
+        /**
+         * Field included by default.
+         */
+        origin_station_id: string;
+        /**
+         * Field included by default.
+         */
+        remaining_count?: number | null | unknown;
+        /**
+         * Field included by default.
+         */
+        shipment_count?: number | unknown;
+        /**
+         * Field included by default.
+         */
+        status: 'open' | 'departed' | 'arrived';
+    };
+    id: string;
+    /**
+     * A relationships object for a manifest
+     */
+    relationships?: {
+        created_by?: {
+            /**
+             * An identifier for created_by
+             */
+            data?: {
+                id: string;
+                meta?: {
+                    [key: string]: unknown;
+                };
+                type: string;
+            } | null;
+        };
+        destination_station?: {
+            /**
+             * An identifier for destination_station
+             */
+            data?: {
+                id: string;
+                meta?: {
+                    [key: string]: unknown;
+                };
+                type: string;
+            } | null;
+        };
+        origin_station?: {
+            /**
+             * An identifier for origin_station
+             */
+            data?: {
+                id: string;
+                meta?: {
+                    [key: string]: unknown;
+                };
+                type: string;
+            } | null;
+        };
+        shipments?: {
+            /**
+             * Relationship data for shipments
+             */
+            data?: Array<{
+                id: string;
+                meta?: {
+                    [key: string]: unknown;
+                };
+                type: string;
+            }>;
         };
     };
     type: string;
@@ -3227,6 +3528,19 @@ export type ReceiverCorrectionFilterReason = {
     string_starts_with?: string;
 };
 
+export type ManifestFilterOriginStationId = {
+    eq?: string;
+    greater_than?: string;
+    greater_than_or_equal?: string;
+    in?: Array<string>;
+    is_distinct_from?: string;
+    is_nil?: boolean;
+    is_not_distinct_from?: string;
+    less_than?: string;
+    less_than_or_equal?: string;
+    not_eq?: string;
+};
+
 export type ParcelFilterId = {
     eq?: string;
     greater_than?: string;
@@ -3292,6 +3606,19 @@ export type User = {
         };
     };
     type: string;
+};
+
+export type ManifestFilterDepartedAt = {
+    eq?: unknown;
+    greater_than?: unknown;
+    greater_than_or_equal?: unknown;
+    in?: Array<unknown>;
+    is_distinct_from?: unknown;
+    is_nil?: boolean;
+    is_not_distinct_from?: unknown;
+    less_than?: unknown;
+    less_than_or_equal?: unknown;
+    not_eq?: unknown;
 };
 
 export type IncidentFilterKind = {
@@ -3555,6 +3882,24 @@ export type PaymentFilterId = {
     not_eq?: string;
 };
 
+export type StationFilterExternalId = {
+    contains?: string;
+    eq?: string;
+    greater_than?: string;
+    greater_than_or_equal?: string;
+    ilike?: string;
+    in?: Array<string>;
+    is_distinct_from?: string;
+    is_nil?: boolean;
+    is_not_distinct_from?: string;
+    less_than?: string;
+    less_than_or_equal?: string;
+    like?: string;
+    not_eq?: string;
+    string_ends_with?: string;
+    string_starts_with?: string;
+};
+
 export type UserFilterPhone = {
     contains?: string;
     eq?: string;
@@ -3654,6 +3999,11 @@ export type StationFilterId = {
 };
 
 /**
+ * Filters the query to results matching the given filter object
+ */
+export type ManifestFilter = unknown;
+
+/**
  * A "Resource object" representing a route
  */
 export type Route = {
@@ -3727,6 +4077,19 @@ export type IncidentFilterShipmentId = {
     less_than?: string;
     less_than_or_equal?: string;
     not_eq?: string;
+};
+
+export type ManifestFilterInsertedAt = {
+    eq?: unknown;
+    greater_than?: unknown;
+    greater_than_or_equal?: unknown;
+    in?: Array<unknown>;
+    is_distinct_from?: unknown;
+    is_nil?: boolean;
+    is_not_distinct_from?: unknown;
+    less_than?: unknown;
+    less_than_or_equal?: unknown;
+    not_eq?: unknown;
 };
 
 export type GetApiV1ShipmentsData = {
@@ -4117,6 +4480,36 @@ export type PatchApiV1SaleItemsByIdResponses = {
 };
 
 export type PatchApiV1SaleItemsByIdResponse = PatchApiV1SaleItemsByIdResponses[keyof PatchApiV1SaleItemsByIdResponses];
+
+export type GetApiV1ManifestsDeparturesData = {
+    body?: never;
+    path?: never;
+    query: {
+        date: string;
+        destination_station_id: string;
+    };
+    url: '/api/v1/manifests/departures';
+};
+
+export type GetApiV1ManifestsDeparturesErrors = {
+    /**
+     * General Error
+     */
+    default: Errors;
+};
+
+export type GetApiV1ManifestsDeparturesError = GetApiV1ManifestsDeparturesErrors[keyof GetApiV1ManifestsDeparturesErrors];
+
+export type GetApiV1ManifestsDeparturesResponses = {
+    /**
+     * Success
+     */
+    200: Array<{
+        [key: string]: unknown;
+    }>;
+};
+
+export type GetApiV1ManifestsDeparturesResponse = GetApiV1ManifestsDeparturesResponses[keyof GetApiV1ManifestsDeparturesResponses];
 
 export type GetApiV1SizeClassesByIdData = {
     body?: never;
@@ -4706,6 +5099,7 @@ export type PostApiV1StationsData = {
     body: {
         data: {
             attributes?: {
+                external_id?: string | unknown;
                 location_id: string;
                 name_en: string;
                 name_km: string;
@@ -5623,6 +6017,7 @@ export type PatchApiV1StationsByIdData = {
         data: {
             attributes?: {
                 active?: boolean | unknown;
+                external_id?: string | unknown;
                 name_en?: string | unknown;
                 name_km?: string | unknown;
             };
@@ -5678,6 +6073,68 @@ export type PatchApiV1StationsByIdResponses = {
 };
 
 export type PatchApiV1StationsByIdResponse = PatchApiV1StationsByIdResponses[keyof PatchApiV1StationsByIdResponses];
+
+export type PatchApiV1ManifestsByIdDepartData = {
+    /**
+     * Request body for the /manifests/:id/depart operation on manifest resource
+     */
+    body?: {
+        data: {
+            attributes?: {
+                [key: string]: never;
+            };
+            id: string;
+            relationships?: {
+                [key: string]: never;
+            };
+            type?: 'manifest';
+        };
+    };
+    path: {
+        id: string;
+    };
+    query?: {
+        /**
+         * Relationship paths to include in the response
+         */
+        include?: string;
+        /**
+         * Limits the response fields to only those listed for each type
+         */
+        fields?: {
+            /**
+             * Comma separated field names for manifest
+             */
+            manifest?: string;
+            [key: string]: unknown;
+        };
+    };
+    url: '/api/v1/manifests/{id}/depart';
+};
+
+export type PatchApiV1ManifestsByIdDepartErrors = {
+    /**
+     * General Error
+     */
+    default: Errors;
+};
+
+export type PatchApiV1ManifestsByIdDepartError = PatchApiV1ManifestsByIdDepartErrors[keyof PatchApiV1ManifestsByIdDepartErrors];
+
+export type PatchApiV1ManifestsByIdDepartResponses = {
+    /**
+     * Success
+     */
+    200: {
+        data?: Manifest;
+        included?: Array<Shipment>;
+        meta?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PatchApiV1ManifestsByIdDepartResponse = PatchApiV1ManifestsByIdDepartResponses[keyof PatchApiV1ManifestsByIdDepartResponses];
 
 export type PatchApiV1SizeClassesByIdPriceData = {
     /**
@@ -5930,6 +6387,130 @@ export type PostApiV1ShipmentNotesResponses = {
 
 export type PostApiV1ShipmentNotesResponse = PostApiV1ShipmentNotesResponses[keyof PostApiV1ShipmentNotesResponses];
 
+export type PatchApiV1ManifestsByIdScanData = {
+    /**
+     * Request body for the /manifests/:id/scan operation on manifest resource
+     */
+    body: {
+        data: {
+            attributes?: {
+                invoice_no: number;
+            };
+            id: string;
+            relationships?: {
+                [key: string]: never;
+            };
+            type?: 'manifest';
+        };
+    };
+    path: {
+        id: string;
+    };
+    query?: {
+        /**
+         * Relationship paths to include in the response
+         */
+        include?: string;
+        /**
+         * Limits the response fields to only those listed for each type
+         */
+        fields?: {
+            /**
+             * Comma separated field names for manifest
+             */
+            manifest?: string;
+            [key: string]: unknown;
+        };
+    };
+    url: '/api/v1/manifests/{id}/scan';
+};
+
+export type PatchApiV1ManifestsByIdScanErrors = {
+    /**
+     * General Error
+     */
+    default: Errors;
+};
+
+export type PatchApiV1ManifestsByIdScanError = PatchApiV1ManifestsByIdScanErrors[keyof PatchApiV1ManifestsByIdScanErrors];
+
+export type PatchApiV1ManifestsByIdScanResponses = {
+    /**
+     * Success
+     */
+    200: {
+        data?: Manifest;
+        included?: Array<Shipment>;
+        meta?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PatchApiV1ManifestsByIdScanResponse = PatchApiV1ManifestsByIdScanResponses[keyof PatchApiV1ManifestsByIdScanResponses];
+
+export type PatchApiV1ManifestsByIdArriveData = {
+    /**
+     * Request body for the /manifests/:id/arrive operation on manifest resource
+     */
+    body?: {
+        data: {
+            attributes?: {
+                [key: string]: never;
+            };
+            id: string;
+            relationships?: {
+                [key: string]: never;
+            };
+            type?: 'manifest';
+        };
+    };
+    path: {
+        id: string;
+    };
+    query?: {
+        /**
+         * Relationship paths to include in the response
+         */
+        include?: string;
+        /**
+         * Limits the response fields to only those listed for each type
+         */
+        fields?: {
+            /**
+             * Comma separated field names for manifest
+             */
+            manifest?: string;
+            [key: string]: unknown;
+        };
+    };
+    url: '/api/v1/manifests/{id}/arrive';
+};
+
+export type PatchApiV1ManifestsByIdArriveErrors = {
+    /**
+     * General Error
+     */
+    default: Errors;
+};
+
+export type PatchApiV1ManifestsByIdArriveError = PatchApiV1ManifestsByIdArriveErrors[keyof PatchApiV1ManifestsByIdArriveErrors];
+
+export type PatchApiV1ManifestsByIdArriveResponses = {
+    /**
+     * Success
+     */
+    200: {
+        data?: Manifest;
+        included?: Array<Shipment>;
+        meta?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PatchApiV1ManifestsByIdArriveResponse = PatchApiV1ManifestsByIdArriveResponses[keyof PatchApiV1ManifestsByIdArriveResponses];
+
 export type PatchApiV1ShipmentsByIdInTransitData = {
     /**
      * Request body for the /shipments/:id/in-transit operation on shipment resource
@@ -5991,6 +6572,54 @@ export type PatchApiV1ShipmentsByIdInTransitResponses = {
 };
 
 export type PatchApiV1ShipmentsByIdInTransitResponse = PatchApiV1ShipmentsByIdInTransitResponses[keyof PatchApiV1ShipmentsByIdInTransitResponses];
+
+export type GetApiV1ManifestsByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: {
+        /**
+         * Relationship paths to include in the response
+         */
+        include?: string;
+        /**
+         * Limits the response fields to only those listed for each type
+         */
+        fields?: {
+            /**
+             * Comma separated field names for manifest
+             */
+            manifest?: string;
+            [key: string]: unknown;
+        };
+    };
+    url: '/api/v1/manifests/{id}';
+};
+
+export type GetApiV1ManifestsByIdErrors = {
+    /**
+     * General Error
+     */
+    default: Errors;
+};
+
+export type GetApiV1ManifestsByIdError = GetApiV1ManifestsByIdErrors[keyof GetApiV1ManifestsByIdErrors];
+
+export type GetApiV1ManifestsByIdResponses = {
+    /**
+     * Success
+     */
+    200: {
+        data?: Manifest;
+        included?: Array<Shipment>;
+        meta?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type GetApiV1ManifestsByIdResponse = GetApiV1ManifestsByIdResponses[keyof GetApiV1ManifestsByIdResponses];
 
 export type GetApiV1PermissionsData = {
     body?: never;
@@ -7310,3 +7939,130 @@ export type GetApiV1PricingCurrentResponses = {
 };
 
 export type GetApiV1PricingCurrentResponse = GetApiV1PricingCurrentResponses[keyof GetApiV1PricingCurrentResponses];
+
+export type GetApiV1ManifestsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Filters the query to results with attributes matching the given filter object
+         */
+        filter?: ManifestFilter;
+        /**
+         * Sort order to apply to the results
+         */
+        sort?: string;
+        /**
+         * Paginates the response with the limit and offset or keyset pagination.
+         */
+        page?: {
+            after?: string;
+            before?: string;
+            count?: boolean;
+            limit?: number;
+            offset?: number;
+        };
+        /**
+         * Relationship paths to include in the response
+         */
+        include?: string;
+        /**
+         * Limits the response fields to only those listed for each type
+         */
+        fields?: {
+            /**
+             * Comma separated field names for manifest
+             */
+            manifest?: string;
+            [key: string]: unknown;
+        };
+    };
+    url: '/api/v1/manifests';
+};
+
+export type GetApiV1ManifestsErrors = {
+    /**
+     * General Error
+     */
+    default: Errors;
+};
+
+export type GetApiV1ManifestsError = GetApiV1ManifestsErrors[keyof GetApiV1ManifestsErrors];
+
+export type GetApiV1ManifestsResponses = {
+    /**
+     * Success
+     */
+    200: {
+        /**
+         * An array of resource objects representing a manifest
+         */
+        data?: Array<Manifest>;
+        included?: Array<Shipment>;
+        meta?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type GetApiV1ManifestsResponse = GetApiV1ManifestsResponses[keyof GetApiV1ManifestsResponses];
+
+export type PostApiV1ManifestsData = {
+    /**
+     * Request body for the /manifests operation on manifest resource
+     */
+    body: {
+        data: {
+            attributes?: {
+                destination_station_id: string;
+                external_trip_id: string;
+            };
+            relationships?: {
+                [key: string]: never;
+            };
+            type?: 'manifest';
+        };
+    };
+    path?: never;
+    query?: {
+        /**
+         * Relationship paths to include in the response
+         */
+        include?: string;
+        /**
+         * Limits the response fields to only those listed for each type
+         */
+        fields?: {
+            /**
+             * Comma separated field names for manifest
+             */
+            manifest?: string;
+            [key: string]: unknown;
+        };
+    };
+    url: '/api/v1/manifests';
+};
+
+export type PostApiV1ManifestsErrors = {
+    /**
+     * General Error
+     */
+    default: Errors;
+};
+
+export type PostApiV1ManifestsError = PostApiV1ManifestsErrors[keyof PostApiV1ManifestsErrors];
+
+export type PostApiV1ManifestsResponses = {
+    /**
+     * Success
+     */
+    201: {
+        data?: Manifest;
+        included?: Array<Shipment>;
+        meta?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type PostApiV1ManifestsResponse = PostApiV1ManifestsResponses[keyof PostApiV1ManifestsResponses];

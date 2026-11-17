@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteApiV1LocationsByIdData, DeleteApiV1LocationsByIdErrors, DeleteApiV1LocationsByIdResponses, DeleteApiV1RoutesByIdData, DeleteApiV1RoutesByIdErrors, DeleteApiV1RoutesByIdResponses, DeleteApiV1StationsByIdData, DeleteApiV1StationsByIdErrors, DeleteApiV1StationsByIdResponses, GetApiV1CancellationRequestsData, GetApiV1CancellationRequestsErrors, GetApiV1CancellationRequestsResponses, GetApiV1IncidentsData, GetApiV1IncidentsErrors, GetApiV1IncidentsResponses, GetApiV1LocationsByIdData, GetApiV1LocationsByIdErrors, GetApiV1LocationsByIdResponses, GetApiV1LocationsData, GetApiV1LocationsErrors, GetApiV1LocationsResponses, GetApiV1PermissionsData, GetApiV1PermissionsErrors, GetApiV1PermissionsResponses, GetApiV1PriceChangesData, GetApiV1PriceChangesErrors, GetApiV1PriceChangesResponses, GetApiV1PricingCancellationFeeData, GetApiV1PricingCancellationFeeErrors, GetApiV1PricingCancellationFeeResponses, GetApiV1PricingCurrentData, GetApiV1PricingCurrentErrors, GetApiV1PricingCurrentResponses, GetApiV1ReceiverCorrectionsData, GetApiV1ReceiverCorrectionsErrors, GetApiV1ReceiverCorrectionsResponses, GetApiV1ReportsCancellationsData, GetApiV1ReportsCancellationsErrors, GetApiV1ReportsCancellationsResponses, GetApiV1ReportsCashData, GetApiV1ReportsCashErrors, GetApiV1ReportsCashResponses, GetApiV1RoutesByIdData, GetApiV1RoutesByIdErrors, GetApiV1RoutesByIdResponses, GetApiV1RoutesData, GetApiV1RoutesErrors, GetApiV1RoutesResponses, GetApiV1SaleItemsByIdData, GetApiV1SaleItemsByIdErrors, GetApiV1SaleItemsByIdResponses, GetApiV1SaleItemsData, GetApiV1SaleItemsErrors, GetApiV1SaleItemsResponses, GetApiV1SettingChangesData, GetApiV1SettingChangesErrors, GetApiV1SettingChangesResponses, GetApiV1ShipmentNotesData, GetApiV1ShipmentNotesErrors, GetApiV1ShipmentNotesResponses, GetApiV1ShipmentsByIdData, GetApiV1ShipmentsByIdErrors, GetApiV1ShipmentsByIdResponses, GetApiV1ShipmentsData, GetApiV1ShipmentsErrors, GetApiV1ShipmentsOverdueData, GetApiV1ShipmentsOverdueErrors, GetApiV1ShipmentsOverdueResponses, GetApiV1ShipmentsResponses, GetApiV1SizeClassesByIdData, GetApiV1SizeClassesByIdErrors, GetApiV1SizeClassesByIdResponses, GetApiV1SizeClassesData, GetApiV1SizeClassesErrors, GetApiV1SizeClassesResponses, GetApiV1StationsByIdData, GetApiV1StationsByIdErrors, GetApiV1StationsByIdResponses, GetApiV1StationsData, GetApiV1StationsErrors, GetApiV1StationsResponses, GetApiV1UsersByIdData, GetApiV1UsersByIdErrors, GetApiV1UsersByIdResponses, GetApiV1UsersData, GetApiV1UsersErrors, GetApiV1UsersResponses, PatchApiV1CancellationRequestsByIdApproveData, PatchApiV1CancellationRequestsByIdApproveErrors, PatchApiV1CancellationRequestsByIdApproveResponses, PatchApiV1CancellationRequestsByIdRejectData, PatchApiV1CancellationRequestsByIdRejectErrors, PatchApiV1CancellationRequestsByIdRejectResponses, PatchApiV1IncidentsByIdResolveData, PatchApiV1IncidentsByIdResolveErrors, PatchApiV1IncidentsByIdResolveResponses, PatchApiV1LocationsByIdData, PatchApiV1LocationsByIdErrors, PatchApiV1LocationsByIdResponses, PatchApiV1SaleItemsByIdData, PatchApiV1SaleItemsByIdErrors, PatchApiV1SaleItemsByIdPriceData, PatchApiV1SaleItemsByIdPriceErrors, PatchApiV1SaleItemsByIdPriceResponses, PatchApiV1SaleItemsByIdResponses, PatchApiV1ShipmentsByIdArrivedData, PatchApiV1ShipmentsByIdArrivedErrors, PatchApiV1ShipmentsByIdArrivedResponses, PatchApiV1ShipmentsByIdCollectData, PatchApiV1ShipmentsByIdCollectErrors, PatchApiV1ShipmentsByIdCollectResponses, PatchApiV1ShipmentsByIdInTransitData, PatchApiV1ShipmentsByIdInTransitErrors, PatchApiV1ShipmentsByIdInTransitResponses, PatchApiV1SizeClassesByIdData, PatchApiV1SizeClassesByIdErrors, PatchApiV1SizeClassesByIdPriceData, PatchApiV1SizeClassesByIdPriceErrors, PatchApiV1SizeClassesByIdPriceResponses, PatchApiV1SizeClassesByIdResponses, PatchApiV1StationsByIdCancellationApprovalData, PatchApiV1StationsByIdCancellationApprovalErrors, PatchApiV1StationsByIdCancellationApprovalResponses, PatchApiV1StationsByIdData, PatchApiV1StationsByIdErrors, PatchApiV1StationsByIdOverdueThresholdData, PatchApiV1StationsByIdOverdueThresholdErrors, PatchApiV1StationsByIdOverdueThresholdResponses, PatchApiV1StationsByIdResponses, PatchApiV1UsersByIdData, PatchApiV1UsersByIdErrors, PatchApiV1UsersByIdResponses, PostApiV1CancellationRequestsData, PostApiV1CancellationRequestsErrors, PostApiV1CancellationRequestsResponses, PostApiV1IncidentsData, PostApiV1IncidentsErrors, PostApiV1IncidentsResponses, PostApiV1LocationsData, PostApiV1LocationsErrors, PostApiV1LocationsResponses, PostApiV1PricingCancellationFeeData, PostApiV1PricingCancellationFeeErrors, PostApiV1PricingCancellationFeeResponses, PostApiV1PricingPricePerKgData, PostApiV1PricingPricePerKgErrors, PostApiV1PricingPricePerKgResponses, PostApiV1ReceiverCorrectionsData, PostApiV1ReceiverCorrectionsErrors, PostApiV1ReceiverCorrectionsResponses, PostApiV1RoutesData, PostApiV1RoutesErrors, PostApiV1RoutesResponses, PostApiV1SaleItemsData, PostApiV1SaleItemsErrors, PostApiV1SaleItemsResponses, PostApiV1ShipmentNotesData, PostApiV1ShipmentNotesErrors, PostApiV1ShipmentNotesResponses, PostApiV1ShipmentsData, PostApiV1ShipmentsErrors, PostApiV1ShipmentsResponses, PostApiV1SizeClassesData, PostApiV1SizeClassesErrors, PostApiV1SizeClassesResponses, PostApiV1StationsData, PostApiV1StationsErrors, PostApiV1StationsResponses, PostApiV1UsersData, PostApiV1UsersErrors, PostApiV1UsersRefreshData, PostApiV1UsersRefreshErrors, PostApiV1UsersRefreshResponses, PostApiV1UsersResponses, PostApiV1UsersSignInData, PostApiV1UsersSignInErrors, PostApiV1UsersSignInResponses } from './types.gen';
+import type { DeleteApiV1LocationsByIdData, DeleteApiV1LocationsByIdErrors, DeleteApiV1LocationsByIdResponses, DeleteApiV1RoutesByIdData, DeleteApiV1RoutesByIdErrors, DeleteApiV1RoutesByIdResponses, DeleteApiV1StationsByIdData, DeleteApiV1StationsByIdErrors, DeleteApiV1StationsByIdResponses, GetApiV1CancellationRequestsData, GetApiV1CancellationRequestsErrors, GetApiV1CancellationRequestsResponses, GetApiV1IncidentsData, GetApiV1IncidentsErrors, GetApiV1IncidentsResponses, GetApiV1LocationsByIdData, GetApiV1LocationsByIdErrors, GetApiV1LocationsByIdResponses, GetApiV1LocationsData, GetApiV1LocationsErrors, GetApiV1LocationsResponses, GetApiV1ManifestsByIdData, GetApiV1ManifestsByIdErrors, GetApiV1ManifestsByIdResponses, GetApiV1ManifestsData, GetApiV1ManifestsDeparturesData, GetApiV1ManifestsDeparturesErrors, GetApiV1ManifestsDeparturesResponses, GetApiV1ManifestsErrors, GetApiV1ManifestsResponses, GetApiV1PermissionsData, GetApiV1PermissionsErrors, GetApiV1PermissionsResponses, GetApiV1PriceChangesData, GetApiV1PriceChangesErrors, GetApiV1PriceChangesResponses, GetApiV1PricingCancellationFeeData, GetApiV1PricingCancellationFeeErrors, GetApiV1PricingCancellationFeeResponses, GetApiV1PricingCurrentData, GetApiV1PricingCurrentErrors, GetApiV1PricingCurrentResponses, GetApiV1ReceiverCorrectionsData, GetApiV1ReceiverCorrectionsErrors, GetApiV1ReceiverCorrectionsResponses, GetApiV1ReportsCancellationsData, GetApiV1ReportsCancellationsErrors, GetApiV1ReportsCancellationsResponses, GetApiV1ReportsCashData, GetApiV1ReportsCashErrors, GetApiV1ReportsCashResponses, GetApiV1RoutesByIdData, GetApiV1RoutesByIdErrors, GetApiV1RoutesByIdResponses, GetApiV1RoutesData, GetApiV1RoutesErrors, GetApiV1RoutesResponses, GetApiV1SaleItemsByIdData, GetApiV1SaleItemsByIdErrors, GetApiV1SaleItemsByIdResponses, GetApiV1SaleItemsData, GetApiV1SaleItemsErrors, GetApiV1SaleItemsResponses, GetApiV1SettingChangesData, GetApiV1SettingChangesErrors, GetApiV1SettingChangesResponses, GetApiV1ShipmentNotesData, GetApiV1ShipmentNotesErrors, GetApiV1ShipmentNotesResponses, GetApiV1ShipmentsByIdData, GetApiV1ShipmentsByIdErrors, GetApiV1ShipmentsByIdResponses, GetApiV1ShipmentsData, GetApiV1ShipmentsErrors, GetApiV1ShipmentsOverdueData, GetApiV1ShipmentsOverdueErrors, GetApiV1ShipmentsOverdueResponses, GetApiV1ShipmentsResponses, GetApiV1SizeClassesByIdData, GetApiV1SizeClassesByIdErrors, GetApiV1SizeClassesByIdResponses, GetApiV1SizeClassesData, GetApiV1SizeClassesErrors, GetApiV1SizeClassesResponses, GetApiV1StationsByIdData, GetApiV1StationsByIdErrors, GetApiV1StationsByIdResponses, GetApiV1StationsData, GetApiV1StationsErrors, GetApiV1StationsResponses, GetApiV1UsersByIdData, GetApiV1UsersByIdErrors, GetApiV1UsersByIdResponses, GetApiV1UsersData, GetApiV1UsersErrors, GetApiV1UsersResponses, PatchApiV1CancellationRequestsByIdApproveData, PatchApiV1CancellationRequestsByIdApproveErrors, PatchApiV1CancellationRequestsByIdApproveResponses, PatchApiV1CancellationRequestsByIdRejectData, PatchApiV1CancellationRequestsByIdRejectErrors, PatchApiV1CancellationRequestsByIdRejectResponses, PatchApiV1IncidentsByIdResolveData, PatchApiV1IncidentsByIdResolveErrors, PatchApiV1IncidentsByIdResolveResponses, PatchApiV1LocationsByIdData, PatchApiV1LocationsByIdErrors, PatchApiV1LocationsByIdResponses, PatchApiV1ManifestsByIdArriveData, PatchApiV1ManifestsByIdArriveErrors, PatchApiV1ManifestsByIdArriveResponses, PatchApiV1ManifestsByIdDepartData, PatchApiV1ManifestsByIdDepartErrors, PatchApiV1ManifestsByIdDepartResponses, PatchApiV1ManifestsByIdScanData, PatchApiV1ManifestsByIdScanErrors, PatchApiV1ManifestsByIdScanResponses, PatchApiV1SaleItemsByIdData, PatchApiV1SaleItemsByIdErrors, PatchApiV1SaleItemsByIdPriceData, PatchApiV1SaleItemsByIdPriceErrors, PatchApiV1SaleItemsByIdPriceResponses, PatchApiV1SaleItemsByIdResponses, PatchApiV1ShipmentsByIdArrivedData, PatchApiV1ShipmentsByIdArrivedErrors, PatchApiV1ShipmentsByIdArrivedResponses, PatchApiV1ShipmentsByIdCollectData, PatchApiV1ShipmentsByIdCollectErrors, PatchApiV1ShipmentsByIdCollectResponses, PatchApiV1ShipmentsByIdInTransitData, PatchApiV1ShipmentsByIdInTransitErrors, PatchApiV1ShipmentsByIdInTransitResponses, PatchApiV1SizeClassesByIdData, PatchApiV1SizeClassesByIdErrors, PatchApiV1SizeClassesByIdPriceData, PatchApiV1SizeClassesByIdPriceErrors, PatchApiV1SizeClassesByIdPriceResponses, PatchApiV1SizeClassesByIdResponses, PatchApiV1StationsByIdCancellationApprovalData, PatchApiV1StationsByIdCancellationApprovalErrors, PatchApiV1StationsByIdCancellationApprovalResponses, PatchApiV1StationsByIdData, PatchApiV1StationsByIdErrors, PatchApiV1StationsByIdOverdueThresholdData, PatchApiV1StationsByIdOverdueThresholdErrors, PatchApiV1StationsByIdOverdueThresholdResponses, PatchApiV1StationsByIdResponses, PatchApiV1UsersByIdData, PatchApiV1UsersByIdErrors, PatchApiV1UsersByIdResponses, PostApiV1CancellationRequestsData, PostApiV1CancellationRequestsErrors, PostApiV1CancellationRequestsResponses, PostApiV1IncidentsData, PostApiV1IncidentsErrors, PostApiV1IncidentsResponses, PostApiV1LocationsData, PostApiV1LocationsErrors, PostApiV1LocationsResponses, PostApiV1ManifestsData, PostApiV1ManifestsErrors, PostApiV1ManifestsResponses, PostApiV1PricingCancellationFeeData, PostApiV1PricingCancellationFeeErrors, PostApiV1PricingCancellationFeeResponses, PostApiV1PricingPricePerKgData, PostApiV1PricingPricePerKgErrors, PostApiV1PricingPricePerKgResponses, PostApiV1ReceiverCorrectionsData, PostApiV1ReceiverCorrectionsErrors, PostApiV1ReceiverCorrectionsResponses, PostApiV1RoutesData, PostApiV1RoutesErrors, PostApiV1RoutesResponses, PostApiV1SaleItemsData, PostApiV1SaleItemsErrors, PostApiV1SaleItemsResponses, PostApiV1ShipmentNotesData, PostApiV1ShipmentNotesErrors, PostApiV1ShipmentNotesResponses, PostApiV1ShipmentsData, PostApiV1ShipmentsErrors, PostApiV1ShipmentsResponses, PostApiV1SizeClassesData, PostApiV1SizeClassesErrors, PostApiV1SizeClassesResponses, PostApiV1StationsData, PostApiV1StationsErrors, PostApiV1StationsResponses, PostApiV1UsersData, PostApiV1UsersErrors, PostApiV1UsersRefreshData, PostApiV1UsersRefreshErrors, PostApiV1UsersRefreshResponses, PostApiV1UsersResponses, PostApiV1UsersSignInData, PostApiV1UsersSignInErrors, PostApiV1UsersSignInResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -87,6 +87,17 @@ export const patchApiV1SaleItemsById = <ThrowOnError extends boolean = false>(op
         'Content-Type': 'application/vnd.api+json',
         ...options.headers
     }
+});
+
+/**
+ * Departures from the external schedule for one `date` (YYYY-MM-DD) from the signed-in user's Station
+ * to `destination_station_id`. Needs `shipment.mark_in_transit`.
+ *
+ */
+export const getApiV1ManifestsDepartures = <ThrowOnError extends boolean = false>(options: Options<GetApiV1ManifestsDeparturesData, ThrowOnError>): RequestResult<GetApiV1ManifestsDeparturesResponses, GetApiV1ManifestsDeparturesErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1ManifestsDeparturesResponses, GetApiV1ManifestsDeparturesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/manifests/departures',
+    ...options
 });
 
 /**
@@ -389,6 +400,19 @@ export const patchApiV1StationsById = <ThrowOnError extends boolean = false>(opt
 });
 
 /**
+ * Departs the Manifest at its origin Station: every loaded Shipment becomes In transit.
+ */
+export const patchApiV1ManifestsByIdDepart = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1ManifestsByIdDepartData, ThrowOnError>): RequestResult<PatchApiV1ManifestsByIdDepartResponses, PatchApiV1ManifestsByIdDepartErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1ManifestsByIdDepartResponses, PatchApiV1ManifestsByIdDepartErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/manifests/{id}/depart',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
  * Sets the KHR price of a Size Class and logs it. Needs `price.manage`.
  */
 export const patchApiV1SizeClassesByIdPrice = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1SizeClassesByIdPriceData, ThrowOnError>): RequestResult<PatchApiV1SizeClassesByIdPriceResponses, PatchApiV1SizeClassesByIdPriceErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1SizeClassesByIdPriceResponses, PatchApiV1SizeClassesByIdPriceErrors, ThrowOnError>({
@@ -441,6 +465,34 @@ export const postApiV1ShipmentNotes = <ThrowOnError extends boolean = false>(opt
 });
 
 /**
+ * Scans one Shipment by `invoice_no`. While the Manifest is open (origin Station) it loads the Shipment;
+ * once departed (destination Station) it marks the Shipment Arrived. Scanning twice is harmless.
+ *
+ */
+export const patchApiV1ManifestsByIdScan = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1ManifestsByIdScanData, ThrowOnError>): RequestResult<PatchApiV1ManifestsByIdScanResponses, PatchApiV1ManifestsByIdScanErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1ManifestsByIdScanResponses, PatchApiV1ManifestsByIdScanErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/manifests/{id}/scan',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Closes the Manifest at its destination Station. Unscanned Shipments stay In transit.
+ */
+export const patchApiV1ManifestsByIdArrive = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1ManifestsByIdArriveData, ThrowOnError>): RequestResult<PatchApiV1ManifestsByIdArriveResponses, PatchApiV1ManifestsByIdArriveErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1ManifestsByIdArriveResponses, PatchApiV1ManifestsByIdArriveErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/manifests/{id}/arrive',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
  * The origin Station hands the Shipment to the bus. Only from Received. Needs `shipment.mark_in_transit`,
  * at the Shipment's origin Station.
  *
@@ -453,6 +505,15 @@ export const patchApiV1ShipmentsByIdInTransit = <ThrowOnError extends boolean = 
         'Content-Type': 'application/vnd.api+json',
         ...options.headers
     }
+});
+
+/**
+ * /manifests/:id operation on manifest resource
+ */
+export const getApiV1ManifestsById = <ThrowOnError extends boolean = false>(options: Options<GetApiV1ManifestsByIdData, ThrowOnError>): RequestResult<GetApiV1ManifestsByIdResponses, GetApiV1ManifestsByIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1ManifestsByIdResponses, GetApiV1ManifestsByIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/manifests/{id}',
+    ...options
 });
 
 /**
@@ -694,4 +755,28 @@ export const getApiV1PricingCurrent = <ThrowOnError extends boolean = false>(opt
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/pricing/current',
     ...options
+});
+
+/**
+ * Lists Manifests at the caller's Station (as origin or destination). Needs `shipment.read`.
+ */
+export const getApiV1Manifests = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1ManifestsData, ThrowOnError>): RequestResult<GetApiV1ManifestsResponses, GetApiV1ManifestsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1ManifestsResponses, GetApiV1ManifestsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/manifests',
+    ...options
+});
+
+/**
+ * Opens the Manifest for a Trip from the schedule (`external_trip_id`) going to `destination_station_id`.
+ * Opening the same Trip again returns the existing Manifest. Needs `shipment.mark_in_transit`.
+ *
+ */
+export const postApiV1Manifests = <ThrowOnError extends boolean = false>(options: Options<PostApiV1ManifestsData, ThrowOnError>): RequestResult<PostApiV1ManifestsResponses, PostApiV1ManifestsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1ManifestsResponses, PostApiV1ManifestsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/manifests',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
 });

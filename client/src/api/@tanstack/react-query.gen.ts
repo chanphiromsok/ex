@@ -3,8 +3,8 @@
 import { type InfiniteData, infiniteQueryOptions, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { deleteApiV1LocationsById, deleteApiV1RoutesById, deleteApiV1StationsById, getApiV1CancellationRequests, getApiV1Incidents, getApiV1Locations, getApiV1LocationsById, getApiV1Permissions, getApiV1PriceChanges, getApiV1PricingCancellationFee, getApiV1PricingCurrent, getApiV1ReceiverCorrections, getApiV1ReportsCancellations, getApiV1ReportsCash, getApiV1Routes, getApiV1RoutesById, getApiV1SaleItems, getApiV1SaleItemsById, getApiV1SettingChanges, getApiV1ShipmentNotes, getApiV1Shipments, getApiV1ShipmentsById, getApiV1ShipmentsOverdue, getApiV1SizeClasses, getApiV1SizeClassesById, getApiV1Stations, getApiV1StationsById, getApiV1Users, getApiV1UsersById, type Options, patchApiV1CancellationRequestsByIdApprove, patchApiV1CancellationRequestsByIdReject, patchApiV1IncidentsByIdResolve, patchApiV1LocationsById, patchApiV1SaleItemsById, patchApiV1SaleItemsByIdPrice, patchApiV1ShipmentsByIdArrived, patchApiV1ShipmentsByIdCollect, patchApiV1ShipmentsByIdInTransit, patchApiV1SizeClassesById, patchApiV1SizeClassesByIdPrice, patchApiV1StationsById, patchApiV1StationsByIdCancellationApproval, patchApiV1StationsByIdOverdueThreshold, patchApiV1UsersById, postApiV1CancellationRequests, postApiV1Incidents, postApiV1Locations, postApiV1PricingCancellationFee, postApiV1PricingPricePerKg, postApiV1ReceiverCorrections, postApiV1Routes, postApiV1SaleItems, postApiV1ShipmentNotes, postApiV1Shipments, postApiV1SizeClasses, postApiV1Stations, postApiV1Users, postApiV1UsersRefresh, postApiV1UsersSignIn } from '../sdk.gen';
-import type { DeleteApiV1LocationsByIdData, DeleteApiV1LocationsByIdError, DeleteApiV1RoutesByIdData, DeleteApiV1RoutesByIdError, DeleteApiV1StationsByIdData, DeleteApiV1StationsByIdError, GetApiV1CancellationRequestsData, GetApiV1CancellationRequestsError, GetApiV1CancellationRequestsResponse, GetApiV1IncidentsData, GetApiV1IncidentsError, GetApiV1IncidentsResponse, GetApiV1LocationsByIdData, GetApiV1LocationsByIdError, GetApiV1LocationsByIdResponse, GetApiV1LocationsData, GetApiV1LocationsError, GetApiV1LocationsResponse, GetApiV1PermissionsData, GetApiV1PermissionsError, GetApiV1PermissionsResponse, GetApiV1PriceChangesData, GetApiV1PriceChangesError, GetApiV1PriceChangesResponse, GetApiV1PricingCancellationFeeData, GetApiV1PricingCancellationFeeError, GetApiV1PricingCancellationFeeResponse, GetApiV1PricingCurrentData, GetApiV1PricingCurrentError, GetApiV1PricingCurrentResponse, GetApiV1ReceiverCorrectionsData, GetApiV1ReceiverCorrectionsError, GetApiV1ReceiverCorrectionsResponse, GetApiV1ReportsCancellationsData, GetApiV1ReportsCancellationsError, GetApiV1ReportsCancellationsResponse, GetApiV1ReportsCashData, GetApiV1ReportsCashError, GetApiV1ReportsCashResponse, GetApiV1RoutesByIdData, GetApiV1RoutesByIdError, GetApiV1RoutesByIdResponse, GetApiV1RoutesData, GetApiV1RoutesError, GetApiV1RoutesResponse, GetApiV1SaleItemsByIdData, GetApiV1SaleItemsByIdError, GetApiV1SaleItemsByIdResponse, GetApiV1SaleItemsData, GetApiV1SaleItemsError, GetApiV1SaleItemsResponse, GetApiV1SettingChangesData, GetApiV1SettingChangesError, GetApiV1SettingChangesResponse, GetApiV1ShipmentNotesData, GetApiV1ShipmentNotesError, GetApiV1ShipmentNotesResponse, GetApiV1ShipmentsByIdData, GetApiV1ShipmentsByIdError, GetApiV1ShipmentsByIdResponse, GetApiV1ShipmentsData, GetApiV1ShipmentsError, GetApiV1ShipmentsOverdueData, GetApiV1ShipmentsOverdueError, GetApiV1ShipmentsOverdueResponse, GetApiV1ShipmentsResponse, GetApiV1SizeClassesByIdData, GetApiV1SizeClassesByIdError, GetApiV1SizeClassesByIdResponse, GetApiV1SizeClassesData, GetApiV1SizeClassesError, GetApiV1SizeClassesResponse, GetApiV1StationsByIdData, GetApiV1StationsByIdError, GetApiV1StationsByIdResponse, GetApiV1StationsData, GetApiV1StationsError, GetApiV1StationsResponse, GetApiV1UsersByIdData, GetApiV1UsersByIdError, GetApiV1UsersByIdResponse, GetApiV1UsersData, GetApiV1UsersError, GetApiV1UsersResponse, PatchApiV1CancellationRequestsByIdApproveData, PatchApiV1CancellationRequestsByIdApproveError, PatchApiV1CancellationRequestsByIdApproveResponse, PatchApiV1CancellationRequestsByIdRejectData, PatchApiV1CancellationRequestsByIdRejectError, PatchApiV1CancellationRequestsByIdRejectResponse, PatchApiV1IncidentsByIdResolveData, PatchApiV1IncidentsByIdResolveError, PatchApiV1IncidentsByIdResolveResponse, PatchApiV1LocationsByIdData, PatchApiV1LocationsByIdError, PatchApiV1LocationsByIdResponse, PatchApiV1SaleItemsByIdData, PatchApiV1SaleItemsByIdError, PatchApiV1SaleItemsByIdPriceData, PatchApiV1SaleItemsByIdPriceError, PatchApiV1SaleItemsByIdPriceResponse, PatchApiV1SaleItemsByIdResponse, PatchApiV1ShipmentsByIdArrivedData, PatchApiV1ShipmentsByIdArrivedError, PatchApiV1ShipmentsByIdArrivedResponse, PatchApiV1ShipmentsByIdCollectData, PatchApiV1ShipmentsByIdCollectError, PatchApiV1ShipmentsByIdCollectResponse, PatchApiV1ShipmentsByIdInTransitData, PatchApiV1ShipmentsByIdInTransitError, PatchApiV1ShipmentsByIdInTransitResponse, PatchApiV1SizeClassesByIdData, PatchApiV1SizeClassesByIdError, PatchApiV1SizeClassesByIdPriceData, PatchApiV1SizeClassesByIdPriceError, PatchApiV1SizeClassesByIdPriceResponse, PatchApiV1SizeClassesByIdResponse, PatchApiV1StationsByIdCancellationApprovalData, PatchApiV1StationsByIdCancellationApprovalError, PatchApiV1StationsByIdCancellationApprovalResponse, PatchApiV1StationsByIdData, PatchApiV1StationsByIdError, PatchApiV1StationsByIdOverdueThresholdData, PatchApiV1StationsByIdOverdueThresholdError, PatchApiV1StationsByIdOverdueThresholdResponse, PatchApiV1StationsByIdResponse, PatchApiV1UsersByIdData, PatchApiV1UsersByIdError, PatchApiV1UsersByIdResponse, PostApiV1CancellationRequestsData, PostApiV1CancellationRequestsError, PostApiV1CancellationRequestsResponse, PostApiV1IncidentsData, PostApiV1IncidentsError, PostApiV1IncidentsResponse, PostApiV1LocationsData, PostApiV1LocationsError, PostApiV1LocationsResponse, PostApiV1PricingCancellationFeeData, PostApiV1PricingCancellationFeeError, PostApiV1PricingCancellationFeeResponse, PostApiV1PricingPricePerKgData, PostApiV1PricingPricePerKgError, PostApiV1PricingPricePerKgResponse, PostApiV1ReceiverCorrectionsData, PostApiV1ReceiverCorrectionsError, PostApiV1ReceiverCorrectionsResponse, PostApiV1RoutesData, PostApiV1RoutesError, PostApiV1RoutesResponse, PostApiV1SaleItemsData, PostApiV1SaleItemsError, PostApiV1SaleItemsResponse, PostApiV1ShipmentNotesData, PostApiV1ShipmentNotesError, PostApiV1ShipmentNotesResponse, PostApiV1ShipmentsData, PostApiV1ShipmentsError, PostApiV1ShipmentsResponse, PostApiV1SizeClassesData, PostApiV1SizeClassesError, PostApiV1SizeClassesResponse, PostApiV1StationsData, PostApiV1StationsError, PostApiV1StationsResponse, PostApiV1UsersData, PostApiV1UsersError, PostApiV1UsersRefreshData, PostApiV1UsersRefreshError, PostApiV1UsersRefreshResponse, PostApiV1UsersResponse, PostApiV1UsersSignInData, PostApiV1UsersSignInError, PostApiV1UsersSignInResponse } from '../types.gen';
+import { deleteApiV1LocationsById, deleteApiV1RoutesById, deleteApiV1StationsById, getApiV1CancellationRequests, getApiV1Incidents, getApiV1Locations, getApiV1LocationsById, getApiV1Manifests, getApiV1ManifestsById, getApiV1ManifestsDepartures, getApiV1Permissions, getApiV1PriceChanges, getApiV1PricingCancellationFee, getApiV1PricingCurrent, getApiV1ReceiverCorrections, getApiV1ReportsCancellations, getApiV1ReportsCash, getApiV1Routes, getApiV1RoutesById, getApiV1SaleItems, getApiV1SaleItemsById, getApiV1SettingChanges, getApiV1ShipmentNotes, getApiV1Shipments, getApiV1ShipmentsById, getApiV1ShipmentsOverdue, getApiV1SizeClasses, getApiV1SizeClassesById, getApiV1Stations, getApiV1StationsById, getApiV1Users, getApiV1UsersById, type Options, patchApiV1CancellationRequestsByIdApprove, patchApiV1CancellationRequestsByIdReject, patchApiV1IncidentsByIdResolve, patchApiV1LocationsById, patchApiV1ManifestsByIdArrive, patchApiV1ManifestsByIdDepart, patchApiV1ManifestsByIdScan, patchApiV1SaleItemsById, patchApiV1SaleItemsByIdPrice, patchApiV1ShipmentsByIdArrived, patchApiV1ShipmentsByIdCollect, patchApiV1ShipmentsByIdInTransit, patchApiV1SizeClassesById, patchApiV1SizeClassesByIdPrice, patchApiV1StationsById, patchApiV1StationsByIdCancellationApproval, patchApiV1StationsByIdOverdueThreshold, patchApiV1UsersById, postApiV1CancellationRequests, postApiV1Incidents, postApiV1Locations, postApiV1Manifests, postApiV1PricingCancellationFee, postApiV1PricingPricePerKg, postApiV1ReceiverCorrections, postApiV1Routes, postApiV1SaleItems, postApiV1ShipmentNotes, postApiV1Shipments, postApiV1SizeClasses, postApiV1Stations, postApiV1Users, postApiV1UsersRefresh, postApiV1UsersSignIn } from '../sdk.gen';
+import type { DeleteApiV1LocationsByIdData, DeleteApiV1LocationsByIdError, DeleteApiV1RoutesByIdData, DeleteApiV1RoutesByIdError, DeleteApiV1StationsByIdData, DeleteApiV1StationsByIdError, GetApiV1CancellationRequestsData, GetApiV1CancellationRequestsError, GetApiV1CancellationRequestsResponse, GetApiV1IncidentsData, GetApiV1IncidentsError, GetApiV1IncidentsResponse, GetApiV1LocationsByIdData, GetApiV1LocationsByIdError, GetApiV1LocationsByIdResponse, GetApiV1LocationsData, GetApiV1LocationsError, GetApiV1LocationsResponse, GetApiV1ManifestsByIdData, GetApiV1ManifestsByIdError, GetApiV1ManifestsByIdResponse, GetApiV1ManifestsData, GetApiV1ManifestsDeparturesData, GetApiV1ManifestsDeparturesError, GetApiV1ManifestsDeparturesResponse, GetApiV1ManifestsError, GetApiV1ManifestsResponse, GetApiV1PermissionsData, GetApiV1PermissionsError, GetApiV1PermissionsResponse, GetApiV1PriceChangesData, GetApiV1PriceChangesError, GetApiV1PriceChangesResponse, GetApiV1PricingCancellationFeeData, GetApiV1PricingCancellationFeeError, GetApiV1PricingCancellationFeeResponse, GetApiV1PricingCurrentData, GetApiV1PricingCurrentError, GetApiV1PricingCurrentResponse, GetApiV1ReceiverCorrectionsData, GetApiV1ReceiverCorrectionsError, GetApiV1ReceiverCorrectionsResponse, GetApiV1ReportsCancellationsData, GetApiV1ReportsCancellationsError, GetApiV1ReportsCancellationsResponse, GetApiV1ReportsCashData, GetApiV1ReportsCashError, GetApiV1ReportsCashResponse, GetApiV1RoutesByIdData, GetApiV1RoutesByIdError, GetApiV1RoutesByIdResponse, GetApiV1RoutesData, GetApiV1RoutesError, GetApiV1RoutesResponse, GetApiV1SaleItemsByIdData, GetApiV1SaleItemsByIdError, GetApiV1SaleItemsByIdResponse, GetApiV1SaleItemsData, GetApiV1SaleItemsError, GetApiV1SaleItemsResponse, GetApiV1SettingChangesData, GetApiV1SettingChangesError, GetApiV1SettingChangesResponse, GetApiV1ShipmentNotesData, GetApiV1ShipmentNotesError, GetApiV1ShipmentNotesResponse, GetApiV1ShipmentsByIdData, GetApiV1ShipmentsByIdError, GetApiV1ShipmentsByIdResponse, GetApiV1ShipmentsData, GetApiV1ShipmentsError, GetApiV1ShipmentsOverdueData, GetApiV1ShipmentsOverdueError, GetApiV1ShipmentsOverdueResponse, GetApiV1ShipmentsResponse, GetApiV1SizeClassesByIdData, GetApiV1SizeClassesByIdError, GetApiV1SizeClassesByIdResponse, GetApiV1SizeClassesData, GetApiV1SizeClassesError, GetApiV1SizeClassesResponse, GetApiV1StationsByIdData, GetApiV1StationsByIdError, GetApiV1StationsByIdResponse, GetApiV1StationsData, GetApiV1StationsError, GetApiV1StationsResponse, GetApiV1UsersByIdData, GetApiV1UsersByIdError, GetApiV1UsersByIdResponse, GetApiV1UsersData, GetApiV1UsersError, GetApiV1UsersResponse, PatchApiV1CancellationRequestsByIdApproveData, PatchApiV1CancellationRequestsByIdApproveError, PatchApiV1CancellationRequestsByIdApproveResponse, PatchApiV1CancellationRequestsByIdRejectData, PatchApiV1CancellationRequestsByIdRejectError, PatchApiV1CancellationRequestsByIdRejectResponse, PatchApiV1IncidentsByIdResolveData, PatchApiV1IncidentsByIdResolveError, PatchApiV1IncidentsByIdResolveResponse, PatchApiV1LocationsByIdData, PatchApiV1LocationsByIdError, PatchApiV1LocationsByIdResponse, PatchApiV1ManifestsByIdArriveData, PatchApiV1ManifestsByIdArriveError, PatchApiV1ManifestsByIdArriveResponse, PatchApiV1ManifestsByIdDepartData, PatchApiV1ManifestsByIdDepartError, PatchApiV1ManifestsByIdDepartResponse, PatchApiV1ManifestsByIdScanData, PatchApiV1ManifestsByIdScanError, PatchApiV1ManifestsByIdScanResponse, PatchApiV1SaleItemsByIdData, PatchApiV1SaleItemsByIdError, PatchApiV1SaleItemsByIdPriceData, PatchApiV1SaleItemsByIdPriceError, PatchApiV1SaleItemsByIdPriceResponse, PatchApiV1SaleItemsByIdResponse, PatchApiV1ShipmentsByIdArrivedData, PatchApiV1ShipmentsByIdArrivedError, PatchApiV1ShipmentsByIdArrivedResponse, PatchApiV1ShipmentsByIdCollectData, PatchApiV1ShipmentsByIdCollectError, PatchApiV1ShipmentsByIdCollectResponse, PatchApiV1ShipmentsByIdInTransitData, PatchApiV1ShipmentsByIdInTransitError, PatchApiV1ShipmentsByIdInTransitResponse, PatchApiV1SizeClassesByIdData, PatchApiV1SizeClassesByIdError, PatchApiV1SizeClassesByIdPriceData, PatchApiV1SizeClassesByIdPriceError, PatchApiV1SizeClassesByIdPriceResponse, PatchApiV1SizeClassesByIdResponse, PatchApiV1StationsByIdCancellationApprovalData, PatchApiV1StationsByIdCancellationApprovalError, PatchApiV1StationsByIdCancellationApprovalResponse, PatchApiV1StationsByIdData, PatchApiV1StationsByIdError, PatchApiV1StationsByIdOverdueThresholdData, PatchApiV1StationsByIdOverdueThresholdError, PatchApiV1StationsByIdOverdueThresholdResponse, PatchApiV1StationsByIdResponse, PatchApiV1UsersByIdData, PatchApiV1UsersByIdError, PatchApiV1UsersByIdResponse, PostApiV1CancellationRequestsData, PostApiV1CancellationRequestsError, PostApiV1CancellationRequestsResponse, PostApiV1IncidentsData, PostApiV1IncidentsError, PostApiV1IncidentsResponse, PostApiV1LocationsData, PostApiV1LocationsError, PostApiV1LocationsResponse, PostApiV1ManifestsData, PostApiV1ManifestsError, PostApiV1ManifestsResponse, PostApiV1PricingCancellationFeeData, PostApiV1PricingCancellationFeeError, PostApiV1PricingCancellationFeeResponse, PostApiV1PricingPricePerKgData, PostApiV1PricingPricePerKgError, PostApiV1PricingPricePerKgResponse, PostApiV1ReceiverCorrectionsData, PostApiV1ReceiverCorrectionsError, PostApiV1ReceiverCorrectionsResponse, PostApiV1RoutesData, PostApiV1RoutesError, PostApiV1RoutesResponse, PostApiV1SaleItemsData, PostApiV1SaleItemsError, PostApiV1SaleItemsResponse, PostApiV1ShipmentNotesData, PostApiV1ShipmentNotesError, PostApiV1ShipmentNotesResponse, PostApiV1ShipmentsData, PostApiV1ShipmentsError, PostApiV1ShipmentsResponse, PostApiV1SizeClassesData, PostApiV1SizeClassesError, PostApiV1SizeClassesResponse, PostApiV1StationsData, PostApiV1StationsError, PostApiV1StationsResponse, PostApiV1UsersData, PostApiV1UsersError, PostApiV1UsersRefreshData, PostApiV1UsersRefreshError, PostApiV1UsersRefreshResponse, PostApiV1UsersResponse, PostApiV1UsersSignInData, PostApiV1UsersSignInError, PostApiV1UsersSignInResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -249,6 +249,26 @@ export const patchApiV1SaleItemsByIdMutation = (options?: Partial<Options<PatchA
     };
     return mutationOptions;
 };
+
+export const getApiV1ManifestsDeparturesQueryKey = (options: Options<GetApiV1ManifestsDeparturesData>) => createQueryKey('getApiV1ManifestsDepartures', options);
+
+/**
+ * Departures from the external schedule for one `date` (YYYY-MM-DD) from the signed-in user's Station
+ * to `destination_station_id`. Needs `shipment.mark_in_transit`.
+ *
+ */
+export const getApiV1ManifestsDeparturesOptions = (options: Options<GetApiV1ManifestsDeparturesData>) => queryOptions<GetApiV1ManifestsDeparturesResponse, GetApiV1ManifestsDeparturesError, GetApiV1ManifestsDeparturesResponse, ReturnType<typeof getApiV1ManifestsDeparturesQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getApiV1ManifestsDepartures({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getApiV1ManifestsDeparturesQueryKey(options)
+});
 
 export const getApiV1SizeClassesByIdQueryKey = (options: Options<GetApiV1SizeClassesByIdData>) => createQueryKey('getApiV1SizeClassesById', options);
 
@@ -928,6 +948,23 @@ export const patchApiV1StationsByIdMutation = (options?: Partial<Options<PatchAp
 };
 
 /**
+ * Departs the Manifest at its origin Station: every loaded Shipment becomes In transit.
+ */
+export const patchApiV1ManifestsByIdDepartMutation = (options?: Partial<Options<PatchApiV1ManifestsByIdDepartData>>): UseMutationOptions<PatchApiV1ManifestsByIdDepartResponse, PatchApiV1ManifestsByIdDepartError, Options<PatchApiV1ManifestsByIdDepartData>> => {
+    const mutationOptions: UseMutationOptions<PatchApiV1ManifestsByIdDepartResponse, PatchApiV1ManifestsByIdDepartError, Options<PatchApiV1ManifestsByIdDepartData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await patchApiV1ManifestsByIdDepart({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
  * Sets the KHR price of a Size Class and logs it. Needs `price.manage`.
  */
 export const patchApiV1SizeClassesByIdPriceMutation = (options?: Partial<Options<PatchApiV1SizeClassesByIdPriceData>>): UseMutationOptions<PatchApiV1SizeClassesByIdPriceResponse, PatchApiV1SizeClassesByIdPriceError, Options<PatchApiV1SizeClassesByIdPriceData>> => {
@@ -1038,6 +1075,42 @@ export const postApiV1ShipmentNotesMutation = (options?: Partial<Options<PostApi
 };
 
 /**
+ * Scans one Shipment by `invoice_no`. While the Manifest is open (origin Station) it loads the Shipment;
+ * once departed (destination Station) it marks the Shipment Arrived. Scanning twice is harmless.
+ *
+ */
+export const patchApiV1ManifestsByIdScanMutation = (options?: Partial<Options<PatchApiV1ManifestsByIdScanData>>): UseMutationOptions<PatchApiV1ManifestsByIdScanResponse, PatchApiV1ManifestsByIdScanError, Options<PatchApiV1ManifestsByIdScanData>> => {
+    const mutationOptions: UseMutationOptions<PatchApiV1ManifestsByIdScanResponse, PatchApiV1ManifestsByIdScanError, Options<PatchApiV1ManifestsByIdScanData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await patchApiV1ManifestsByIdScan({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Closes the Manifest at its destination Station. Unscanned Shipments stay In transit.
+ */
+export const patchApiV1ManifestsByIdArriveMutation = (options?: Partial<Options<PatchApiV1ManifestsByIdArriveData>>): UseMutationOptions<PatchApiV1ManifestsByIdArriveResponse, PatchApiV1ManifestsByIdArriveError, Options<PatchApiV1ManifestsByIdArriveData>> => {
+    const mutationOptions: UseMutationOptions<PatchApiV1ManifestsByIdArriveResponse, PatchApiV1ManifestsByIdArriveError, Options<PatchApiV1ManifestsByIdArriveData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await patchApiV1ManifestsByIdArrive({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
  * The origin Station hands the Shipment to the bus. Only from Received. Needs `shipment.mark_in_transit`,
  * at the Shipment's origin Station.
  *
@@ -1055,6 +1128,24 @@ export const patchApiV1ShipmentsByIdInTransitMutation = (options?: Partial<Optio
     };
     return mutationOptions;
 };
+
+export const getApiV1ManifestsByIdQueryKey = (options: Options<GetApiV1ManifestsByIdData>) => createQueryKey('getApiV1ManifestsById', options);
+
+/**
+ * /manifests/:id operation on manifest resource
+ */
+export const getApiV1ManifestsByIdOptions = (options: Options<GetApiV1ManifestsByIdData>) => queryOptions<GetApiV1ManifestsByIdResponse, GetApiV1ManifestsByIdError, GetApiV1ManifestsByIdResponse, ReturnType<typeof getApiV1ManifestsByIdQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getApiV1ManifestsById({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getApiV1ManifestsByIdQueryKey(options)
+});
 
 export const getApiV1PermissionsQueryKey = (options?: Options<GetApiV1PermissionsData>) => createQueryKey('getApiV1Permissions', options);
 
@@ -1627,3 +1718,76 @@ export const getApiV1PricingCurrentOptions = (options?: Options<GetApiV1PricingC
     },
     queryKey: getApiV1PricingCurrentQueryKey(options)
 });
+
+export const getApiV1ManifestsQueryKey = (options?: Options<GetApiV1ManifestsData>) => createQueryKey('getApiV1Manifests', options);
+
+/**
+ * Lists Manifests at the caller's Station (as origin or destination). Needs `shipment.read`.
+ */
+export const getApiV1ManifestsOptions = (options?: Options<GetApiV1ManifestsData>) => queryOptions<GetApiV1ManifestsResponse, GetApiV1ManifestsError, GetApiV1ManifestsResponse, ReturnType<typeof getApiV1ManifestsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await getApiV1Manifests({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getApiV1ManifestsQueryKey(options)
+});
+
+export const getApiV1ManifestsInfiniteQueryKey = (options?: Options<GetApiV1ManifestsData>): QueryKey<Options<GetApiV1ManifestsData>> => createQueryKey('getApiV1Manifests', options, true);
+
+/**
+ * Lists Manifests at the caller's Station (as origin or destination). Needs `shipment.read`.
+ */
+export const getApiV1ManifestsInfiniteOptions = (options?: Options<GetApiV1ManifestsData>) => {
+    const opts = infiniteQueryOptions<GetApiV1ManifestsResponse, GetApiV1ManifestsError, InfiniteData<GetApiV1ManifestsResponse>, QueryKey<Options<GetApiV1ManifestsData>>, {
+        after?: string;
+        before?: string;
+        count?: boolean;
+        limit?: number;
+        offset?: number;
+    } | Pick<QueryKey<Options<GetApiV1ManifestsData>>[0], 'body' | 'headers' | 'path' | 'query'>>(
+    // @ts-ignore
+    {
+        queryFn: async ({ pageParam, queryKey, signal }) => {
+            // @ts-ignore
+            const page: Pick<QueryKey<Options<GetApiV1ManifestsData>>[0], 'body' | 'headers' | 'path' | 'query'> = typeof pageParam === 'object' ? pageParam : {
+                query: {
+                    page: pageParam
+                }
+            };
+            const params = createInfiniteParams(queryKey, page);
+            const { data } = await getApiV1Manifests({
+                ...options,
+                ...params,
+                signal,
+                throwOnError: true
+            });
+            return data;
+        },
+        queryKey: getApiV1ManifestsInfiniteQueryKey(options)
+    });
+    return opts as Omit<typeof opts, 'initialData'>;
+};
+
+/**
+ * Opens the Manifest for a Trip from the schedule (`external_trip_id`) going to `destination_station_id`.
+ * Opening the same Trip again returns the existing Manifest. Needs `shipment.mark_in_transit`.
+ *
+ */
+export const postApiV1ManifestsMutation = (options?: Partial<Options<PostApiV1ManifestsData>>): UseMutationOptions<PostApiV1ManifestsResponse, PostApiV1ManifestsError, Options<PostApiV1ManifestsData>> => {
+    const mutationOptions: UseMutationOptions<PostApiV1ManifestsResponse, PostApiV1ManifestsError, Options<PostApiV1ManifestsData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await postApiV1Manifests({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};

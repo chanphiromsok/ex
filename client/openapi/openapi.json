@@ -192,6 +192,45 @@
         },
         "type": "object"
       },
+      "manifest-filter-shipment_count": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {
+            "type": "integer"
+          },
+          "greater_than": {
+            "type": "integer"
+          },
+          "greater_than_or_equal": {
+            "type": "integer"
+          },
+          "in": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "type": "integer"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "type": "integer"
+          },
+          "less_than": {
+            "type": "integer"
+          },
+          "less_than_or_equal": {
+            "type": "integer"
+          },
+          "not_eq": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
       "report-row": {
         "additionalProperties": false,
         "description": "A \"Resource object\" representing a report-row",
@@ -219,6 +258,60 @@
           "type",
           "id"
         ],
+        "type": "object"
+      },
+      "manifest-filter-bus_label": {
+        "additionalProperties": false,
+        "properties": {
+          "contains": {
+            "type": "string"
+          },
+          "eq": {
+            "type": "string"
+          },
+          "greater_than": {
+            "type": "string"
+          },
+          "greater_than_or_equal": {
+            "type": "string"
+          },
+          "ilike": {
+            "type": "string"
+          },
+          "in": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "type": "string"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "type": "string"
+          },
+          "less_than": {
+            "type": "string"
+          },
+          "less_than_or_equal": {
+            "type": "string"
+          },
+          "like": {
+            "type": "string"
+          },
+          "not_eq": {
+            "type": "string"
+          },
+          "string_ends_with": {
+            "type": "string"
+          },
+          "string_starts_with": {
+            "type": "string"
+          }
+        },
         "type": "object"
       },
       "shipment-filter-receiver_phone": {
@@ -2239,6 +2332,54 @@
         },
         "type": "object"
       },
+      "shipment-filter-manifest_id": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "greater_than": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "greater_than_or_equal": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "in": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "less_than": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "less_than_or_equal": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "not_eq": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "station-filter-location_id": {
         "additionalProperties": false,
         "properties": {
@@ -2737,6 +2878,129 @@
         },
         "type": "object"
       },
+      "manifest-filter-remaining_count": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {
+            "type": "integer"
+          },
+          "greater_than": {
+            "type": "integer"
+          },
+          "greater_than_or_equal": {
+            "type": "integer"
+          },
+          "in": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "type": "integer"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "type": "integer"
+          },
+          "less_than": {
+            "type": "integer"
+          },
+          "less_than_or_equal": {
+            "type": "integer"
+          },
+          "not_eq": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "manifest-filter-status": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {
+            "enum": [
+              "open",
+              "departed",
+              "arrived"
+            ],
+            "type": "string"
+          },
+          "greater_than": {
+            "enum": [
+              "open",
+              "departed",
+              "arrived"
+            ],
+            "type": "string"
+          },
+          "greater_than_or_equal": {
+            "enum": [
+              "open",
+              "departed",
+              "arrived"
+            ],
+            "type": "string"
+          },
+          "in": {
+            "items": {
+              "enum": [
+                "open",
+                "departed",
+                "arrived"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "enum": [
+              "open",
+              "departed",
+              "arrived"
+            ],
+            "type": "string"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "enum": [
+              "open",
+              "departed",
+              "arrived"
+            ],
+            "type": "string"
+          },
+          "less_than": {
+            "enum": [
+              "open",
+              "departed",
+              "arrived"
+            ],
+            "type": "string"
+          },
+          "less_than_or_equal": {
+            "enum": [
+              "open",
+              "departed",
+              "arrived"
+            ],
+            "type": "string"
+          },
+          "not_eq": {
+            "enum": [
+              "open",
+              "departed",
+              "arrived"
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "status-event-filter-created_by_id": {
         "additionalProperties": false,
         "properties": {
@@ -2863,6 +3127,27 @@
           }
         },
         "type": "deepObject"
+      },
+      "manifest-filter-arrived_at": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {},
+          "greater_than": {},
+          "greater_than_or_equal": {},
+          "in": {
+            "items": {},
+            "type": "array"
+          },
+          "is_distinct_from": {},
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {},
+          "less_than": {},
+          "less_than_or_equal": {},
+          "not_eq": {}
+        },
+        "type": "object"
       },
       "cancellation-request-filter-fee": {
         "additionalProperties": false,
@@ -3052,6 +3337,45 @@
               "currency"
             ],
             "type": "object"
+          }
+        },
+        "type": "object"
+      },
+      "manifest-filter-arrived_count": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {
+            "type": "integer"
+          },
+          "greater_than": {
+            "type": "integer"
+          },
+          "greater_than_or_equal": {
+            "type": "integer"
+          },
+          "in": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "type": "integer"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "type": "integer"
+          },
+          "less_than": {
+            "type": "integer"
+          },
+          "less_than_or_equal": {
+            "type": "integer"
+          },
+          "not_eq": {
+            "type": "integer"
           }
         },
         "type": "object"
@@ -4540,6 +4864,54 @@
         },
         "type": "object"
       },
+      "manifest-filter-id": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "greater_than": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "greater_than_or_equal": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "in": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "less_than": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "less_than_or_equal": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "not_eq": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "cancellation-fee-setting": {
         "additionalProperties": false,
         "description": "A \"Resource object\" representing a cancellation-fee-setting",
@@ -5693,6 +6065,60 @@
         ],
         "type": "object"
       },
+      "manifest-filter-external_trip_id": {
+        "additionalProperties": false,
+        "properties": {
+          "contains": {
+            "type": "string"
+          },
+          "eq": {
+            "type": "string"
+          },
+          "greater_than": {
+            "type": "string"
+          },
+          "greater_than_or_equal": {
+            "type": "string"
+          },
+          "ilike": {
+            "type": "string"
+          },
+          "in": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "type": "string"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "type": "string"
+          },
+          "less_than": {
+            "type": "string"
+          },
+          "less_than_or_equal": {
+            "type": "string"
+          },
+          "like": {
+            "type": "string"
+          },
+          "not_eq": {
+            "type": "string"
+          },
+          "string_ends_with": {
+            "type": "string"
+          },
+          "string_starts_with": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "sale-item-filter": {
         "additionalProperties": false,
         "description": "Filters the query to results matching the given filter object",
@@ -6234,6 +6660,54 @@
           "less_than": {},
           "less_than_or_equal": {},
           "not_eq": {}
+        },
+        "type": "object"
+      },
+      "manifest-filter-destination_station_id": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "greater_than": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "greater_than_or_equal": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "in": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "less_than": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "less_than_or_equal": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "not_eq": {
+            "format": "uuid",
+            "type": "string"
+          }
         },
         "type": "object"
       },
@@ -7206,6 +7680,19 @@
                 "description": "Field included by default.",
                 "type": "integer"
               },
+              "manifest_id": {
+                "anyOf": [
+                  {
+                    "format": "uuid",
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Field included by default."
+              },
               "origin_station_id": {
                 "description": "Field included by default.",
                 "format": "uuid",
@@ -7373,6 +7860,32 @@
                   "data": {
                     "additionalProperties": false,
                     "description": "An identifier for destination_station",
+                    "nullable": true,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "meta": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "id"
+                    ],
+                    "type": "object"
+                  }
+                }
+              },
+              "manifest": {
+                "properties": {
+                  "data": {
+                    "additionalProperties": false,
+                    "description": "An identifier for manifest",
                     "nullable": true,
                     "properties": {
                       "id": {
@@ -7656,6 +8169,9 @@
           },
           "cancellation_requires_approval": {
             "$ref": "#/components/schemas/station-filter-cancellation_requires_approval"
+          },
+          "external_id": {
+            "$ref": "#/components/schemas/station-filter-external_id"
           },
           "id": {
             "$ref": "#/components/schemas/station-filter-id"
@@ -9535,6 +10051,54 @@
         },
         "type": "object"
       },
+      "manifest-filter-created_by_id": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "greater_than": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "greater_than_or_equal": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "in": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "less_than": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "less_than_or_equal": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "not_eq": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "parcel-filter-shipment_id": {
         "additionalProperties": false,
         "properties": {
@@ -9837,6 +10401,27 @@
         },
         "type": "deepObject"
       },
+      "manifest-filter-departs_at": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {},
+          "greater_than": {},
+          "greater_than_or_equal": {},
+          "in": {
+            "items": {},
+            "type": "array"
+          },
+          "is_distinct_from": {},
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {},
+          "less_than": {},
+          "less_than_or_equal": {},
+          "not_eq": {}
+        },
+        "type": "object"
+      },
       "route-filter-destination_location_id": {
         "additionalProperties": false,
         "properties": {
@@ -9974,6 +10559,18 @@
                 "description": "Field included by default.",
                 "type": "boolean"
               },
+              "external_id": {
+                "anyOf": [
+                  {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Field included by default."
+              },
               "location_id": {
                 "description": "Field included by default.",
                 "format": "uuid",
@@ -10048,62 +10645,270 @@
         ],
         "type": "object"
       },
+      "manifest": {
+        "additionalProperties": false,
+        "description": "A \"Resource object\" representing a manifest",
+        "properties": {
+          "attributes": {
+            "additionalProperties": false,
+            "description": "An attributes object for a manifest",
+            "properties": {
+              "arrived_at": {
+                "anyOf": [
+                  {},
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Field included by default."
+              },
+              "arrived_count": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Field included by default."
+              },
+              "bus_label": {
+                "anyOf": [
+                  {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Field included by default."
+              },
+              "created_by_id": {
+                "format": "uuid",
+                "type": "string"
+              },
+              "departed_at": {
+                "anyOf": [
+                  {},
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Field included by default."
+              },
+              "departs_at": {
+                "description": "Field included by default."
+              },
+              "destination_station_id": {
+                "description": "Field included by default.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "external_trip_id": {
+                "description": "Field included by default.",
+                "type": "string"
+              },
+              "inserted_at": {
+                "description": "Field included by default."
+              },
+              "origin_station_id": {
+                "description": "Field included by default.",
+                "format": "uuid",
+                "type": "string"
+              },
+              "remaining_count": {
+                "anyOf": [
+                  {
+                    "nullable": true,
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Field included by default."
+              },
+              "shipment_count": {
+                "anyOf": [
+                  {
+                    "type": "integer"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Field included by default."
+              },
+              "status": {
+                "description": "Field included by default.",
+                "enum": [
+                  "open",
+                  "departed",
+                  "arrived"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "external_trip_id",
+              "departs_at",
+              "status",
+              "inserted_at",
+              "origin_station_id",
+              "destination_station_id",
+              "created_by_id"
+            ],
+            "type": "object"
+          },
+          "id": {
+            "type": "string"
+          },
+          "relationships": {
+            "additionalProperties": false,
+            "description": "A relationships object for a manifest",
+            "properties": {
+              "created_by": {
+                "properties": {
+                  "data": {
+                    "additionalProperties": false,
+                    "description": "An identifier for created_by",
+                    "nullable": true,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "meta": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "id"
+                    ],
+                    "type": "object"
+                  }
+                }
+              },
+              "destination_station": {
+                "properties": {
+                  "data": {
+                    "additionalProperties": false,
+                    "description": "An identifier for destination_station",
+                    "nullable": true,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "meta": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "id"
+                    ],
+                    "type": "object"
+                  }
+                }
+              },
+              "origin_station": {
+                "properties": {
+                  "data": {
+                    "additionalProperties": false,
+                    "description": "An identifier for origin_station",
+                    "nullable": true,
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "meta": {
+                        "additionalProperties": true,
+                        "type": "object"
+                      },
+                      "type": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "id"
+                    ],
+                    "type": "object"
+                  }
+                }
+              },
+              "shipments": {
+                "properties": {
+                  "data": {
+                    "description": "Relationship data for shipments",
+                    "items": {
+                      "additionalProperties": false,
+                      "description": "Resource identifiers for shipments",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "meta": {
+                          "additionalProperties": true,
+                          "type": "object"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type",
+                        "id"
+                      ],
+                      "type": "object"
+                    },
+                    "type": "array",
+                    "uniqueItems": true
+                  }
+                }
+              }
+            },
+            "type": "object"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "id"
+        ],
+        "type": "object"
+      },
       "shipment-filter": {
         "additionalProperties": false,
         "description": "Filters the query to results matching the given filter object",
         "example": "",
         "properties": {
-          "and": {
-            "items": {
-              "$ref": "#/components/schemas/shipment-filter"
-            },
-            "type": "array",
-            "uniqueItems": true
-          },
-          "arrived_at": {
-            "$ref": "#/components/schemas/shipment-filter-arrived_at"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/user-filter"
-          },
-          "created_by_id": {
-            "$ref": "#/components/schemas/shipment-filter-created_by_id"
-          },
-          "current_receiver_name": {
-            "$ref": "#/components/schemas/shipment-filter-current_receiver_name"
-          },
-          "current_receiver_phone": {
-            "$ref": "#/components/schemas/shipment-filter-current_receiver_phone"
-          },
-          "declared_value": {
-            "$ref": "#/components/schemas/shipment-filter-declared_value"
-          },
-          "departed_at": {
-            "$ref": "#/components/schemas/shipment-filter-departed_at"
+          "receiver_corrections": {
+            "$ref": "#/components/schemas/receiver-correction-filter"
           },
           "destination_station": {
             "$ref": "#/components/schemas/station-filter"
           },
-          "destination_station_id": {
-            "$ref": "#/components/schemas/shipment-filter-destination_station_id"
-          },
-          "id": {
-            "$ref": "#/components/schemas/shipment-filter-id"
-          },
-          "idempotency_key": {
-            "$ref": "#/components/schemas/shipment-filter-idempotency_key"
-          },
-          "inserted_at": {
-            "$ref": "#/components/schemas/shipment-filter-inserted_at"
-          },
-          "invoice_no": {
-            "$ref": "#/components/schemas/shipment-filter-invoice_no"
-          },
-          "not": {
-            "$ref": "#/components/schemas/shipment-filter"
-          },
           "notes": {
             "$ref": "#/components/schemas/shipment-note-filter"
+          },
+          "shipment_total": {
+            "$ref": "#/components/schemas/shipment-filter-shipment_total"
+          },
+          "created_by_id": {
+            "$ref": "#/components/schemas/shipment-filter-created_by_id"
           },
           "or": {
             "items": {
@@ -10112,50 +10917,93 @@
             "type": "array",
             "uniqueItems": true
           },
-          "origin_station": {
-            "$ref": "#/components/schemas/station-filter"
-          },
-          "origin_station_id": {
-            "$ref": "#/components/schemas/shipment-filter-origin_station_id"
-          },
-          "parcels": {
-            "$ref": "#/components/schemas/parcel-filter"
-          },
-          "payments": {
-            "$ref": "#/components/schemas/payment-filter"
-          },
-          "receiver_corrections": {
-            "$ref": "#/components/schemas/receiver-correction-filter"
+          "sale_items": {
+            "$ref": "#/components/schemas/shipment-sale-item-filter"
           },
           "receiver_name": {
             "$ref": "#/components/schemas/shipment-filter-receiver_name"
           },
-          "receiver_phone": {
-            "$ref": "#/components/schemas/shipment-filter-receiver_phone"
+          "inserted_at": {
+            "$ref": "#/components/schemas/shipment-filter-inserted_at"
           },
-          "route": {
-            "$ref": "#/components/schemas/route-filter"
+          "departed_at": {
+            "$ref": "#/components/schemas/shipment-filter-departed_at"
           },
-          "route_id": {
-            "$ref": "#/components/schemas/shipment-filter-route_id"
+          "current_receiver_name": {
+            "$ref": "#/components/schemas/shipment-filter-current_receiver_name"
           },
-          "sale_items": {
-            "$ref": "#/components/schemas/shipment-sale-item-filter"
-          },
-          "sender_name": {
-            "$ref": "#/components/schemas/shipment-filter-sender_name"
-          },
-          "sender_phone": {
-            "$ref": "#/components/schemas/shipment-filter-sender_phone"
-          },
-          "shipment_total": {
-            "$ref": "#/components/schemas/shipment-filter-shipment_total"
+          "invoice_no": {
+            "$ref": "#/components/schemas/shipment-filter-invoice_no"
           },
           "status": {
             "$ref": "#/components/schemas/shipment-filter-status"
           },
+          "and": {
+            "items": {
+              "$ref": "#/components/schemas/shipment-filter"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "manifest_id": {
+            "$ref": "#/components/schemas/shipment-filter-manifest_id"
+          },
+          "parcels": {
+            "$ref": "#/components/schemas/parcel-filter"
+          },
+          "idempotency_key": {
+            "$ref": "#/components/schemas/shipment-filter-idempotency_key"
+          },
+          "origin_station_id": {
+            "$ref": "#/components/schemas/shipment-filter-origin_station_id"
+          },
+          "origin_station": {
+            "$ref": "#/components/schemas/station-filter"
+          },
+          "current_receiver_phone": {
+            "$ref": "#/components/schemas/shipment-filter-current_receiver_phone"
+          },
+          "not": {
+            "$ref": "#/components/schemas/shipment-filter"
+          },
+          "payments": {
+            "$ref": "#/components/schemas/payment-filter"
+          },
+          "route_id": {
+            "$ref": "#/components/schemas/shipment-filter-route_id"
+          },
           "status_events": {
             "$ref": "#/components/schemas/status-event-filter"
+          },
+          "id": {
+            "$ref": "#/components/schemas/shipment-filter-id"
+          },
+          "manifest": {
+            "$ref": "#/components/schemas/manifest-filter"
+          },
+          "declared_value": {
+            "$ref": "#/components/schemas/shipment-filter-declared_value"
+          },
+          "sender_phone": {
+            "$ref": "#/components/schemas/shipment-filter-sender_phone"
+          },
+          "receiver_phone": {
+            "$ref": "#/components/schemas/shipment-filter-receiver_phone"
+          },
+          "destination_station_id": {
+            "$ref": "#/components/schemas/shipment-filter-destination_station_id"
+          },
+          "arrived_at": {
+            "$ref": "#/components/schemas/shipment-filter-arrived_at"
+          },
+          "sender_name": {
+            "$ref": "#/components/schemas/shipment-filter-sender_name"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/user-filter"
+          },
+          "route": {
+            "$ref": "#/components/schemas/route-filter"
           }
         },
         "type": "deepObject"
@@ -10857,6 +11705,54 @@
         },
         "type": "object"
       },
+      "manifest-filter-origin_station_id": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "greater_than": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "greater_than_or_equal": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "in": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "less_than": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "less_than_or_equal": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "not_eq": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "parcel-filter-id": {
         "additionalProperties": false,
         "properties": {
@@ -11028,6 +11924,27 @@
           "type",
           "id"
         ],
+        "type": "object"
+      },
+      "manifest-filter-departed_at": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {},
+          "greater_than": {},
+          "greater_than_or_equal": {},
+          "in": {
+            "items": {},
+            "type": "array"
+          },
+          "is_distinct_from": {},
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {},
+          "less_than": {},
+          "less_than_or_equal": {},
+          "not_eq": {}
+        },
         "type": "object"
       },
       "incident-filter-kind": {
@@ -11841,6 +12758,60 @@
         },
         "type": "object"
       },
+      "station-filter-external_id": {
+        "additionalProperties": false,
+        "properties": {
+          "contains": {
+            "type": "string"
+          },
+          "eq": {
+            "type": "string"
+          },
+          "greater_than": {
+            "type": "string"
+          },
+          "greater_than_or_equal": {
+            "type": "string"
+          },
+          "ilike": {
+            "type": "string"
+          },
+          "in": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "type": "string"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "type": "string"
+          },
+          "less_than": {
+            "type": "string"
+          },
+          "less_than_or_equal": {
+            "type": "string"
+          },
+          "like": {
+            "type": "string"
+          },
+          "not_eq": {
+            "type": "string"
+          },
+          "string_ends_with": {
+            "type": "string"
+          },
+          "string_starts_with": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "user-filter-phone": {
         "additionalProperties": false,
         "properties": {
@@ -12178,6 +13149,85 @@
         },
         "type": "object"
       },
+      "manifest-filter": {
+        "additionalProperties": false,
+        "description": "Filters the query to results matching the given filter object",
+        "example": "",
+        "properties": {
+          "and": {
+            "items": {
+              "$ref": "#/components/schemas/manifest-filter"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "arrived_at": {
+            "$ref": "#/components/schemas/manifest-filter-arrived_at"
+          },
+          "arrived_count": {
+            "$ref": "#/components/schemas/manifest-filter-arrived_count"
+          },
+          "bus_label": {
+            "$ref": "#/components/schemas/manifest-filter-bus_label"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/user-filter"
+          },
+          "created_by_id": {
+            "$ref": "#/components/schemas/manifest-filter-created_by_id"
+          },
+          "departed_at": {
+            "$ref": "#/components/schemas/manifest-filter-departed_at"
+          },
+          "departs_at": {
+            "$ref": "#/components/schemas/manifest-filter-departs_at"
+          },
+          "destination_station": {
+            "$ref": "#/components/schemas/station-filter"
+          },
+          "destination_station_id": {
+            "$ref": "#/components/schemas/manifest-filter-destination_station_id"
+          },
+          "external_trip_id": {
+            "$ref": "#/components/schemas/manifest-filter-external_trip_id"
+          },
+          "id": {
+            "$ref": "#/components/schemas/manifest-filter-id"
+          },
+          "inserted_at": {
+            "$ref": "#/components/schemas/manifest-filter-inserted_at"
+          },
+          "not": {
+            "$ref": "#/components/schemas/manifest-filter"
+          },
+          "or": {
+            "items": {
+              "$ref": "#/components/schemas/manifest-filter"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "origin_station": {
+            "$ref": "#/components/schemas/station-filter"
+          },
+          "origin_station_id": {
+            "$ref": "#/components/schemas/manifest-filter-origin_station_id"
+          },
+          "remaining_count": {
+            "$ref": "#/components/schemas/manifest-filter-remaining_count"
+          },
+          "shipment_count": {
+            "$ref": "#/components/schemas/manifest-filter-shipment_count"
+          },
+          "shipments": {
+            "$ref": "#/components/schemas/shipment-filter"
+          },
+          "status": {
+            "$ref": "#/components/schemas/manifest-filter-status"
+          }
+        },
+        "type": "deepObject"
+      },
       "route": {
         "additionalProperties": false,
         "description": "A \"Resource object\" representing a route",
@@ -12370,6 +13420,27 @@
           }
         },
         "type": "object"
+      },
+      "manifest-filter-inserted_at": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {},
+          "greater_than": {},
+          "greater_than_or_equal": {},
+          "in": {
+            "items": {},
+            "type": "array"
+          },
+          "is_distinct_from": {},
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {},
+          "less_than": {},
+          "less_than_or_equal": {},
+          "not_eq": {}
+        },
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -12411,7 +13482,7 @@
             "name": "sort",
             "required": false,
             "schema": {
-              "pattern": "^(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|status|-status|\\+\\+status|--status|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at)(,(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|status|-status|\\+\\+status|--status|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at))*$",
+              "pattern": "^(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|status|-status|\\+\\+status|--status|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|manifest_id|-manifest_id|\\+\\+manifest_id|--manifest_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at)(,(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|status|-status|\\+\\+status|--status|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|manifest_id|-manifest_id|\\+\\+manifest_id|--manifest_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at))*$",
               "type": "string"
             },
             "style": "form"
@@ -12469,12 +13540,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "shipment": "invoice_no,origin_station_id,destination_station_id,route_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history"
+                "shipment": "invoice_no,origin_station_id,destination_station_id,route_id,manifest_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history"
               },
               "properties": {
                 "shipment": {
                   "description": "Comma separated field names for shipment",
-                  "example": "invoice_no,origin_station_id,destination_station_id,route_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history",
+                  "example": "invoice_no,origin_station_id,destination_station_id,route_id,manifest_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history",
                   "type": "string"
                 }
               },
@@ -12571,12 +13642,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "shipment": "invoice_no,origin_station_id,destination_station_id,route_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history"
+                "shipment": "invoice_no,origin_station_id,destination_station_id,route_id,manifest_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history"
               },
               "properties": {
                 "shipment": {
                   "description": "Comma separated field names for shipment",
-                  "example": "invoice_no,origin_station_id,destination_station_id,route_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history",
+                  "example": "invoice_no,origin_station_id,destination_station_id,route_id,manifest_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history",
                   "type": "string"
                 }
               },
@@ -13389,6 +14460,56 @@
         },
         "tags": [
           "sale-item"
+        ]
+      }
+    },
+    "/api/v1/manifests/departures": {
+      "get": {
+        "callbacks": {},
+        "deprecated": false,
+        "description": "Departures from the external schedule for one `date` (YYYY-MM-DD) from the signed-in user's Station\nto `destination_station_id`. Needs `shipment.mark_in_transit`.\n",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "date",
+            "required": true,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "in": "query",
+            "name": "destination_station_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "style": "form"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "items": {
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "default": {
+            "$ref": "#/components/responses/errors"
+          }
+        },
+        "tags": [
+          "manifest"
         ]
       }
     },
@@ -14482,7 +15603,7 @@
             "name": "sort",
             "required": false,
             "schema": {
-              "pattern": "^(id|-id|\\+\\+id|--id|name_en|-name_en|\\+\\+name_en|--name_en|name_km|-name_km|\\+\\+name_km|--name_km|overdue_threshold_days|-overdue_threshold_days|\\+\\+overdue_threshold_days|--overdue_threshold_days|active|-active|\\+\\+active|--active|cancellation_requires_approval|-cancellation_requires_approval|\\+\\+cancellation_requires_approval|--cancellation_requires_approval|location_id|-location_id|\\+\\+location_id|--location_id)(,(id|-id|\\+\\+id|--id|name_en|-name_en|\\+\\+name_en|--name_en|name_km|-name_km|\\+\\+name_km|--name_km|overdue_threshold_days|-overdue_threshold_days|\\+\\+overdue_threshold_days|--overdue_threshold_days|active|-active|\\+\\+active|--active|cancellation_requires_approval|-cancellation_requires_approval|\\+\\+cancellation_requires_approval|--cancellation_requires_approval|location_id|-location_id|\\+\\+location_id|--location_id))*$",
+              "pattern": "^(id|-id|\\+\\+id|--id|name_en|-name_en|\\+\\+name_en|--name_en|name_km|-name_km|\\+\\+name_km|--name_km|overdue_threshold_days|-overdue_threshold_days|\\+\\+overdue_threshold_days|--overdue_threshold_days|external_id|-external_id|\\+\\+external_id|--external_id|active|-active|\\+\\+active|--active|cancellation_requires_approval|-cancellation_requires_approval|\\+\\+cancellation_requires_approval|--cancellation_requires_approval|location_id|-location_id|\\+\\+location_id|--location_id)(,(id|-id|\\+\\+id|--id|name_en|-name_en|\\+\\+name_en|--name_en|name_km|-name_km|\\+\\+name_km|--name_km|overdue_threshold_days|-overdue_threshold_days|\\+\\+overdue_threshold_days|--overdue_threshold_days|external_id|-external_id|\\+\\+external_id|--external_id|active|-active|\\+\\+active|--active|cancellation_requires_approval|-cancellation_requires_approval|\\+\\+cancellation_requires_approval|--cancellation_requires_approval|location_id|-location_id|\\+\\+location_id|--location_id))*$",
               "type": "string"
             },
             "style": "form"
@@ -14540,12 +15661,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "station": "id,name_en,name_km,overdue_threshold_days,active,cancellation_requires_approval,location_id"
+                "station": "id,name_en,name_km,overdue_threshold_days,external_id,active,cancellation_requires_approval,location_id"
               },
               "properties": {
                 "station": {
                   "description": "Comma separated field names for station",
-                  "example": "id,name_en,name_km,overdue_threshold_days,active,cancellation_requires_approval,location_id",
+                  "example": "id,name_en,name_km,overdue_threshold_days,external_id,active,cancellation_requires_approval,location_id",
                   "type": "string"
                 }
               },
@@ -14620,12 +15741,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "station": "id,name_en,name_km,overdue_threshold_days,active,cancellation_requires_approval,location_id"
+                "station": "id,name_en,name_km,overdue_threshold_days,external_id,active,cancellation_requires_approval,location_id"
               },
               "properties": {
                 "station": {
                   "description": "Comma separated field names for station",
-                  "example": "id,name_en,name_km,overdue_threshold_days,active,cancellation_requires_approval,location_id",
+                  "example": "id,name_en,name_km,overdue_threshold_days,external_id,active,cancellation_requires_approval,location_id",
                   "type": "string"
                 }
               },
@@ -14646,6 +15767,16 @@
                       "attributes": {
                         "additionalProperties": false,
                         "properties": {
+                          "external_id": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
                           "location_id": {
                             "format": "uuid",
                             "type": "string"
@@ -15039,12 +16170,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "shipment": "invoice_no,origin_station_id,destination_station_id,route_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history"
+                "shipment": "invoice_no,origin_station_id,destination_station_id,route_id,manifest_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history"
               },
               "properties": {
                 "shipment": {
                   "description": "Comma separated field names for shipment",
-                  "example": "invoice_no,origin_station_id,destination_station_id,route_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history",
+                  "example": "invoice_no,origin_station_id,destination_station_id,route_id,manifest_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history",
                   "type": "string"
                 }
               },
@@ -16441,12 +17572,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "station": "id,name_en,name_km,overdue_threshold_days,active,cancellation_requires_approval,location_id"
+                "station": "id,name_en,name_km,overdue_threshold_days,external_id,active,cancellation_requires_approval,location_id"
               },
               "properties": {
                 "station": {
                   "description": "Comma separated field names for station",
-                  "example": "id,name_en,name_km,overdue_threshold_days,active,cancellation_requires_approval,location_id",
+                  "example": "id,name_en,name_km,overdue_threshold_days,external_id,active,cancellation_requires_approval,location_id",
                   "type": "string"
                 }
               },
@@ -16501,12 +17632,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "station": "id,name_en,name_km,overdue_threshold_days,active,cancellation_requires_approval,location_id"
+                "station": "id,name_en,name_km,overdue_threshold_days,external_id,active,cancellation_requires_approval,location_id"
               },
               "properties": {
                 "station": {
                   "description": "Comma separated field names for station",
-                  "example": "id,name_en,name_km,overdue_threshold_days,active,cancellation_requires_approval,location_id",
+                  "example": "id,name_en,name_km,overdue_threshold_days,external_id,active,cancellation_requires_approval,location_id",
                   "type": "string"
                 }
               },
@@ -16584,12 +17715,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "station": "id,name_en,name_km,overdue_threshold_days,active,cancellation_requires_approval,location_id"
+                "station": "id,name_en,name_km,overdue_threshold_days,external_id,active,cancellation_requires_approval,location_id"
               },
               "properties": {
                 "station": {
                   "description": "Comma separated field names for station",
-                  "example": "id,name_en,name_km,overdue_threshold_days,active,cancellation_requires_approval,location_id",
+                  "example": "id,name_en,name_km,overdue_threshold_days,external_id,active,cancellation_requires_approval,location_id",
                   "type": "string"
                 }
               },
@@ -16614,6 +17745,16 @@
                             "anyOf": [
                               {
                                 "type": "boolean"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          },
+                          "external_id": {
+                            "anyOf": [
+                              {
+                                "type": "string"
                               },
                               {
                                 "type": "null"
@@ -16706,6 +17847,139 @@
         },
         "tags": [
           "station"
+        ]
+      }
+    },
+    "/api/v1/manifests/{id}/depart": {
+      "patch": {
+        "callbacks": {},
+        "deprecated": false,
+        "description": "Departs the Manifest at its origin Station: every loaded Shipment becomes In transit.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Relationship paths to include in the response",
+            "explode": false,
+            "in": "query",
+            "name": "include",
+            "required": false,
+            "schema": {
+              "pattern": "^(shipments)(,(shipments))*$",
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Limits the response fields to only those listed for each type",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "additionalProperties": true,
+              "example": {
+                "manifest": "external_trip_id,origin_station_id,destination_station_id,departs_at,bus_label,status,departed_at,arrived_at,inserted_at,shipment_count,arrived_count,remaining_count"
+              },
+              "properties": {
+                "manifest": {
+                  "description": "Comma separated field names for manifest",
+                  "example": "external_trip_id,origin_station_id,destination_station_id,departs_at,bus_label,status,departed_at,arrived_at,inserted_at,shipment_count,arrived_count,remaining_count",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "data": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "attributes": {
+                        "additionalProperties": false,
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "id": {
+                        "type": "string"
+                      },
+                      "relationships": {
+                        "additionalProperties": false,
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "type": {
+                        "enum": [
+                          "manifest"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "data"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "description": "Request body for the /manifests/:id/depart operation on manifest resource",
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/manifest"
+                    },
+                    "included": {
+                      "items": {
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/shipment"
+                          }
+                        ]
+                      },
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "meta": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "default": {
+            "$ref": "#/components/responses/errors"
+          }
+        },
+        "tags": [
+          "manifest"
         ]
       }
     },
@@ -17258,6 +18532,279 @@
         ]
       }
     },
+    "/api/v1/manifests/{id}/scan": {
+      "patch": {
+        "callbacks": {},
+        "deprecated": false,
+        "description": "Scans one Shipment by `invoice_no`. While the Manifest is open (origin Station) it loads the Shipment;\nonce departed (destination Station) it marks the Shipment Arrived. Scanning twice is harmless.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Relationship paths to include in the response",
+            "explode": false,
+            "in": "query",
+            "name": "include",
+            "required": false,
+            "schema": {
+              "pattern": "^(shipments)(,(shipments))*$",
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Limits the response fields to only those listed for each type",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "additionalProperties": true,
+              "example": {
+                "manifest": "external_trip_id,origin_station_id,destination_station_id,departs_at,bus_label,status,departed_at,arrived_at,inserted_at,shipment_count,arrived_count,remaining_count"
+              },
+              "properties": {
+                "manifest": {
+                  "description": "Comma separated field names for manifest",
+                  "example": "external_trip_id,origin_station_id,destination_station_id,departs_at,bus_label,status,departed_at,arrived_at,inserted_at,shipment_count,arrived_count,remaining_count",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "data": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "attributes": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "invoice_no": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "invoice_no"
+                        ],
+                        "type": "object"
+                      },
+                      "id": {
+                        "type": "string"
+                      },
+                      "relationships": {
+                        "additionalProperties": false,
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "type": {
+                        "enum": [
+                          "manifest"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "data"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "description": "Request body for the /manifests/:id/scan operation on manifest resource",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/manifest"
+                    },
+                    "included": {
+                      "items": {
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/shipment"
+                          }
+                        ]
+                      },
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "meta": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "default": {
+            "$ref": "#/components/responses/errors"
+          }
+        },
+        "tags": [
+          "manifest"
+        ]
+      }
+    },
+    "/api/v1/manifests/{id}/arrive": {
+      "patch": {
+        "callbacks": {},
+        "deprecated": false,
+        "description": "Closes the Manifest at its destination Station. Unscanned Shipments stay In transit.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Relationship paths to include in the response",
+            "explode": false,
+            "in": "query",
+            "name": "include",
+            "required": false,
+            "schema": {
+              "pattern": "^(shipments)(,(shipments))*$",
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Limits the response fields to only those listed for each type",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "additionalProperties": true,
+              "example": {
+                "manifest": "external_trip_id,origin_station_id,destination_station_id,departs_at,bus_label,status,departed_at,arrived_at,inserted_at,shipment_count,arrived_count,remaining_count"
+              },
+              "properties": {
+                "manifest": {
+                  "description": "Comma separated field names for manifest",
+                  "example": "external_trip_id,origin_station_id,destination_station_id,departs_at,bus_label,status,departed_at,arrived_at,inserted_at,shipment_count,arrived_count,remaining_count",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "data": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "attributes": {
+                        "additionalProperties": false,
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "id": {
+                        "type": "string"
+                      },
+                      "relationships": {
+                        "additionalProperties": false,
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "type": {
+                        "enum": [
+                          "manifest"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ],
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "data"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "description": "Request body for the /manifests/:id/arrive operation on manifest resource",
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/manifest"
+                    },
+                    "included": {
+                      "items": {
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/shipment"
+                          }
+                        ]
+                      },
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "meta": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "default": {
+            "$ref": "#/components/responses/errors"
+          }
+        },
+        "tags": [
+          "manifest"
+        ]
+      }
+    },
     "/api/v1/shipments/{id}/in-transit": {
       "patch": {
         "callbacks": {},
@@ -17293,12 +18840,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "shipment": "invoice_no,origin_station_id,destination_station_id,route_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history"
+                "shipment": "invoice_no,origin_station_id,destination_station_id,route_id,manifest_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history"
               },
               "properties": {
                 "shipment": {
                   "description": "Comma separated field names for shipment",
-                  "example": "invoice_no,origin_station_id,destination_station_id,route_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history",
+                  "example": "invoice_no,origin_station_id,destination_station_id,route_id,manifest_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history",
                   "type": "string"
                 }
               },
@@ -17406,6 +18953,95 @@
         },
         "tags": [
           "shipment"
+        ]
+      }
+    },
+    "/api/v1/manifests/{id}": {
+      "get": {
+        "callbacks": {},
+        "deprecated": false,
+        "description": "/manifests/:id operation on manifest resource",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Relationship paths to include in the response",
+            "explode": false,
+            "in": "query",
+            "name": "include",
+            "required": false,
+            "schema": {
+              "pattern": "^(shipments)(,(shipments))*$",
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Limits the response fields to only those listed for each type",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "additionalProperties": true,
+              "example": {
+                "manifest": "external_trip_id,origin_station_id,destination_station_id,departs_at,bus_label,status,departed_at,arrived_at,inserted_at,shipment_count,arrived_count,remaining_count"
+              },
+              "properties": {
+                "manifest": {
+                  "description": "Comma separated field names for manifest",
+                  "example": "external_trip_id,origin_station_id,destination_station_id,departs_at,bus_label,status,departed_at,arrived_at,inserted_at,shipment_count,arrived_count,remaining_count",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/manifest"
+                    },
+                    "included": {
+                      "items": {
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/shipment"
+                          }
+                        ]
+                      },
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "meta": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "default": {
+            "$ref": "#/components/responses/errors"
+          }
+        },
+        "tags": [
+          "manifest"
         ]
       }
     },
@@ -17581,12 +19217,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "station": "id,name_en,name_km,overdue_threshold_days,active,cancellation_requires_approval,location_id"
+                "station": "id,name_en,name_km,overdue_threshold_days,external_id,active,cancellation_requires_approval,location_id"
               },
               "properties": {
                 "station": {
                   "description": "Comma separated field names for station",
-                  "example": "id,name_en,name_km,overdue_threshold_days,active,cancellation_requires_approval,location_id",
+                  "example": "id,name_en,name_km,overdue_threshold_days,external_id,active,cancellation_requires_approval,location_id",
                   "type": "string"
                 }
               },
@@ -17721,12 +19357,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "shipment": "invoice_no,origin_station_id,destination_station_id,route_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history"
+                "shipment": "invoice_no,origin_station_id,destination_station_id,route_id,manifest_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history"
               },
               "properties": {
                 "shipment": {
                   "description": "Comma separated field names for shipment",
-                  "example": "invoice_no,origin_station_id,destination_station_id,route_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history",
+                  "example": "invoice_no,origin_station_id,destination_station_id,route_id,manifest_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history",
                   "type": "string"
                 }
               },
@@ -18055,7 +19691,7 @@
             "name": "sort",
             "required": false,
             "schema": {
-              "pattern": "^(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|status|-status|\\+\\+status|--status|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at)(,(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|status|-status|\\+\\+status|--status|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at))*$",
+              "pattern": "^(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|status|-status|\\+\\+status|--status|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|manifest_id|-manifest_id|\\+\\+manifest_id|--manifest_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at)(,(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|status|-status|\\+\\+status|--status|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|manifest_id|-manifest_id|\\+\\+manifest_id|--manifest_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at))*$",
               "type": "string"
             },
             "style": "form"
@@ -18080,12 +19716,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "shipment": "invoice_no,origin_station_id,destination_station_id,route_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history"
+                "shipment": "invoice_no,origin_station_id,destination_station_id,route_id,manifest_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history"
               },
               "properties": {
                 "shipment": {
                   "description": "Comma separated field names for shipment",
-                  "example": "invoice_no,origin_station_id,destination_station_id,route_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history",
+                  "example": "invoice_no,origin_station_id,destination_station_id,route_id,manifest_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history",
                   "type": "string"
                 }
               },
@@ -19377,12 +21013,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "station": "id,name_en,name_km,overdue_threshold_days,active,cancellation_requires_approval,location_id"
+                "station": "id,name_en,name_km,overdue_threshold_days,external_id,active,cancellation_requires_approval,location_id"
               },
               "properties": {
                 "station": {
                   "description": "Comma separated field names for station",
-                  "example": "id,name_en,name_km,overdue_threshold_days,active,cancellation_requires_approval,location_id",
+                  "example": "id,name_en,name_km,overdue_threshold_days,external_id,active,cancellation_requires_approval,location_id",
                   "type": "string"
                 }
               },
@@ -20001,12 +21637,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "shipment": "invoice_no,origin_station_id,destination_station_id,route_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history"
+                "shipment": "invoice_no,origin_station_id,destination_station_id,route_id,manifest_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history"
               },
               "properties": {
                 "shipment": {
                   "description": "Comma separated field names for shipment",
-                  "example": "invoice_no,origin_station_id,destination_station_id,route_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history",
+                  "example": "invoice_no,origin_station_id,destination_station_id,route_id,manifest_id,sender_name,sender_phone,receiver_name,receiver_phone,current_receiver_name,current_receiver_phone,declared_value,shipment_total,inserted_at,status,status_label_en,status_label_km,status_history",
                   "type": "string"
                 }
               },
@@ -20243,6 +21879,275 @@
           "pricing-setting"
         ]
       }
+    },
+    "/api/v1/manifests": {
+      "get": {
+        "callbacks": {},
+        "deprecated": false,
+        "description": "Lists Manifests at the caller's Station (as origin or destination). Needs `shipment.read`.",
+        "parameters": [
+          {
+            "description": "Filters the query to results with attributes matching the given filter object",
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/manifest-filter"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Sort order to apply to the results",
+            "explode": false,
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "pattern": "^(id|-id|\\+\\+id|--id|external_trip_id|-external_trip_id|\\+\\+external_trip_id|--external_trip_id|departs_at|-departs_at|\\+\\+departs_at|--departs_at|bus_label|-bus_label|\\+\\+bus_label|--bus_label|status|-status|\\+\\+status|--status|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|remaining_count|-remaining_count|\\+\\+remaining_count|--remaining_count|shipment_count|-shipment_count|\\+\\+shipment_count|--shipment_count|arrived_count|-arrived_count|\\+\\+arrived_count|--arrived_count)(,(id|-id|\\+\\+id|--id|external_trip_id|-external_trip_id|\\+\\+external_trip_id|--external_trip_id|departs_at|-departs_at|\\+\\+departs_at|--departs_at|bus_label|-bus_label|\\+\\+bus_label|--bus_label|status|-status|\\+\\+status|--status|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|remaining_count|-remaining_count|\\+\\+remaining_count|--remaining_count|shipment_count|-shipment_count|\\+\\+shipment_count|--shipment_count|arrived_count|-arrived_count|\\+\\+arrived_count|--arrived_count))*$",
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Paginates the response with the limit and offset or keyset pagination.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "example": {
+                "limit": 25
+              },
+              "properties": {
+                "after": {
+                  "type": "string"
+                },
+                "before": {
+                  "type": "string"
+                },
+                "count": {
+                  "default": false,
+                  "type": "boolean"
+                },
+                "limit": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "offset": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Relationship paths to include in the response",
+            "explode": false,
+            "in": "query",
+            "name": "include",
+            "required": false,
+            "schema": {
+              "pattern": "^(shipments)(,(shipments))*$",
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Limits the response fields to only those listed for each type",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "additionalProperties": true,
+              "example": {
+                "manifest": "external_trip_id,origin_station_id,destination_station_id,departs_at,bus_label,status,departed_at,arrived_at,inserted_at,shipment_count,arrived_count,remaining_count"
+              },
+              "properties": {
+                "manifest": {
+                  "description": "Comma separated field names for manifest",
+                  "example": "external_trip_id,origin_station_id,destination_station_id,departs_at,bus_label,status,departed_at,arrived_at,inserted_at,shipment_count,arrived_count,remaining_count",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "data": {
+                      "description": "An array of resource objects representing a manifest",
+                      "items": {
+                        "$ref": "#/components/schemas/manifest"
+                      },
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "included": {
+                      "items": {
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/shipment"
+                          }
+                        ]
+                      },
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "meta": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "default": {
+            "$ref": "#/components/responses/errors"
+          }
+        },
+        "tags": [
+          "manifest"
+        ]
+      },
+      "post": {
+        "callbacks": {},
+        "deprecated": false,
+        "description": "Opens the Manifest for a Trip from the schedule (`external_trip_id`) going to `destination_station_id`.\nOpening the same Trip again returns the existing Manifest. Needs `shipment.mark_in_transit`.\n",
+        "parameters": [
+          {
+            "description": "Relationship paths to include in the response",
+            "explode": false,
+            "in": "query",
+            "name": "include",
+            "required": false,
+            "schema": {
+              "pattern": "^(shipments)(,(shipments))*$",
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Limits the response fields to only those listed for each type",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "additionalProperties": true,
+              "example": {
+                "manifest": "external_trip_id,origin_station_id,destination_station_id,departs_at,bus_label,status,departed_at,arrived_at,inserted_at,shipment_count,arrived_count,remaining_count"
+              },
+              "properties": {
+                "manifest": {
+                  "description": "Comma separated field names for manifest",
+                  "example": "external_trip_id,origin_station_id,destination_station_id,departs_at,bus_label,status,departed_at,arrived_at,inserted_at,shipment_count,arrived_count,remaining_count",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/vnd.api+json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "data": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "attributes": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "destination_station_id": {
+                            "format": "uuid",
+                            "type": "string"
+                          },
+                          "external_trip_id": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "external_trip_id",
+                          "destination_station_id"
+                        ],
+                        "type": "object"
+                      },
+                      "relationships": {
+                        "additionalProperties": false,
+                        "properties": {},
+                        "type": "object"
+                      },
+                      "type": {
+                        "enum": [
+                          "manifest"
+                        ]
+                      }
+                    },
+                    "type": "object"
+                  }
+                },
+                "required": [
+                  "data"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "description": "Request body for the /manifests operation on manifest resource",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/manifest"
+                    },
+                    "included": {
+                      "items": {
+                        "oneOf": [
+                          {
+                            "$ref": "#/components/schemas/shipment"
+                          }
+                        ]
+                      },
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "meta": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "default": {
+            "$ref": "#/components/responses/errors"
+          }
+        },
+        "tags": [
+          "manifest"
+        ]
+      }
     }
   },
   "security": [
@@ -20269,6 +22174,9 @@
     {
       "description": "Cities and provinces a Station is in.",
       "name": "location"
+    },
+    {
+      "name": "manifest"
     },
     {
       "description": "The permissions a role can be given.",

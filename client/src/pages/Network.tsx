@@ -19,7 +19,7 @@ const named = {
   name_km: z.string().trim().min(1, 'Enter the Khmer name.'),
 }
 const locationSchema = z.object(named)
-const stationSchema = z.object({ location_id: z.string().min(1, 'Choose a Location.'), ...named })
+const stationSchema = z.object({ location_id: z.string().min(1, 'Choose a Location.'), ...named, external_id: z.string().trim() })
 const routeSchema = z
   .object({
     origin: z.string().min(1, 'Choose where it starts.'),
@@ -42,7 +42,7 @@ export function Network() {
   const refresh = (...keys: string[]) => Promise.all(keys.map((k) => qc.invalidateQueries({ queryKey: apiKey(k) })))
 
   const locForm = useForm({ resolver: zodResolver(locationSchema), defaultValues: { name_en: '', name_km: '' } })
-  const stForm = useForm({ resolver: zodResolver(stationSchema), defaultValues: { location_id: '', name_en: '', name_km: '' } })
+  const stForm = useForm({ resolver: zodResolver(stationSchema), defaultValues: { location_id: '', name_en: '', name_km: '', external_id: '' } })
   const rtForm = useForm({ resolver: zodResolver(routeSchema), defaultValues: { origin: '', destination: '' } })
   const origin = useWatch({ control: rtForm.control, name: 'origin' })
 
@@ -57,7 +57,7 @@ export function Network() {
     },
   })
   const addSt = useMutation({
-    mutationFn: (v: z.infer<typeof stationSchema>) => create('/stations', 'station', v),
+    mutationFn: (v: z.infer<typeof stationSchema>) => create('/stations', 'station', { ...v, external_id: v.external_id || undefined }),
     onSuccess: async (_d, v) => {
       toast.success(`${v.name_en} Station added`)
       stForm.reset()
@@ -111,6 +111,12 @@ export function Network() {
         accessorFn: (s) => name(s.location_id),
         header: 'Location',
         cell: ({ getValue }) => <span className="text-ink-soft">{getValue<string>()}</span>,
+      },
+      {
+        id: 'external_id',
+        accessorFn: (s) => s.external_id ?? '',
+        header: 'Schedule ID',
+        cell: ({ getValue }) => <span className="font-mono text-xs text-ink-soft">{getValue<string>() || '—'}</span>,
       },
       {
         id: 'active',
@@ -247,6 +253,9 @@ export function Network() {
             </FormField>
             <FormField control={stForm.control} name="name_km" label="Name (Khmer)">
               {(f) => <Input {...f} lang="km" autoComplete="off" />}
+            </FormField>
+            <FormField control={stForm.control} name="external_id" label="Schedule ID (optional)">
+              {(f) => <Input {...f} autoComplete="off" className="font-mono" />}
             </FormField>
             <Button type="submit" variant="secondary" className="sm:mt-6" busy={addSt.isPending} icon={<Plus aria-hidden className="size-4" />}>
               Add Station
