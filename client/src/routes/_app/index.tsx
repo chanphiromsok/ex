@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_app/')({ component: Home })
 function Home() {
   const { session } = Route.useRouteContext()
   const groups = menuFor(session.permissions)
-  const name = session.email.split('@')[0]
+  const name = session.label.split('@')[0]
 
   return (
     <Page title={`Hello, ${name}`} subtitle={<span className="capitalize">{session.role}</span>}>

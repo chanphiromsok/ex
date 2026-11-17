@@ -85,12 +85,14 @@ CREATE TABLE station_settings (
 -- Users ------------------------------------------------------------------
 CREATE TABLE users (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  email citext NOT NULL UNIQUE,
+  email citext UNIQUE,
+  phone text UNIQUE CHECK (phone ~ '^855[1-9][0-9]{7,8}$'),
   hashed_password text NOT NULL,
   confirmed_at timestamp(6),
   role text NOT NULL CHECK (role IN ('staff','supervisor','admin')),
   station_id uuid REFERENCES stations,
-  CHECK ((role = 'admin' AND station_id IS NULL) OR (role <> 'admin' AND station_id IS NOT NULL))
+  CHECK ((role = 'admin' AND station_id IS NULL) OR (role <> 'admin' AND station_id IS NOT NULL)),
+  CHECK (email IS NOT NULL OR phone IS NOT NULL)
 );
 
 -- Shipments --------------------------------------------------------------

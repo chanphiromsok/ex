@@ -42,6 +42,14 @@ defmodule Ex.Accounts.User do
     end
 
     check_constraints do
+      check_constraint :phone, "users_phone_format",
+        check: "phone IS NULL OR phone ~ '^855[1-9][0-9]{7,8}$'",
+        message: "is not a valid Cambodian phone number"
+
+      check_constraint :email, "users_phone_or_email",
+        check: "email IS NOT NULL OR phone IS NOT NULL",
+        message: "a user needs a phone number or an email"
+
       check_constraint :station_id, "station_matches_role",
         check:
           "(role = 'admin' AND station_id IS NULL) OR (role <> 'admin' AND station_id IS NOT NULL)",
@@ -55,7 +63,7 @@ defmodule Ex.Accounts.User do
 
   json_api do
     type "user"
-    default_fields [:email, :role, :station_id, :inserted_at, :permissions]
+    default_fields [:email, :phone, :role, :station_id, :inserted_at, :permissions]
 
     routes do
       base "/users"
@@ -78,11 +86,11 @@ defmodule Ex.Accounts.User do
         description "Changes a user's role and Station. The change is recorded in the assignment log."
       end
 
-      post :sign_in_with_password do
+      post :sign_in do
         route "/sign-in"
 
         description """
-        Signs in with email and password. Public.
+        Signs in with a phone number or an email (send it as `login`) and a password. Public.
 
         Returns `meta.token` (access token, valid 1 hour) and `meta.refresh_token` (single use, 30 days).
         Send the access token as `Authorization: Bearer <token>`.
@@ -144,11 +152,10 @@ defmodule Ex.Accounts.User do
     end
 
     read :sign_in_with_password do
-      description "Attempt to sign in using a email and password."
+      description "AshAuthentication's own email sign-in. Not routed; /users/sign-in uses :sign_in."
       get? true
 
       argument :email, :ci_string do
-        description "The email to use for retrieving the user."
         allow_nil? false
       end
 
@@ -158,8 +165,41 @@ defmodule Ex.Accounts.User do
         sensitive? true
       end
 
-      # validates the provided email and password and generates a token
       prepare AshAuthentication.Strategy.Password.SignInPreparation
+
+      prepare Ex.Accounts.User.Preparations.IssueRefreshToken
+
+      metadata :token, :string do
+        description "A JWT that can be used to authenticate the user."
+        allow_nil? false
+      end
+
+      metadata :refresh_token, :string do
+        description "A single-use secret to exchange for a new token via /users/refresh."
+        allow_nil? false
+      end
+    end
+
+    read :sign_in do
+      description "Sign in with a phone number or an email, and a password."
+      get? true
+
+      argument :login, :string do
+        description "The user's phone number (012 345 678) or email."
+      end
+
+      argument :email, :ci_string do
+        description "Same as `login`, kept for older clients."
+      end
+
+      argument :password, :string do
+        description "The password to check for the matching user."
+        allow_nil? false
+        sensitive? true
+      end
+
+      # Finds the user by phone or email, checks the password and generates a token
+      prepare Ex.Accounts.User.Preparations.SignInByLogin
 
       prepare Ex.Accounts.User.Preparations.IssueRefreshToken
 
@@ -217,12 +257,10 @@ defmodule Ex.Accounts.User do
     end
 
     create :register_with_password do
-      description "Create a user with an email, password, role and Station. Admin only."
-      accept [:role, :station_id]
+      description "Create a user with a phone number and/or an email, a password, a role and a Station. Admin only."
+      accept [:role, :station_id, :phone]
 
-      argument :email, :ci_string do
-        allow_nil? false
-      end
+      argument :email, :ci_string
 
       argument :password, :string do
         description "The proposed password for the user, in plain text."
@@ -237,8 +275,10 @@ defmodule Ex.Accounts.User do
         sensitive? true
       end
 
-      # Sets the email from the argument
+      # Sets the email from the argument; a user needs a phone number or an email to sign in with
       change set_attribute(:email, arg(:email))
+      change {Ex.Shipping.Changes.NormalizePhones, fields: [:phone]}
+      validate present([:email, :phone], at_least: 1), message: "enter a phone number or an email"
 
       # Hashes the provided password
       change AshAuthentication.Strategy.Password.HashPasswordChange
@@ -274,7 +314,7 @@ defmodule Ex.Accounts.User do
     end
 
     # The action itself checks the password; anyone may attempt to sign in.
-    policy action([:sign_in_with_password, :refresh]) do
+    policy action([:sign_in_with_password, :sign_in, :refresh]) do
       authorize_if always()
     end
 
@@ -292,9 +332,12 @@ defmodule Ex.Accounts.User do
     uuid_primary_key :id
 
     attribute :email, :ci_string do
-      allow_nil? false
+      allow_nil? true
       public? true
     end
+
+    # Stored as 855… (see Ex.Shipping.Phone). Staff mostly sign in with it; the email is optional.
+    attribute :phone, :string, allow_nil?: true, public?: true
 
     attribute :hashed_password, :string do
       allow_nil? false
@@ -328,5 +371,6 @@ defmodule Ex.Accounts.User do
 
   identities do
     identity :unique_email, [:email]
+    identity :unique_phone, [:phone]
   end
 end

@@ -18,7 +18,7 @@ export const Route = createFileRoute('/login')({
 })
 
 const schema = z.object({
-  email: z.email('Enter a valid email address.'),
+  login: z.string().trim().min(1, 'Enter your phone number or email.'),
   password: z.string().min(1, 'Enter your password.'),
 })
 type Values = z.infer<typeof schema>
@@ -26,10 +26,10 @@ type Values = z.infer<typeof schema>
 function Login() {
   const navigate = useNavigate()
   const login = useMutation({
-    mutationFn: ({ email, password }: Values) => signIn(email, password),
+    mutationFn: ({ login, password }: Values) => signIn(login, password),
     onSuccess: () => navigate({ to: '/' }),
   })
-  const form = useForm<Values>({ resolver: zodResolver(schema), defaultValues: { email: '', password: '' } })
+  const form = useForm<Values>({ resolver: zodResolver(schema), defaultValues: { login: '', password: '' } })
 
   return (
     <main className="grid min-h-screen lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
@@ -60,8 +60,8 @@ function Login() {
           <p className="mt-1 text-sm text-ink-soft">Use the staff account your admin gave you.</p>
 
           <div className="mt-7 space-y-4">
-            <FormField control={form.control} name="email" label="Email" id="email">
-              {(field) => <Input {...field} type="email" autoComplete="username" autoFocus className="h-10" />}
+            <FormField control={form.control} name="login" label="Phone number or email" id="login">
+              {(field) => <Input {...field} inputMode="text" autoComplete="username" autoFocus className="h-10" />}
             </FormField>
             <FormField control={form.control} name="password" label="Password" id="password">
               {(field) => <Input {...field} type="password" autoComplete="current-password" className="h-10" />}

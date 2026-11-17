@@ -1395,7 +1395,7 @@ export const getApiV1SettingChangesInfiniteOptions = (options?: Options<GetApiV1
 };
 
 /**
- * Signs in with email and password. Public.
+ * Signs in with a phone number or an email (send it as `login`) and a password. Public.
  *
  * Returns `meta.token` (access token, valid 1 hour) and `meta.refresh_token` (single use, 30 days).
  * Send the access token as `Authorization: Bearer <token>`.

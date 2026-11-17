@@ -2184,7 +2184,7 @@ export type Shipment = {
         /**
          * Field included by default.
          */
-        status?: 'received' | 'in_transit' | 'arrived' | 'collected' | 'cancelled' | unknown;
+        status: 'received' | 'in_transit' | 'arrived' | 'collected' | 'cancelled';
         /**
          * Field included by default.
          */
@@ -3251,7 +3251,7 @@ export type User = {
         /**
          * Field included by default.
          */
-        email: string;
+        email?: string | null | unknown;
         /**
          * Field included by default.
          */
@@ -3260,6 +3260,10 @@ export type User = {
          * Field included by default.
          */
         permissions?: Array<string> | null | unknown;
+        /**
+         * Field included by default.
+         */
+        phone?: string | null | unknown;
         /**
          * Field included by default.
          */
@@ -3549,6 +3553,24 @@ export type PaymentFilterId = {
     less_than?: string;
     less_than_or_equal?: string;
     not_eq?: string;
+};
+
+export type UserFilterPhone = {
+    contains?: string;
+    eq?: string;
+    greater_than?: string;
+    greater_than_or_equal?: string;
+    ilike?: string;
+    in?: Array<string>;
+    is_distinct_from?: string;
+    is_nil?: boolean;
+    is_not_distinct_from?: string;
+    less_than?: string;
+    less_than_or_equal?: string;
+    like?: string;
+    not_eq?: string;
+    string_ends_with?: string;
+    string_starts_with?: string;
 };
 
 export type SettingChangeFilterInsertedAt = {
@@ -5195,7 +5217,7 @@ export type PostApiV1UsersData = {
     body: {
         data: {
             attributes?: {
-                email: string;
+                email?: string | unknown;
                 /**
                  * The proposed password for the user, in plain text.
                  */
@@ -5204,6 +5226,7 @@ export type PostApiV1UsersData = {
                  * The proposed password for the user (again), in plain text.
                  */
                 password_confirmation: string;
+                phone?: string | unknown;
                 role: 'staff' | 'supervisor' | 'admin';
                 station_id?: string | unknown;
             };
@@ -6714,9 +6737,13 @@ export type PostApiV1UsersSignInData = {
         data: {
             attributes?: {
                 /**
-                 * The email to use for retrieving the user.
+                 * Same as `login`, kept for older clients.
                  */
-                email: string;
+                email?: string | unknown;
+                /**
+                 * The user's phone number (012 345 678) or email.
+                 */
+                login?: string | unknown;
                 /**
                  * The password to check for the matching user.
                  */

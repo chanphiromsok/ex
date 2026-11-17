@@ -1,9 +1,13 @@
 import { client } from '#/api/client.gen'
+import { formatPhone } from '#/lib/phone'
 
 export type Session = {
   token: string
   userId: string
-  email: string
+  email: string | null
+  phone: string | null
+  /** What to call this user on screen: the phone if they have one, else the email. */
+  label: string
   role: 'staff' | 'supervisor' | 'admin'
   stationId: string | null
   permissions: string[]
@@ -33,22 +37,24 @@ export function signOut() {
   setSession(null)
 }
 
-export async function signIn(email: string, password: string): Promise<Session> {
+export async function signIn(login: string, password: string): Promise<Session> {
   const res = await fetch('/api/v1/users/sign-in', {
     method: 'POST',
     headers: {
       'content-type': 'application/vnd.api+json',
       accept: 'application/vnd.api+json',
     },
-    body: JSON.stringify({ data: { type: 'user', attributes: { email, password } } }),
+    body: JSON.stringify({ data: { type: 'user', attributes: { login, password } } }),
   })
-  if (!res.ok) throw new Error(res.status === 400 ? 'Wrong email or password' : 'Sign-in failed')
+  if (!res.ok) throw new Error(res.status === 400 ? 'Wrong phone, email or password' : 'Sign-in failed')
   const body = await res.json()
   const attrs = body.data.attributes
   const session: Session = {
     token: body.meta.token,
     userId: body.data.id,
-    email: attrs.email,
+    email: attrs.email ?? null,
+    phone: attrs.phone ?? null,
+    label: attrs.phone ? formatPhone(attrs.phone) : attrs.email,
     role: attrs.role,
     stationId: attrs.station_id,
     permissions: attrs.permissions ?? [],

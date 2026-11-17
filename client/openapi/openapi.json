@@ -7270,23 +7270,15 @@
                 "type": "object"
               },
               "status": {
-                "anyOf": [
-                  {
-                    "enum": [
-                      "received",
-                      "in_transit",
-                      "arrived",
-                      "collected",
-                      "cancelled"
-                    ],
-                    "nullable": true,
-                    "type": "string"
-                  },
-                  {
-                    "type": "null"
-                  }
+                "description": "Field included by default.",
+                "enum": [
+                  "received",
+                  "in_transit",
+                  "arrived",
+                  "collected",
+                  "cancelled"
                 ],
-                "description": "Field included by default."
+                "type": "string"
               },
               "status_history": {
                 "anyOf": [
@@ -7331,6 +7323,7 @@
             "required": [
               "invoice_no",
               "idempotency_key",
+              "status",
               "sender_phone",
               "receiver_phone",
               "shipment_total",
@@ -9829,6 +9822,9 @@
             "type": "array",
             "uniqueItems": true
           },
+          "phone": {
+            "$ref": "#/components/schemas/user-filter-phone"
+          },
           "role": {
             "$ref": "#/components/schemas/user-filter-role"
           },
@@ -10918,8 +10914,16 @@
             "description": "An attributes object for a user",
             "properties": {
               "email": {
-                "description": "Field included by default.",
-                "type": "string"
+                "anyOf": [
+                  {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Field included by default."
               },
               "inserted_at": {
                 "description": "Field included by default."
@@ -10932,6 +10936,18 @@
                     },
                     "nullable": true,
                     "type": "array"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Field included by default."
+              },
+              "phone": {
+                "anyOf": [
+                  {
+                    "nullable": true,
+                    "type": "string"
                   },
                   {
                     "type": "null"
@@ -10963,7 +10979,6 @@
               }
             },
             "required": [
-              "email",
               "role",
               "inserted_at"
             ],
@@ -11826,6 +11841,60 @@
         },
         "type": "object"
       },
+      "user-filter-phone": {
+        "additionalProperties": false,
+        "properties": {
+          "contains": {
+            "type": "string"
+          },
+          "eq": {
+            "type": "string"
+          },
+          "greater_than": {
+            "type": "string"
+          },
+          "greater_than_or_equal": {
+            "type": "string"
+          },
+          "ilike": {
+            "type": "string"
+          },
+          "in": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "type": "string"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "type": "string"
+          },
+          "less_than": {
+            "type": "string"
+          },
+          "less_than_or_equal": {
+            "type": "string"
+          },
+          "like": {
+            "type": "string"
+          },
+          "not_eq": {
+            "type": "string"
+          },
+          "string_ends_with": {
+            "type": "string"
+          },
+          "string_starts_with": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "setting-change-filter-inserted_at": {
         "additionalProperties": false,
         "properties": {
@@ -12342,7 +12411,7 @@
             "name": "sort",
             "required": false,
             "schema": {
-              "pattern": "^(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at|status|-status|\\+\\+status|--status)(,(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at|status|-status|\\+\\+status|--status))*$",
+              "pattern": "^(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|status|-status|\\+\\+status|--status|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at)(,(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|status|-status|\\+\\+status|--status|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at))*$",
               "type": "string"
             },
             "style": "form"
@@ -15536,7 +15605,7 @@
             "name": "sort",
             "required": false,
             "schema": {
-              "pattern": "^(id|-id|\\+\\+id|--id|email|-email|\\+\\+email|--email|role|-role|\\+\\+role|--role|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|station_id|-station_id|\\+\\+station_id|--station_id)(,(id|-id|\\+\\+id|--id|email|-email|\\+\\+email|--email|role|-role|\\+\\+role|--role|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|station_id|-station_id|\\+\\+station_id|--station_id))*$",
+              "pattern": "^(id|-id|\\+\\+id|--id|email|-email|\\+\\+email|--email|phone|-phone|\\+\\+phone|--phone|role|-role|\\+\\+role|--role|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|station_id|-station_id|\\+\\+station_id|--station_id)(,(id|-id|\\+\\+id|--id|email|-email|\\+\\+email|--email|phone|-phone|\\+\\+phone|--phone|role|-role|\\+\\+role|--role|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|station_id|-station_id|\\+\\+station_id|--station_id))*$",
               "type": "string"
             },
             "style": "form"
@@ -15594,12 +15663,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "user": "email,role,station_id,inserted_at,permissions"
+                "user": "email,phone,role,station_id,inserted_at,permissions"
               },
               "properties": {
                 "user": {
                   "description": "Comma separated field names for user",
-                  "example": "email,role,station_id,inserted_at,permissions",
+                  "example": "email,phone,role,station_id,inserted_at,permissions",
                   "type": "string"
                 }
               },
@@ -15674,12 +15743,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "user": "email,role,station_id,inserted_at,permissions"
+                "user": "email,phone,role,station_id,inserted_at,permissions"
               },
               "properties": {
                 "user": {
                   "description": "Comma separated field names for user",
-                  "example": "email,role,station_id,inserted_at,permissions",
+                  "example": "email,phone,role,station_id,inserted_at,permissions",
                   "type": "string"
                 }
               },
@@ -15701,7 +15770,14 @@
                         "additionalProperties": false,
                         "properties": {
                           "email": {
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "password": {
                             "description": "The proposed password for the user, in plain text.",
@@ -15710,6 +15786,16 @@
                           "password_confirmation": {
                             "description": "The proposed password for the user (again), in plain text.",
                             "type": "string"
+                          },
+                          "phone": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "role": {
                             "enum": [
@@ -15733,7 +15819,6 @@
                         },
                         "required": [
                           "role",
-                          "email",
                           "password",
                           "password_confirmation"
                         ],
@@ -16807,12 +16892,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "user": "email,role,station_id,inserted_at,permissions"
+                "user": "email,phone,role,station_id,inserted_at,permissions"
               },
               "properties": {
                 "user": {
                   "description": "Comma separated field names for user",
-                  "example": "email,role,station_id,inserted_at,permissions",
+                  "example": "email,phone,role,station_id,inserted_at,permissions",
                   "type": "string"
                 }
               },
@@ -17743,12 +17828,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "user": "email,role,station_id,inserted_at,permissions"
+                "user": "email,phone,role,station_id,inserted_at,permissions"
               },
               "properties": {
                 "user": {
                   "description": "Comma separated field names for user",
-                  "example": "email,role,station_id,inserted_at,permissions",
+                  "example": "email,phone,role,station_id,inserted_at,permissions",
                   "type": "string"
                 }
               },
@@ -17826,12 +17911,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "user": "email,role,station_id,inserted_at,permissions"
+                "user": "email,phone,role,station_id,inserted_at,permissions"
               },
               "properties": {
                 "user": {
                   "description": "Comma separated field names for user",
-                  "example": "email,role,station_id,inserted_at,permissions",
+                  "example": "email,phone,role,station_id,inserted_at,permissions",
                   "type": "string"
                 }
               },
@@ -17970,7 +18055,7 @@
             "name": "sort",
             "required": false,
             "schema": {
-              "pattern": "^(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at|status|-status|\\+\\+status|--status)(,(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at|status|-status|\\+\\+status|--status))*$",
+              "pattern": "^(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|status|-status|\\+\\+status|--status|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at)(,(id|-id|\\+\\+id|--id|invoice_no|-invoice_no|\\+\\+invoice_no|--invoice_no|idempotency_key|-idempotency_key|\\+\\+idempotency_key|--idempotency_key|status|-status|\\+\\+status|--status|sender_name|-sender_name|\\+\\+sender_name|--sender_name|sender_phone|-sender_phone|\\+\\+sender_phone|--sender_phone|receiver_name|-receiver_name|\\+\\+receiver_name|--receiver_name|receiver_phone|-receiver_phone|\\+\\+receiver_phone|--receiver_phone|declared_value|-declared_value|\\+\\+declared_value|--declared_value|shipment_total|-shipment_total|\\+\\+shipment_total|--shipment_total|inserted_at|-inserted_at|\\+\\+inserted_at|--inserted_at|origin_station_id|-origin_station_id|\\+\\+origin_station_id|--origin_station_id|destination_station_id|-destination_station_id|\\+\\+destination_station_id|--destination_station_id|route_id|-route_id|\\+\\+route_id|--route_id|created_by_id|-created_by_id|\\+\\+created_by_id|--created_by_id|current_receiver_phone|-current_receiver_phone|\\+\\+current_receiver_phone|--current_receiver_phone|current_receiver_name|-current_receiver_name|\\+\\+current_receiver_name|--current_receiver_name|departed_at|-departed_at|\\+\\+departed_at|--departed_at|arrived_at|-arrived_at|\\+\\+arrived_at|--arrived_at))*$",
               "type": "string"
             },
             "style": "form"
@@ -18962,7 +19047,7 @@
       "post": {
         "callbacks": {},
         "deprecated": false,
-        "description": "Signs in with email and password. Public.\n\nReturns `meta.token` (access token, valid 1 hour) and `meta.refresh_token` (single use, 30 days).\nSend the access token as `Authorization: Bearer <token>`.\n",
+        "description": "Signs in with a phone number or an email (send it as `login`) and a password. Public.\n\nReturns `meta.token` (access token, valid 1 hour) and `meta.refresh_token` (single use, 30 days).\nSend the access token as `Authorization: Bearer <token>`.\n",
         "parameters": [
           {
             "description": "Relationship paths to include in the response",
@@ -18984,12 +19069,12 @@
             "schema": {
               "additionalProperties": true,
               "example": {
-                "user": "email,role,station_id,inserted_at,permissions"
+                "user": "email,phone,role,station_id,inserted_at,permissions"
               },
               "properties": {
                 "user": {
                   "description": "Comma separated field names for user",
-                  "example": "email,role,station_id,inserted_at,permissions",
+                  "example": "email,phone,role,station_id,inserted_at,permissions",
                   "type": "string"
                 }
               },
@@ -19004,7 +19089,7 @@
               "example": {
                 "data": {
                   "attributes": {
-                    "email": "staff@example.com",
+                    "login": "012 345 678",
                     "password": "password123"
                   },
                   "type": "user"
@@ -19020,8 +19105,26 @@
                         "additionalProperties": false,
                         "properties": {
                           "email": {
-                            "description": "The email to use for retrieving the user.",
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "Same as `login`, kept for older clients."
+                          },
+                          "login": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ],
+                            "description": "The user's phone number (012 345 678) or email."
                           },
                           "password": {
                             "description": "The password to check for the matching user.",
@@ -19029,7 +19132,6 @@
                           }
                         },
                         "required": [
-                          "email",
                           "password"
                         ],
                         "type": "object"

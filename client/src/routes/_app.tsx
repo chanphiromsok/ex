@@ -61,7 +61,7 @@ function Shell() {
       </nav>
 
       <div className="border-t border-rail-line px-4 py-4">
-        <p className="truncate text-[13px] font-medium text-on-rail">{session.email}</p>
+        <p className="truncate text-[13px] font-medium text-on-rail">{session.label}</p>
         <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-on-rail-soft">
           <span className="capitalize">{session.role}</span>
           {station && (

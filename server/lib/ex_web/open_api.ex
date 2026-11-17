@@ -18,7 +18,7 @@ defmodule ExWeb.OpenApi do
     {:post, "/users/sign-in"} => %{
       "data" => %{
         "type" => "user",
-        "attributes" => %{"email" => "staff@example.com", "password" => "password123"}
+        "attributes" => %{"login" => "012 345 678", "password" => "password123"}
       }
     },
     {:post, "/shipments"} => %{

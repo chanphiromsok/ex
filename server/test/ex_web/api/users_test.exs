@@ -40,6 +40,128 @@ defmodule ExWeb.Api.UsersTest do
     end
   end
 
+  describe "signing in with a phone number" do
+    setup do
+      station = station!()
+
+      staff =
+        Ash.create!(
+          Ex.Accounts.User,
+          %{
+            phone: "012 345 678",
+            password: "password123",
+            password_confirmation: "password123",
+            role: :staff,
+            station_id: station.id
+          },
+          action: :register_with_password,
+          authorize?: false
+        )
+
+      %{staff: staff, station: station}
+    end
+
+    defp login(conn, login, password \\ "password123") do
+      conn
+      |> put_req_header("accept", "application/vnd.api+json")
+      |> put_req_header("content-type", "application/vnd.api+json")
+      |> post("/api/v1/users/sign-in", %{
+        data: %{type: "user", attributes: %{login: login, password: password}}
+      })
+    end
+
+    test "the phone is stored as 855…, the email is empty", %{staff: staff} do
+      assert staff.phone == "85512345678"
+      assert staff.email == nil
+    end
+
+    for login <- ["012 345 678", "012345678", "+855 12 345 678", "85512345678"] do
+      test "signs in with #{login}", %{conn: conn, staff: staff} do
+        body = conn |> login(unquote(login)) |> json_response(201)
+        assert body["data"]["id"] == staff.id
+        assert body["data"]["attributes"]["phone"] == "85512345678"
+        assert is_binary(body["meta"]["token"])
+        assert is_binary(body["meta"]["refresh_token"])
+      end
+    end
+
+    test "rejects a wrong password and an unknown phone the same way", %{conn: conn} do
+      assert conn |> login("012 345 678", "nope-nope") |> json_response(403)
+      assert conn |> login("099 999 999") |> json_response(403)
+    end
+
+    test "a user with both signs in with either", %{conn: conn} do
+      user =
+        Ash.create!(
+          Ex.Accounts.User,
+          %{
+            email: "both@example.com",
+            phone: "097 111 2222",
+            password: "password123",
+            password_confirmation: "password123",
+            role: :admin
+          },
+          action: :register_with_password,
+          authorize?: false
+        )
+
+      assert conn |> login("097 111 2222") |> json_response(201) |> get_in(["data", "id"]) ==
+               user.id
+
+      assert conn |> login("both@example.com") |> json_response(201) |> get_in(["data", "id"]) ==
+               user.id
+
+      assert sign_in(conn, "both@example.com", "password123") |> json_response(201)
+    end
+
+    test "an Admin creates a staff user with only a phone", %{conn: conn, station: station} do
+      conn = signed_in(conn, user!(:admin))
+
+      body =
+        post(
+          conn,
+          "/api/v1/users",
+          %{
+            data: %{
+              type: "user",
+              attributes: %{
+                phone: "097 555 1234",
+                password: "password123",
+                password_confirmation: "password123",
+                role: "staff",
+                station_id: station.id
+              }
+            }
+          }
+        )
+        |> json_response(201)
+
+      assert body["data"]["attributes"]["phone"] == "855975551234"
+    end
+
+    test "a user with neither phone nor email, a bad phone, or a taken phone is rejected", %{
+      conn: conn,
+      station: station
+    } do
+      conn = signed_in(conn, user!(:admin))
+
+      base = %{
+        password: "password123",
+        password_confirmation: "password123",
+        role: "staff",
+        station_id: station.id
+      }
+
+      create = fn attrs ->
+        post(conn, "/api/v1/users", %{data: %{type: "user", attributes: Map.merge(base, attrs)}})
+      end
+
+      assert create.(%{}) |> json_response(400)
+      assert create.(%{phone: "12345"}) |> json_response(400)
+      assert create.(%{phone: "012 345 678"}) |> json_response(400)
+    end
+  end
+
   describe "sparse fields" do
     test "the fields listed as default in the OpenAPI spec are accepted", %{conn: conn} do
       admin = user!(:admin)

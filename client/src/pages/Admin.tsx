@@ -1,3 +1,4 @@
+import { formatPhone, isCambodianPhone } from '#/lib/phone'
 import { useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm, useWatch } from 'react-hook-form'
@@ -176,16 +177,20 @@ export function StationSettings() {
 
 const NO_STATION = 'none'
 
+const who = (u: Rec) => (u.phone ? formatPhone(u.phone) : u.email)
+
 const userSchema = z
   .object({
-    email: z.string().trim().min(1, 'Enter an email.').email('Enter a valid email.'),
+    phone: z.string().trim().refine((v) => v === '' || isCambodianPhone(v), 'Enter a Cambodian phone number.'),
+    email: z.string().trim().refine((v) => v === '' || z.email().safeParse(v).success, 'Enter a valid email.'),
     password: z.string().min(8, 'At least 8 characters.'),
     role: z.enum(['staff', 'supervisor', 'admin']),
     station_id: z.string(),
   })
+  .refine((v) => !!v.phone || !!v.email, { path: ['phone'], message: 'Enter a phone number or an email.' })
   .refine((v) => v.role === 'admin' || !!v.station_id, { path: ['station_id'], message: 'Staff and Supervisors need a Station.' })
 
-const blankUser: z.input<typeof userSchema> = { email: '', password: '', role: 'staff', station_id: '' }
+const blankUser: z.input<typeof userSchema> = { phone: '', email: '', password: '', role: 'staff', station_id: '' }
 
 export function Users() {
   const qc = useQueryClient()
@@ -206,14 +211,15 @@ export function Users() {
   const add = useMutation({
     mutationFn: (v: z.infer<typeof userSchema>) =>
       create('/users', 'user', {
-        email: v.email,
+        phone: v.phone || null,
+        email: v.email || null,
         password: v.password,
         password_confirmation: v.password,
         role: v.role,
         station_id: v.role === 'admin' ? null : v.station_id,
       }),
     onSuccess: async (_d, v) => {
-      toast.success(`${v.email} can sign in now`)
+      toast.success(`${v.phone || v.email} can sign in now`)
       form.reset(blankUser)
       await refresh()
     },
@@ -221,10 +227,10 @@ export function Users() {
   const change = useMutation({
     mutationFn: ({ u, attrs }: { u: Rec; attrs: Record<string, unknown>; what: string }) => update(`/users/${u.id}`, 'user', attrs),
     onSuccess: async (_d, { u, what }) => {
-      toast.success(`${u.email}: ${what}`)
+      toast.success(`${who(u)}: ${what}`)
       await refresh()
     },
-    onError: (e, { u }) => toast.error(`Couldn't update ${u.email}`, { description: e instanceof Error ? e.message : String(e) }),
+    onError: (e, { u }) => toast.error(`Couldn't update ${who(u)}`, { description: e instanceof Error ? e.message : String(e) }),
   })
 
   const rows = useMemo(() => (usersQ.data ?? []).filter((u) => roleFilter === 'all' || u.role === roleFilter), [usersQ.data, roleFilter])
@@ -233,9 +239,14 @@ export function Users() {
     () => [
       {
         id: 'email',
-        accessorFn: (u) => u.email,
-        header: 'Email',
-        cell: ({ getValue }) => <span className="font-medium">{getValue<string>()}</span>,
+        accessorFn: (u) => `${u.phone ?? ''} ${u.email ?? ''} ${formatPhone(u.phone).replaceAll(' ', '')}`,
+        header: 'Sign-in',
+        cell: ({ row }) => (
+          <span className="block">
+            <span className="font-medium">{who(row.original)}</span>
+            {row.original.phone && row.original.email && <span className="block text-xs text-ink-faint">{row.original.email}</span>}
+          </span>
+        ),
       },
       {
         id: 'role',
@@ -248,7 +259,7 @@ export function Users() {
               id={`role-${u.id}`}
               size="sm"
               className="w-36"
-              aria-label={`Role for ${u.email}`}
+              aria-label={`Role for ${who(u)}`}
               value={u.role}
               options={ROLES}
               disabled={change.isPending && change.variables?.u.id === u.id}
@@ -267,7 +278,7 @@ export function Users() {
             <Combobox
               id={`station-${u.id}`}
               className="h-8 w-48"
-              aria-label={`Station for ${u.email}`}
+              aria-label={`Station for ${who(u)}`}
               value={u.station_id ?? NO_STATION}
               options={[{ value: NO_STATION, label: 'No Station' }, ...stationOptions]}
               searchPlaceholder="Search Stations"
@@ -296,7 +307,7 @@ export function Users() {
           data={rows}
           loading={usersQ.isPending}
           empty={roleFilter === 'all' ? 'No users yet.' : `No ${roleLabel(roleFilter)} users.`}
-          search={{ placeholder: 'Search by email or Station' }}
+          search={{ placeholder: 'Search by phone, email or Station' }}
           toolbar={
             <Segmented
               aria-label="Filter by role"
@@ -312,10 +323,13 @@ export function Users() {
           <form
             id="user-form"
             noValidate
-            className="grid items-start gap-3 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_150px_1fr_auto]"
+            className="grid items-start gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1.2fr_1fr_150px_1fr_auto]"
             onSubmit={form.handleSubmit((v) => add.mutate(v))}
           >
-            <FormField control={form.control} name="email" id="new-user-email" label="Email">
+            <FormField control={form.control} name="phone" id="new-user-phone" label="Phone number" description="Used to sign in.">
+              {(f) => <Input {...f} inputMode="tel" autoComplete="off" className="tabular" />}
+            </FormField>
+            <FormField control={form.control} name="email" id="new-user-email" label="Email (optional)">
               {(f) => <Input {...f} type="email" autoComplete="off" />}
             </FormField>
             <FormField control={form.control} name="password" id="new-user-password" label="Password" description="At least 8 characters.">

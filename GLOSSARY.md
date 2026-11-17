@@ -29,7 +29,7 @@ A province or city that contains one or more Stations. Locations, Stations, Size
 _Avoid_: City (as a record)
 
 **Station Staff**:
-A user who works at one Station and serves walk-in customers.
+A user who works at one Station and serves walk-in customers. Staff mostly sign in with their phone number; an email is optional. A user needs at least one of the two.
 _Avoid_: Agent, clerk, operator
 
 **Supervisor**:
