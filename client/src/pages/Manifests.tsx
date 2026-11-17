@@ -182,10 +182,12 @@ function Detail({ id, session, stations, onBack }: { id: string; session: Sessio
   const m = manifest.data
   const refresh = () => qc.invalidateQueries({ queryKey: apiKey('manifests') })
   const done = { onSuccess: refresh, onError: (e: Error) => toast.error(e.message) }
+  const clearErrors = () => { scan.reset(); depart.reset(); arrive.reset() }
 
   const scan = useMutation({
     mutationFn: (no: number) => update(`/manifests/${id}/scan`, 'manifest', { invoice_no: no }),
     onSuccess: (_r, no) => {
+      clearErrors()
       toast.success(`Invoice #${no} scanned`)
       setInvoice('')
       refresh()
@@ -193,8 +195,8 @@ function Detail({ id, session, stations, onBack }: { id: string; session: Sessio
     },
     onError: (e: Error) => toast.error(e.message),
   })
-  const depart = useMutation({ mutationFn: () => update(`/manifests/${id}/depart`, 'manifest', {}), ...done, onSuccess: () => { toast.success('Bus marked as departed'); refresh(); qc.invalidateQueries({ queryKey: apiKey('shipments') }) } })
-  const arrive = useMutation({ mutationFn: () => update(`/manifests/${id}/arrive`, 'manifest', {}), ...done, onSuccess: () => { toast.success('Manifest closed'); refresh(); qc.invalidateQueries({ queryKey: apiKey('shipments') }) } })
+  const depart = useMutation({ mutationFn: () => update(`/manifests/${id}/depart`, 'manifest', {}), ...done, onSuccess: () => { clearErrors(); toast.success('Bus marked as departed'); refresh(); qc.invalidateQueries({ queryKey: apiKey('shipments') }) } })
+  const arrive = useMutation({ mutationFn: () => update(`/manifests/${id}/arrive`, 'manifest', {}), ...done, onSuccess: () => { clearErrors(); toast.success('Manifest closed'); refresh(); qc.invalidateQueries({ queryKey: apiKey('shipments') }) } })
 
   if (!m) return <Page title="Manifest" onBack={onBack} backLabel="Manifests"><Err error={manifest.error} /></Page>
 
