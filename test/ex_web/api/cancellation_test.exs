@@ -150,7 +150,7 @@ defmodule ExWeb.Api.CancellationTest do
       ctx.supervisor |> decide(rid, "approve") |> json_response(400)
     end
 
-    test "only an origin Station Supervisor can decide, and staff cannot", ctx do
+    test "only an origin Station Supervisor or an Admin can decide, and staff cannot", ctx do
       id = send_shipment(ctx.staff, ctx.sr)
       %{"data" => %{"id" => rid}} = ctx.staff |> request_cancel(id) |> json_response(201)
 
@@ -174,11 +174,9 @@ defmodule ExWeb.Api.CancellationTest do
   end
 
   describe "approval after departure or by an Admin" do
-    test "an Admin cannot approve, and approval is invalid once In Transit", ctx do
+    test "an Admin can approve, and approval is invalid once In Transit", ctx do
       id = send_shipment(ctx.staff, ctx.sr)
       %{"data" => %{"id" => rid}} = ctx.staff |> request_cancel(id) |> json_response(201)
-
-      ctx.admin |> decide(rid, "approve") |> json_response(403)
 
       ctx.staff
       |> patch("/api/v1/shipments/#{id}/in-transit", %{

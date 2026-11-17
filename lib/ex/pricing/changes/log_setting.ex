@@ -19,7 +19,7 @@ defmodule Ex.Pricing.Changes.LogSetting do
             %{station_id: record.id, requires_approval: record.cancellation_requires_approval}
 
           :station_overdue_threshold ->
-            %{station_id: record.id, hours: record.overdue_threshold_hours}
+            %{station_id: record.id, days: record.overdue_threshold_days}
         end
 
       Ash.create!(

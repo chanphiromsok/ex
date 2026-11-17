@@ -110,7 +110,7 @@ defmodule Ex.Shipping.Shipment do
       index :overdue do
         route "/overdue"
 
-        description "Overdue Shipments: past their destination Station's Overdue Threshold since departure. Optional `destination_station_id`."
+        description "Arrived Shipments waiting longer than their destination Station's Overdue Threshold (days since arrival). Staff and Supervisors see their own Station; an Admin sees all and may pass `destination_station_id`."
       end
 
       index :read do
@@ -150,12 +150,17 @@ defmodule Ex.Shipping.Shipment do
     defaults [:read]
 
     read :overdue do
-      description "In Transit or Arrived Shipments past the destination Station's Overdue Threshold."
+      description """
+      Arrived Shipments that have waited longer than the destination Station's Overdue Threshold (in days),
+      counted from the moment they arrived. Station staff and Supervisors see only their own Station;
+      an Admin sees every Station and can narrow it with `destination_station_id`.
+      """
+
       argument :destination_station_id, :uuid
 
       filter expr(
-               status in [:in_transit, :arrived] and
-                 departed_at < ago(destination_station.overdue_threshold_hours, :hour) and
+               status == :arrived and
+                 arrived_at < ago(destination_station.overdue_threshold_days, :day) and
                  (is_nil(^arg(:destination_station_id)) or
                     destination_station_id == ^arg(:destination_station_id))
              )
@@ -237,6 +242,12 @@ defmodule Ex.Shipping.Shipment do
   policies do
     policy action_type(:read) do
       authorize_if {Ex.Accounts.Checks.HasPermission, permission: :"shipment.read"}
+    end
+
+    # The Overdue list is limited to the caller's own Station; an Admin has no Station and sees all.
+    policy action(:overdue) do
+      authorize_if actor_attribute_equals(:role, :admin)
+      authorize_if expr(destination_station_id == ^actor(:station_id))
     end
 
     policy action(:create) do
@@ -350,6 +361,11 @@ defmodule Ex.Shipping.Shipment do
     first :departed_at, :status_events, :inserted_at do
       public? true
       filter expr(status == :in_transit)
+    end
+
+    first :arrived_at, :status_events, :inserted_at do
+      public? true
+      filter expr(status == :arrived)
     end
 
     first :status, :status_events, :status do

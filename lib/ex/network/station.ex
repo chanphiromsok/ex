@@ -88,7 +88,7 @@ defmodule Ex.Network.Station do
 
     update :set_overdue_threshold do
       require_atomic? false
-      accept [:overdue_threshold_hours]
+      accept [:overdue_threshold_days]
       change {Ex.Pricing.Changes.LogSetting, kind: :station_overdue_threshold}
     end
   end
@@ -112,11 +112,11 @@ defmodule Ex.Network.Station do
     attribute :name_en, :string, allow_nil?: false, public?: true
     attribute :name_km, :string, allow_nil?: false, public?: true
 
-    attribute :overdue_threshold_hours, :integer,
+    attribute :overdue_threshold_days, :integer,
       allow_nil?: false,
-      default: 48,
+      default: 2,
       public?: true,
-      constraints: [min: 1, max: 720]
+      constraints: [min: 1, max: 90]
 
     attribute :active, :boolean, allow_nil?: false, default: true, public?: true
 
