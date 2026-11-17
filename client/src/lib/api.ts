@@ -43,7 +43,8 @@ function flatten(r: any, included: any[]): Rec {
 
 export async function list(path: string): Promise<Rec[]> {
   const j = await call('GET', path)
-  return (j.data ?? []).map((r: any) => flatten(r, j.included ?? []))
+  const rows = Array.isArray(j.data) ? j.data : j.data ? [j.data] : []
+  return rows.map((r: any) => flatten(r, j.included ?? []))
 }
 export async function get(path: string): Promise<Rec> {
   const j = await call('GET', path)

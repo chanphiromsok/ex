@@ -39,6 +39,7 @@ export function Shipments({ session }: { session: Session }) {
 function Detail({ id, session, onBack }: { id: string; session: Session; onBack: () => void }) {
   const [s, setS] = useState<Rec | null>(null)
   const [error, setError] = useState<unknown>(null)
+  const [itemNames, setItemNames] = useState<Record<string, string>>({})
   const [phone, setPhone] = useState('')
   const [text, setText] = useState('')
   const [corr, setCorr] = useState({ name: '', phone: '', reason: '' })
@@ -49,6 +50,9 @@ function Detail({ id, session, onBack }: { id: string; session: Session; onBack:
   const load = () =>
     get(`/shipments/${id}?include=parcels,sale_items,payments,status_events,notes,receiver_corrections`).then(setS).catch(setError)
   useEffect(() => { load() }, [id])
+  useEffect(() => {
+    list('/sale-items').then((r) => setItemNames(Object.fromEntries(r.map((i) => [i.id, i.name_en])))).catch(() => {})
+  }, [])
 
   const act = (fn: () => Promise<unknown>) => useAction(fn, load)
   const inTransit = act(() => update(`/shipments/${id}/in-transit`, 'shipment', {}))
@@ -72,7 +76,7 @@ function Detail({ id, session, onBack }: { id: string; session: Session; onBack:
         <Table head={['Parcel', 'Measure', 'Charge']}
           rows={(s.parcels ?? []).map((p: Rec, i: number) => [i + 1, p.measurement_type === 'kg' ? `${p.weight_kg} kg` : 'by size', money(p.chargeable_amount)])} />
         <Table head={['Item', 'Qty', 'Unit']}
-          rows={(s.sale_items ?? []).map((p: Rec) => [p.sale_item_id.slice(0, 8), p.quantity, money(p.unit_price)])} />
+          rows={(s.sale_items ?? []).map((p: Rec) => [itemNames[p.sale_item_id] ?? p.sale_item_id.slice(0, 8), p.quantity, money(p.unit_price)])} />
         <Table head={['Payment', 'Method', 'Amount', 'When']}
           rows={(s.payments ?? []).map((p: Rec) => [p.kind, p.method, money(p.amount), when(p.inserted_at)])} />
         <Table head={['#', 'Status', 'When']}

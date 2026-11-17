@@ -2,9 +2,13 @@ import { useEffect, useState } from 'react'
 import { rawGet, money } from '#/lib/api'
 import { Card, Err, Page, Table, btn, input } from '#/components/ui'
 
-const today = () => new Date().toISOString().slice(0, 10)
+// Report days are Asia/Phnom_Penh (UTC+7) days, sent to the API as UTC instants (ADR-0005).
+const PP_OFFSET_MS = 7 * 3600e3
+const ppDay = (ms: number) => new Date(ms + PP_OFFSET_MS).toISOString().slice(0, 10)
+const today = () => ppDay(Date.now())
 const monthStart = () => today().slice(0, 8) + '01'
-const tomorrow = () => new Date(Date.now() + 864e5).toISOString().slice(0, 10)
+const tomorrow = () => ppDay(Date.now() + 864e5)
+const dayStartUtc = (day: string) => new Date(`${day}T00:00:00+07:00`).toISOString()
 
 function useReport(kind: 'cash' | 'cancellations') {
   const [from, setFrom] = useState(monthStart())
@@ -12,7 +16,7 @@ function useReport(kind: 'cash' | 'cancellations') {
   const [rows, setRows] = useState<any[]>([])
   const [error, setError] = useState<unknown>(null)
   const load = () =>
-    rawGet(`/reports/${kind}?from=${from}&to=${to}`).then((r) => { setRows(Array.isArray(r) ? r : []); setError(null) }).catch(setError)
+    rawGet(`/reports/${kind}?from=${encodeURIComponent(dayStartUtc(from))}&to=${encodeURIComponent(dayStartUtc(to))}`).then((r) => { setRows(Array.isArray(r) ? r : []); setError(null) }).catch(setError)
   useEffect(() => { load() }, [])
   return { from, setFrom, to, setTo, rows, error, load }
 }

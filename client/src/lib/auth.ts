@@ -2,6 +2,7 @@ import { client } from '#/api/client.gen'
 
 export type Session = {
   token: string
+  userId: string
   email: string
   role: 'staff' | 'supervisor' | 'admin'
   stationId: string | null
@@ -46,6 +47,7 @@ export async function signIn(email: string, password: string): Promise<Session> 
   const attrs = body.data.attributes
   const session: Session = {
     token: body.meta.token,
+    userId: body.data.id,
     email: attrs.email,
     role: attrs.role,
     stationId: attrs.station_id,

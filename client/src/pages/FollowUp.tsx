@@ -46,7 +46,7 @@ export function Cancellations({ session }: { session: Session }) {
         <Table head={['Reason', 'Status', 'Fee', 'Refund', 'Requested', '']}
           rows={rows.map((r) => [
             r.reason, r.status, money(r.fee), money(r.refund_amount), when(r.inserted_at),
-            canApprove && r.status === 'pending' ? (
+            canApprove && r.status === 'pending' && r.requested_by_id !== session.userId ? (
               <span key="a" className="flex gap-1">
                 <button className={btn} disabled={decide.busy} onClick={() => decide.run(r.id, 'approve')}>Approve</button>
                 <button className={btn2} disabled={decide.busy || !why} onClick={() => decide.run(r.id, 'reject')}>Reject</button>
