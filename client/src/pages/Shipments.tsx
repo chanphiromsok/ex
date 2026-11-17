@@ -19,7 +19,10 @@ import { Textarea } from '@/components/ui/textarea'
 const stationName = (stations: Rec[] | undefined, id?: string) => stations?.find((s) => s.id === id)?.name_en ?? '—'
 
 export function Shipments({ session }: { session: Session }) {
-  const shipments = useQuery(listQuery('/shipments'))
+  const [showDone, setShowDone] = useState(false)
+  const shipments = useQuery(
+    listQuery(showDone ? '/shipments' : '/shipments?filter[status][in][]=received&filter[status][in][]=in_transit&filter[status][in][]=arrived'),
+  )
   const stations = useQuery(listQuery('/stations'))
   const [selected, setSelected] = useState<string | null>(null)
 
@@ -81,7 +84,14 @@ export function Shipments({ session }: { session: Session }) {
 
   const rows = shipments.data ?? []
   return (
-    <Page title="Shipments" subtitle={shipments.isSuccess ? `${rows.length.toLocaleString('en-US')} on record` : undefined}>
+    <Page title="Shipments" subtitle={shipments.isSuccess ? `${rows.length.toLocaleString('en-US')} ${showDone ? 'on record' : 'still moving'}` : undefined}
+      action={
+        <label className="flex items-center gap-2 text-sm text-ink-soft">
+          <input id="show-completed" type="checkbox" checked={showDone} onChange={(e) => setShowDone(e.target.checked)} />
+          Show completed
+        </label>
+      }
+    >
       <Err error={shipments.error} />
       <Card flush>
         <DataTable
@@ -103,7 +113,7 @@ export function Shipments({ session }: { session: Session }) {
 function Person({ name, phone }: { name?: string; phone?: string }) {
   return (
     <span className="block max-w-56 min-w-0">
-      <span className="block truncate text-ink">{name}</span>
+      {name && <span className="block truncate text-ink">{name}</span>}
       {phone && <span className="tabular block text-xs text-ink-faint">{formatPhone(phone)}</span>}
     </span>
   )
@@ -336,14 +346,14 @@ function Detail({ id, session, onBack }: { id: string; session: Session; onBack:
             <dl className="grid divide-thread sm:grid-cols-2 sm:divide-x">
               <div className="px-5 py-4">
                 <dt className="text-xs text-ink-soft">Sender</dt>
-                <dd className="mt-1 font-medium">{s.sender_name}</dd>
+                <dd className="mt-1 font-medium">{s.sender_name || '—'}</dd>
                 <dd className="tabular text-[13px] text-ink-soft">{formatPhone(s.sender_phone)}</dd>
               </div>
               <div className="border-t border-thread px-5 py-4 sm:border-t-0">
                 <dt className="flex items-center gap-2 text-xs text-ink-soft">
                   Receiver {corrected && <Pill tone="turmeric">Corrected</Pill>}
                 </dt>
-                <dd className="mt-1 font-medium">{s.current_receiver_name}</dd>
+                <dd className="mt-1 font-medium">{s.current_receiver_name || '—'}</dd>
                 <dd className="tabular text-[13px] text-ink-soft">{formatPhone(s.current_receiver_phone)}</dd>
                 {corrected && (
                   <dd className="mt-1 text-xs text-ink-faint">

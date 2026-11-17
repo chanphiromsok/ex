@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { Minus, Plus, Printer, Trash2 } from 'lucide-react'
 import { create, money } from '#/lib/api'
 import { apiKey, listQuery } from '#/lib/queries'
-import { phoneSchema } from '#/lib/phone'
+import { formatPhone, phoneSchema } from '#/lib/phone'
 import { Bilingual, Button, Card, Err, Num, Page } from '#/components/kit'
 import { Combobox, FormField, Segmented } from '#/components/form'
 import { Input } from '@/components/ui/input'
@@ -33,9 +33,7 @@ const parcel = z
   })
 
 const schema = z.object({
-  sender_name: z.string().trim().min(1, 'Enter the Sender name.'),
   sender_phone: phone,
-  receiver_name: z.string().trim().min(1, 'Enter the Receiver name.'),
   receiver_phone: phone,
   destination: z.string().min(1, 'Choose a Destination Station.'),
   declared: z.string().trim().regex(/^\d*$/, 'Whole riel only, no commas.'),
@@ -48,9 +46,7 @@ type ParcelValues = Values['parcels'][number]
 
 const blankParcel = (): ParcelValues => ({ mode: 'kg', weight: '', size: '' })
 const blank = (method: Values['method'] = 'cash', destination = ''): Values => ({
-  sender_name: '',
   sender_phone: '',
-  receiver_name: '',
   receiver_phone: '',
   destination,
   declared: '',
@@ -96,9 +92,7 @@ export function NewShipment({ stationId }: { stationId: string | null }) {
     mutationFn: (v: Values) => {
       const attributes: Record<string, unknown> = {
         idempotency_key: key,
-        sender_name: v.sender_name,
         sender_phone: v.sender_phone,
-        receiver_name: v.receiver_name,
         receiver_phone: v.receiver_phone,
         destination_station_id: v.destination,
         payment_method: v.method,
@@ -138,11 +132,11 @@ export function NewShipment({ stationId }: { stationId: string | null }) {
           <dl className="grid grid-cols-2 gap-4 border-t border-thread pt-4 text-sm">
             <div>
               <dt className="text-xs text-ink-soft">Sender</dt>
-              <dd className="mt-0.5 font-medium">{done.sender_name}</dd>
+              <dd className="mt-0.5 font-medium">{formatPhone(done.sender_phone)}</dd>
             </div>
             <div>
               <dt className="text-xs text-ink-soft">Receiver</dt>
-              <dd className="mt-0.5 font-medium">{done.receiver_name}</dd>
+              <dd className="mt-0.5 font-medium">{formatPhone(done.receiver_phone)}</dd>
             </div>
             {to && (
               <div>
@@ -187,14 +181,8 @@ export function NewShipment({ stationId }: { stationId: string | null }) {
         <div className="min-w-0 space-y-5">
           <Card title="Sender and Receiver">
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormField control={c} name="sender_name" label="Sender name">
-                {(f) => <Input {...f} autoFocus autoComplete="off" />}
-              </FormField>
               <FormField control={c} name="sender_phone" label="Sender phone">
                 {(f) => <Input {...f} inputMode="tel" autoComplete="off" className="tabular" />}
-              </FormField>
-              <FormField control={c} name="receiver_name" label="Receiver name">
-                {(f) => <Input {...f} autoComplete="off" />}
               </FormField>
               <FormField control={c} name="receiver_phone" label="Receiver phone">
                 {(f) => <Input {...f} inputMode="tel" autoComplete="off" className="tabular" />}

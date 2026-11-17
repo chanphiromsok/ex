@@ -2157,7 +2157,7 @@ export type Shipment = {
         /**
          * Field included by default.
          */
-        receiver_name: string;
+        receiver_name?: string | null | unknown;
         /**
          * Field included by default.
          */
@@ -2169,7 +2169,7 @@ export type Shipment = {
         /**
          * Field included by default.
          */
-        sender_name: string;
+        sender_name?: string | null | unknown;
         /**
          * Field included by default.
          */
@@ -3793,13 +3793,13 @@ export type PostApiV1ShipmentsData = {
                     weight_kg?: string | unknown;
                 }>;
                 payment_method: 'cash' | 'bank_transfer' | 'qr';
-                receiver_name: string;
+                receiver_name?: string | unknown;
                 receiver_phone: string;
                 sale_items?: Array<{
                     quantity: number;
                     sale_item_id: string;
                 }> | unknown;
-                sender_name: string;
+                sender_name?: string | unknown;
                 sender_phone: string;
             };
             relationships?: {
