@@ -294,7 +294,7 @@ export function Pricing() {
   const feeForm = useForm({ resolver: zodResolver(feeSchema), defaultValues: { percent: '', cap: '' } })
 
   const savePerKg = useMutation({
-    mutationFn: (v: z.infer<typeof perKgSchema>) => create('/pricing/price-per-kg', 'price-per-kg', { price_per_kg: khr(v.price) }),
+    mutationFn: (v: z.infer<typeof perKgSchema>) => create('/pricing/price-per-kg', 'pricing-setting', { price_per_kg: khr(v.price) }),
     onSuccess: async () => {
       toast.success('Price per kg saved')
       perKgForm.reset()
@@ -302,7 +302,7 @@ export function Pricing() {
     },
   })
   const saveFee = useMutation({
-    mutationFn: (v: z.infer<typeof feeSchema>) => create('/pricing/cancellation-fee', 'cancellation-fee', { cap: khr(v.cap), percent: v.percent }),
+    mutationFn: (v: z.infer<typeof feeSchema>) => create('/pricing/cancellation-fee', 'cancellation-fee-setting', { cap: khr(v.cap), percent: v.percent }),
     onSuccess: async (_d, v) => {
       toast.success(`Cancellation Fee set to ${v.percent}%, capped at ${Number(v.cap).toLocaleString('en-US')} ៛`)
       feeForm.reset()
