@@ -14,6 +14,7 @@ export const MENU: MenuGroup[] = [
     items: [
       { slug: 'new-shipment', label: 'New Shipment', permissions: ['shipment.create'] },
       { slug: 'shipments', label: 'Shipments', permissions: ['shipment.read'] },
+      { slug: 'manifests', label: 'Manifests', permissions: ['shipment.mark_in_transit', 'shipment.read'] },
       { slug: 'overdue', label: 'Overdue', permissions: ['shipment.read'] },
     ],
   },

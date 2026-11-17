@@ -4,6 +4,7 @@ import { findItem } from '#/lib/menu'
 import type { Session } from '#/lib/auth'
 import { NewShipment } from '#/pages/NewShipment'
 import { Shipments } from '#/pages/Shipments'
+import { Manifests } from '#/pages/Manifests'
 import { Overdue, Cancellations, Incidents } from '#/pages/FollowUp'
 import { CashReport, CancellationReport } from '#/pages/Reports'
 import { Pricing } from '#/pages/Pricing'
@@ -13,6 +14,7 @@ import { StationSettings, Users } from '#/pages/Admin'
 const SCREENS: Record<string, (s: Session) => ReactNode> = {
   'new-shipment': (s) => <NewShipment stationId={s.stationId} />,
   shipments: (s) => <Shipments session={s} />,
+  manifests: (s) => <Manifests session={s} />,
   overdue: (s) => <Overdue session={s} />,
   cancellations: (s) => <Cancellations session={s} />,
   incidents: (s) => <Incidents session={s} />,
