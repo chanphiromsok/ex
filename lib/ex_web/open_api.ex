@@ -26,9 +26,7 @@ defmodule ExWeb.OpenApi do
         "type" => "shipment",
         "attributes" => %{
           "idempotency_key" => "6f1c1d0e-8a5b-4f43-9c1e-2b7d9a3f5e10",
-          "sender_name" => "Sok Dara",
           "sender_phone" => "012 345 678",
-          "receiver_name" => "Chea Srey",
           "receiver_phone" => "097 111 2222",
           "destination_station_id" => "00000000-0000-0000-0000-000000000000",
           "payment_method" => "cash",

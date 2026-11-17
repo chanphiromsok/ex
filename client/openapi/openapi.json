@@ -7212,8 +7212,16 @@
                 "type": "string"
               },
               "receiver_name": {
-                "description": "Field included by default.",
-                "type": "string"
+                "anyOf": [
+                  {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Field included by default."
               },
               "receiver_phone": {
                 "description": "Field included by default.",
@@ -7225,8 +7233,16 @@
                 "type": "string"
               },
               "sender_name": {
-                "description": "Field included by default.",
-                "type": "string"
+                "anyOf": [
+                  {
+                    "nullable": true,
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "description": "Field included by default."
               },
               "sender_phone": {
                 "description": "Field included by default.",
@@ -7315,9 +7331,7 @@
             "required": [
               "invoice_no",
               "idempotency_key",
-              "sender_name",
               "sender_phone",
-              "receiver_name",
               "receiver_phone",
               "shipment_total",
               "inserted_at",
@@ -12525,7 +12539,6 @@
                       }
                     ],
                     "payment_method": "cash",
-                    "receiver_name": "Chea Srey",
                     "receiver_phone": "097 111 2222",
                     "sale_items": [
                       {
@@ -12533,7 +12546,6 @@
                         "sale_item_id": "00000000-0000-0000-0000-000000000000"
                       }
                     ],
-                    "sender_name": "Sok Dara",
                     "sender_phone": "012 345 678"
                   },
                   "type": "shipment"
@@ -12632,7 +12644,14 @@
                             "type": "string"
                           },
                           "receiver_name": {
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "receiver_phone": {
                             "type": "string"
@@ -12665,7 +12684,14 @@
                             ]
                           },
                           "sender_name": {
-                            "type": "string"
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
                           },
                           "sender_phone": {
                             "type": "string"
@@ -12673,9 +12699,7 @@
                         },
                         "required": [
                           "idempotency_key",
-                          "sender_name",
                           "sender_phone",
-                          "receiver_name",
                           "receiver_phone",
                           "destination_station_id",
                           "payment_method",

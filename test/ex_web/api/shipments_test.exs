@@ -141,6 +141,14 @@ defmodule ExWeb.Api.ShipmentsTest do
       assert Enum.sum(lines) == amount(shipment["shipment_total"])
     end
 
+    test "names are optional: only the two phones are needed", ctx do
+      attrs = ctx |> attributes() |> Map.drop([:sender_name, :receiver_name])
+      body = ctx.clerk |> send_shipment(attrs) |> json_response(201)
+
+      assert body["data"]["attributes"]["sender_name"] == nil
+      assert body["data"]["attributes"]["receiver_phone"] == "855971112222"
+    end
+
     test "the invoice can be read again by anyone with shipment.read", ctx do
       id =
         ctx.clerk

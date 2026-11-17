@@ -101,9 +101,9 @@ CREATE TABLE shipments (
   origin_station_id uuid NOT NULL REFERENCES stations,
   destination_station_id uuid NOT NULL REFERENCES stations,
   route_id uuid NOT NULL REFERENCES routes,
-  sender_name text NOT NULL,
+  sender_name text,
   sender_phone text NOT NULL CHECK (sender_phone ~ '^855[1-9][0-9]{7,8}$'),  -- normalised by one shared function
-  receiver_name text NOT NULL,
+  receiver_name text,
   receiver_phone text NOT NULL CHECK (receiver_phone ~ '^855[1-9][0-9]{7,8}$'),  -- normalised digits + country code
   declared_value money_with_currency CHECK (is_whole_khr(declared_value) AND (declared_value).amount >= 0),
   shipment_total money_with_currency NOT NULL CHECK (is_whole_khr(shipment_total) AND (shipment_total).amount > 0),

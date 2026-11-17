@@ -303,14 +303,14 @@ defmodule Ex.Shipping.Shipment do
     attribute :idempotency_key, :uuid, allow_nil?: false, public?: true
 
     attribute :sender_name, :string,
-      allow_nil?: false,
+      allow_nil?: true,
       public?: true,
       constraints: [min_length: 1]
 
     attribute :sender_phone, :string, allow_nil?: false, public?: true
 
     attribute :receiver_name, :string,
-      allow_nil?: false,
+      allow_nil?: true,
       public?: true,
       constraints: [min_length: 1]
 
