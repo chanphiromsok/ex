@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { ArrowRight, PackageCheck, Truck, Warehouse } from 'lucide-react'
+import { ArrowRight, PackageCheck, Printer, Truck, Warehouse } from 'lucide-react'
 import { create, money, update, when, type Rec } from '#/lib/api'
 import type { Session } from '#/lib/auth'
 import { apiKey, listQuery, recordQuery } from '#/lib/queries'
@@ -330,9 +330,14 @@ export function ShipmentDetail({ id, session }: { id: string; session: Session }
         </span>
       }
       action={
-        <div className="text-right">
-          <p className="text-xs text-ink-soft">Shipment Total</p>
-          <Num className="text-[22px] font-semibold tracking-[-0.01em]">{money(s.shipment_total)}</Num>
+        <div className="flex items-center gap-4">
+          <Button id="open-invoice" variant="outline" icon={<Printer aria-hidden className="size-4" />} onClick={() => navigate({ to: '/shipments/$id/invoice', params: { id } })}>
+            Invoice
+          </Button>
+          <div className="text-right">
+            <p className="text-xs text-ink-soft">Shipment Total</p>
+            <Num className="text-[22px] font-semibold tracking-[-0.01em]">{money(s.shipment_total)}</Num>
+          </div>
         </div>
       }
     >

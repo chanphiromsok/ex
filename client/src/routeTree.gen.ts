@@ -28,7 +28,8 @@ import { Route as AppManifestsIndexRouteImport } from './routes/_app/manifests.i
 import { Route as AppManifestsIdRouteImport } from './routes/_app/manifests.$id'
 import { Route as AppManifestsNewRouteImport } from './routes/_app/manifests.new'
 import { Route as AppShipmentsIndexRouteImport } from './routes/_app/shipments.index'
-import { Route as AppShipmentsIdRouteImport } from './routes/_app/shipments.$id'
+import { Route as AppShipmentsIdIndexRouteImport } from './routes/_app/shipments.$id.index'
+import { Route as AppShipmentsIdInvoiceRouteImport } from './routes/_app/shipments.$id.invoice'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -124,9 +125,14 @@ const AppShipmentsIndexRoute = AppShipmentsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppShipmentsRoute,
 } as any)
-const AppShipmentsIdRoute = AppShipmentsIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
+const AppShipmentsIdIndexRoute = AppShipmentsIdIndexRouteImport.update({
+  id: '/$id/',
+  path: '/$id/',
+  getParentRoute: () => AppShipmentsRoute,
+} as any)
+const AppShipmentsIdInvoiceRoute = AppShipmentsIdInvoiceRouteImport.update({
+  id: '/$id/invoice',
+  path: '/$id/invoice',
   getParentRoute: () => AppShipmentsRoute,
 } as any)
 
@@ -147,9 +153,10 @@ export interface FileRoutesByFullPath {
   '/users': typeof AppUsersRoute
   '/manifests/$id': typeof AppManifestsIdRoute
   '/manifests/new': typeof AppManifestsNewRoute
-  '/shipments/$id': typeof AppShipmentsIdRoute
   '/manifests/': typeof AppManifestsIndexRoute
   '/shipments/': typeof AppShipmentsIndexRoute
+  '/shipments/$id/invoice': typeof AppShipmentsIdInvoiceRoute
+  '/shipments/$id/': typeof AppShipmentsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -166,9 +173,10 @@ export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/manifests/$id': typeof AppManifestsIdRoute
   '/manifests/new': typeof AppManifestsNewRoute
-  '/shipments/$id': typeof AppShipmentsIdRoute
   '/manifests': typeof AppManifestsIndexRoute
   '/shipments': typeof AppShipmentsIndexRoute
+  '/shipments/$id/invoice': typeof AppShipmentsIdInvoiceRoute
+  '/shipments/$id': typeof AppShipmentsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -189,9 +197,10 @@ export interface FileRoutesById {
   '/_app/': typeof AppIndexRoute
   '/_app/manifests/$id': typeof AppManifestsIdRoute
   '/_app/manifests/new': typeof AppManifestsNewRoute
-  '/_app/shipments/$id': typeof AppShipmentsIdRoute
   '/_app/manifests/': typeof AppManifestsIndexRoute
   '/_app/shipments/': typeof AppShipmentsIndexRoute
+  '/_app/shipments/$id/invoice': typeof AppShipmentsIdInvoiceRoute
+  '/_app/shipments/$id/': typeof AppShipmentsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -212,9 +221,10 @@ export interface FileRouteTypes {
     | '/users'
     | '/manifests/$id'
     | '/manifests/new'
-    | '/shipments/$id'
     | '/manifests/'
     | '/shipments/'
+    | '/shipments/$id/invoice'
+    | '/shipments/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -231,9 +241,10 @@ export interface FileRouteTypes {
     | '/'
     | '/manifests/$id'
     | '/manifests/new'
-    | '/shipments/$id'
     | '/manifests'
     | '/shipments'
+    | '/shipments/$id/invoice'
+    | '/shipments/$id'
   id:
     | '__root__'
     | '/_app'
@@ -253,9 +264,10 @@ export interface FileRouteTypes {
     | '/_app/'
     | '/_app/manifests/$id'
     | '/_app/manifests/new'
-    | '/_app/shipments/$id'
     | '/_app/manifests/'
     | '/_app/shipments/'
+    | '/_app/shipments/$id/invoice'
+    | '/_app/shipments/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -398,11 +410,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppShipmentsIndexRouteImport
       parentRoute: typeof AppShipmentsRoute
     }
-    '/_app/shipments/$id': {
-      id: '/_app/shipments/$id'
+    '/_app/shipments/$id/': {
+      id: '/_app/shipments/$id/'
       path: '/$id'
-      fullPath: '/shipments/$id'
-      preLoaderRoute: typeof AppShipmentsIdRouteImport
+      fullPath: '/shipments/$id/'
+      preLoaderRoute: typeof AppShipmentsIdIndexRouteImport
+      parentRoute: typeof AppShipmentsRoute
+    }
+    '/_app/shipments/$id/invoice': {
+      id: '/_app/shipments/$id/invoice'
+      path: '/$id/invoice'
+      fullPath: '/shipments/$id/invoice'
+      preLoaderRoute: typeof AppShipmentsIdInvoiceRouteImport
       parentRoute: typeof AppShipmentsRoute
     }
   }
@@ -425,13 +444,15 @@ const AppManifestsRouteWithChildren = AppManifestsRoute._addFileChildren(
 )
 
 interface AppShipmentsRouteChildren {
-  AppShipmentsIdRoute: typeof AppShipmentsIdRoute
   AppShipmentsIndexRoute: typeof AppShipmentsIndexRoute
+  AppShipmentsIdInvoiceRoute: typeof AppShipmentsIdInvoiceRoute
+  AppShipmentsIdIndexRoute: typeof AppShipmentsIdIndexRoute
 }
 
 const AppShipmentsRouteChildren: AppShipmentsRouteChildren = {
-  AppShipmentsIdRoute: AppShipmentsIdRoute,
   AppShipmentsIndexRoute: AppShipmentsIndexRoute,
+  AppShipmentsIdInvoiceRoute: AppShipmentsIdInvoiceRoute,
+  AppShipmentsIdIndexRoute: AppShipmentsIdIndexRoute,
 }
 
 const AppShipmentsRouteWithChildren = AppShipmentsRoute._addFileChildren(

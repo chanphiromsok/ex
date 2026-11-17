@@ -161,6 +161,10 @@
   );
 }
 
+@page {
+  margin: 10mm;
+}
+
 @media print {
   body {
     background: white;
@@ -168,6 +172,32 @@
 
   .no-print {
     display: none !important;
+  }
+
+  /* Only the Invoice prints, wherever it sits on the page. */
+  body * {
+    visibility: hidden;
+  }
+
+  #invoice,
+  #invoice * {
+    visibility: visible;
+  }
+
+  #invoice {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+
+  /* An Invoice prints as a plain receipt: no frame, no rounded corners. */
+  .invoice-print {
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
   }
 }
 

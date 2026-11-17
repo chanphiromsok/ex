@@ -7,8 +7,9 @@ import { toast } from 'sonner'
 import { Minus, Plus, Printer, Trash2 } from 'lucide-react'
 import { create, money } from '#/lib/api'
 import { apiKey, listQuery } from '#/lib/queries'
-import { formatPhone, phoneSchema } from '#/lib/phone'
+import { phoneSchema } from '#/lib/phone'
 import { Bilingual, Button, Card, Err, Num, Page } from '#/components/kit'
+import { InvoiceLoader } from '#/components/invoice'
 import { Combobox, FormField, Segmented } from '#/components/form'
 import { Input } from '@/components/ui/input'
 
@@ -121,49 +122,17 @@ export function NewShipment({ stationId }: { stationId: string | null }) {
 
   const done = submit.data
   if (done) {
-    const to = stationsQ.data?.find((s) => s.id === done.destination_station_id)
     return (
       <Page title="Shipment created" subtitle="Payment taken. Hand the printed Invoice to the Sender.">
-        <Card className="max-w-xl">
-          <p className="text-[13px] text-ink-soft">Invoice Number</p>
-          <p id="invoice-no" className="tabular mt-0.5 text-[40px] leading-none font-semibold tracking-[-0.02em]">
-            #{done.invoice_no}
-          </p>
-          <dl className="grid grid-cols-2 gap-4 border-t border-thread pt-4 text-sm">
-            <div>
-              <dt className="text-xs text-ink-soft">Sender</dt>
-              <dd className="mt-0.5 font-medium">{formatPhone(done.sender_phone)}</dd>
-            </div>
-            <div>
-              <dt className="text-xs text-ink-soft">Receiver</dt>
-              <dd className="mt-0.5 font-medium">{formatPhone(done.receiver_phone)}</dd>
-            </div>
-            {to && (
-              <div>
-                <dt className="text-xs text-ink-soft">Destination Station</dt>
-                <dd className="mt-0.5 font-medium">{to.name_en}</dd>
-              </div>
-            )}
-            <div>
-              <dt className="text-xs text-ink-soft">Status</dt>
-              <dd className="mt-0.5 font-medium">{done.status_label_en}</dd>
-            </div>
-          </dl>
-          <div className="flex items-baseline justify-between border-t border-thread pt-4">
-            <span className="text-sm text-ink-soft">Shipment Total paid</span>
-            <Num className="text-xl font-semibold">
-              <span id="invoice-total">{money(done.shipment_total)}</span>
-            </Num>
-          </div>
-          <div className="no-print flex gap-2 pt-1">
-            <Button icon={<Printer aria-hidden className="size-4" />} onClick={() => window.print()}>
-              Print Invoice
-            </Button>
-            <Button id="new-another" variant="outline" onClick={again}>
-              New Shipment
-            </Button>
-          </div>
-        </Card>
+        <InvoiceLoader id={done.id} />
+        <div className="no-print mx-auto flex w-full max-w-[420px] gap-2 pt-4">
+          <Button id="print-invoice" icon={<Printer aria-hidden className="size-4" />} onClick={() => window.print()}>
+            Print Invoice
+          </Button>
+          <Button id="new-another" variant="outline" onClick={again}>
+            New Shipment
+          </Button>
+        </div>
       </Page>
     )
   }
