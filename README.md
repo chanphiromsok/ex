@@ -1,18 +1,11 @@
-# Ex
+# Express Cargo
 
-To start your Phoenix server:
+Parcel counter system for Cambodia.
 
-* Run `mix setup` to install and setup dependencies
-* Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+| Folder | What | Run |
+| --- | --- | --- |
+| `server/` | Phoenix + Ash JSON:API backend, Postgres | `cd server && mix setup && mix phx.server` (port 4000) |
+| `client/` | Staff portal, TanStack Start + React | `cd client && pnpm install && pnpm dev` (port 3000, proxies `/api` to 4000) |
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://phoenix.hexdocs.pm/deployment.html).
-
-## Learn more
-
-* Official website: https://www.phoenixframework.org/
-* Guides: https://phoenix.hexdocs.pm/overview.html
-* Docs: https://phoenix.hexdocs.pm
-* Forum: https://elixirforum.com/c/phoenix-forum
-* Source: https://github.com/phoenixframework/phoenix
+- Docker (app + Postgres): `cd server && docker compose up --build`
+- Domain terms: `GLOSSARY.md`. Decisions and deploy notes: `docs/`.

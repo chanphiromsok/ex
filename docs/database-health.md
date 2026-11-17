@@ -107,4 +107,4 @@ Register it in a **`.mcp.json`** at the repo root (leading dot; `mcp.json` is no
 
 - Keep the credentials in your shell (`export PGBOT_DATABASE_URL=postgres://pgbot_ro:...@localhost:5432/ex_dev`), not in the file, so they are never committed.
 - Use the read-only role from `pgbot init`, not a superuser.
-- The app also exposes its own dev MCP endpoint (`AshAi.Mcp.Dev` at `/ash_ai/mcp`, see `lib/ex_web/endpoint.ex`).
+- The app also exposes its own dev MCP endpoint (`AshAi.Mcp.Dev` at `/ash_ai/mcp`, see `server/lib/ex_web/endpoint.ex`).

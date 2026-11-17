@@ -29,6 +29,7 @@ mise use -g erlang@29.1.2 elixir@1.20.5-otp-29
 
 git clone https://github.com/chanphiromsok/ex.git /opt/ex-src && cd /opt/ex-src
 git checkout release/1.0.0
+cd server
 export MIX_ENV=prod
 mix local.hex --force && mix local.rebar --force
 mix deps.get --only prod
@@ -48,8 +49,8 @@ DATABASE_URL=ecto://ex:CHANGE_ME_DB_PASSWORD@localhost/ex
 POOL_SIZE=3
 RELEASE_MODE=interactive
 ERL_FLAGS=+MBas aobf +MHas aobf +MMmcs 0
-SECRET_KEY_BASE=$(cd /opt/ex-src && mix phx.gen.secret)
-TOKEN_SIGNING_SECRET=$(cd /opt/ex-src && mix phx.gen.secret)
+SECRET_KEY_BASE=$(cd /opt/ex-src/server && mix phx.gen.secret)
+TOKEN_SIGNING_SECRET=$(cd /opt/ex-src/server && mix phx.gen.secret)
 SEED_ADMIN_EMAIL=admin@example.com
 SEED_ADMIN_PASSWORD=CHANGE_ME_ADMIN_PASSWORD
 EOF
@@ -88,7 +89,7 @@ Firewall: allow only 22 and 80 (`ufw allow 22 && ufw allow 80 && ufw enable`); P
 ## Updating later
 
 ```sh
-cd /opt/ex-src && git pull && MIX_ENV=prod mix release --overwrite
+cd /opt/ex-src && git pull && cd server && MIX_ENV=prod mix release --overwrite
 systemctl stop ex && rm -rf /opt/ex && cp -r _build/prod/rel/ex /opt/ex
 set -a; . /etc/ex.env; set +a; /opt/ex/bin/ex eval Ex.Release.migrate
 systemctl start ex
@@ -97,6 +98,6 @@ systemctl start ex
 ## Notes
 
 - The seed admin defaults to `admin@gmail.com` / `12345678` if the `SEED_*` variables are unset; always set them on a public IP.
-- If the build is killed (out of memory), resize the droplet to 1 GB for the build, then resize back, or build locally and copy `_build/prod/rel/ex` over (same OS and architecture needed).
+- If the build is killed (out of memory), resize the droplet to 1 GB for the build, then resize back, or build locally and copy `server/_build/prod/rel/ex` over (same OS and architecture needed).
 - Memory: `RELEASE_MODE=interactive` loads code on first use. In a local Docker test it took the app from about 440 MB to about 150-170 MB; the allocator flags in `ERL_FLAGS` gave a smaller saving. Scheduler count is left at the default.
 - Not verified: written from the repo's config, not run on a real droplet.

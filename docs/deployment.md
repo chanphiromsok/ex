@@ -30,7 +30,7 @@ Create the first Admin (idempotent, so running it again does nothing):
 ## Checks before the first real deploy
 
 - TLS terminates at the load balancer; `force_ssl` trusts `x-forwarded-proto`.
-- The migrations in `priv/repo/migrations` also create the permission and role tables' data, so no extra seeding is needed for them.
+- The migrations in `server/priv/repo/migrations` also create the permission and role tables' data, so no extra seeding is needed for them.
 - While the table has little data a plain index build is fine. After launch, build new indexes `concurrently` in their own migration (see `docs/database-health.md`).
 - Expired refresh tokens are never deleted yet.
 

@@ -2,8 +2,8 @@
 
 A **preparation** is a module that changes a **read query** before it runs and/or its results after it runs. A **change** is the same idea for create, update and destroy actions. This page uses the two preparations in this project:
 
-- `lib/ex/accounts/user/preparations/issue_refresh_token.ex` (small, runs after the read)
-- `lib/ex/accounts/user/preparations/refresh_session.ex` (runs before and after)
+- `server/lib/ex/accounts/user/preparations/issue_refresh_token.ex` (small, runs after the read)
+- `server/lib/ex/accounts/user/preparations/refresh_session.ex` (runs before and after)
 
 ## 1. Where a preparation sits
 
@@ -127,7 +127,7 @@ The new JWT is created here, and the rotated refresh secret is read back from th
 - **Policies and errors still apply.** The action is a normal Ash action: the router, the OpenAPI spec, authorization and error formatting all come for free.
 - **One place per rule.** `sign_in_with_password` lists its steps (`SignInPreparation`, then `IssueRefreshToken`), so you can read the sign-in flow top to bottom.
 - **Reusable.** Any read action can add `prepare Ex.Accounts.User.Preparations.IssueRefreshToken`.
-- **Testable through HTTP.** `test/ex_web/api/refresh_test.exs` exercises the whole thing through the API; no test calls the preparation directly.
+- **Testable through HTTP.** `server/test/ex_web/api/refresh_test.exs` exercises the whole thing through the API; no test calls the preparation directly.
 
 ## 6. Preparation vs change vs calculation vs validation
 
@@ -152,7 +152,7 @@ Rule of thumb: if it needs the **result of the query**, use `after_action`; if i
 
 ## 8. Try it
 
-1. Read `test/ex_web/api/refresh_test.exs`, then sign in and refresh with curl or Scalar (`/api/docs`).
+1. Read `server/test/ex_web/api/refresh_test.exs`, then sign in and refresh with curl or Scalar (`/api/docs`).
 2. In `iex -S mix`, run an action without HTTP:
 
 ```elixir
@@ -167,5 +167,5 @@ Ex.Accounts.User
 ## Further reading
 
 - Ash guides: *Preparations*, *Changes*, *Actions: read* (hexdocs.pm/ash)
-- AshAuthentication: `SignInPreparation` in `deps/ash_authentication/lib/ash_authentication/strategies/password/sign_in_preparation.ex`
+- AshAuthentication: `SignInPreparation` in `server/deps/ash_authentication/lib/ash_authentication/strategies/password/sign_in_preparation.ex`
 - This project: `docs/adr/` for design decisions, `docs/schema.md` for the data model.
