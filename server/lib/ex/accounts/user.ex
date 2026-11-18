@@ -4,7 +4,7 @@ defmodule Ex.Accounts.User do
     domain: Ex.Accounts,
     data_layer: AshPostgres.DataLayer,
     authorizers: [Ash.Policy.Authorizer],
-    extensions: [AshAuthentication, AshJsonApi.Resource]
+    extensions: [AshAuthentication, AshJsonApi.Resource, AshRateLimiter]
 
   authentication do
     add_ons do
@@ -115,6 +115,17 @@ defmodule Ex.Accounts.User do
         end
       end
     end
+  end
+
+  # Caps password guessing per account, on top of the per-IP limit in ExWeb.Plugs.RateLimit
+  # (which can't see attackers that rotate IPs).
+  rate_limit do
+    backend Ex.RateLimit
+
+    action :sign_in,
+      limit: 5,
+      per: :timer.minutes(15),
+      key: &__MODULE__.sign_in_key/2
   end
 
   actions do
@@ -372,5 +383,18 @@ defmodule Ex.Accounts.User do
   identities do
     identity :unique_email, [:email]
     identity :unique_phone, [:phone]
+  end
+
+  @doc false
+  # Groups sign-in attempts by the login being tried (phone or email), whichever the client sent.
+  def sign_in_key(query, _context) do
+    login =
+      [:login, :email]
+      |> Enum.find_value(&Ash.Query.get_argument(query, &1))
+      |> to_string()
+      |> String.trim()
+      |> String.downcase()
+
+    "sign_in:" <> login
   end
 end

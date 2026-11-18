@@ -10,6 +10,7 @@ defmodule Ex.Application do
     children = [
       ExWeb.Telemetry,
       Ex.Repo,
+      {Ex.RateLimit, clean_period: :timer.minutes(1)},
       {DNSCluster, query: Application.get_env(:ex, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Ex.PubSub},
       # Start a worker by calling: Ex.Worker.start_link(arg)

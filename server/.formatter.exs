@@ -5,6 +5,7 @@
     :ash_postgres,
     :ash_json_api,
     :ash_phoenix,
+    :ash_rate_limiter,
     :ash,
     :reactor,
     :ecto,

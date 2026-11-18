@@ -3,6 +3,7 @@ defmodule ExWeb.Router do
   import AshAuthentication.Plug.Helpers
 
   pipeline :api do
+    plug ExWeb.Plugs.RateLimit
     plug :accepts, ["json"]
     plug :retrieve_from_bearer, :ex
     plug :set_actor, :user

@@ -64,6 +64,8 @@ defmodule Ex.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:jason, "~> 1.2"},
+      {:hammer, "~> 7.5"},
+      {:ash_rate_limiter, "~> 2.0"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:scalar_plug, "~> 0.1.0"}

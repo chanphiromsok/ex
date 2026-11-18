@@ -43,3 +43,6 @@ config :phoenix, :plug_init_mode, :runtime
 # Sort query params output of verified routes for robust url comparisons
 config :phoenix,
   sort_verified_routes_query_params: true
+
+# Rate limiting is off in tests; test/ex_web/plugs/rate_limit_test.exs turns it on explicitly.
+config :ex, ExWeb.Plugs.RateLimit, enabled: false
