@@ -366,6 +366,15 @@ export function Users() {
 
 const ROLE_ORDER = ['staff', 'supervisor', 'admin'] as const
 
+// Permissions that move money or change who can do what, prices or the network. Shown in red so an Admin thinks twice before granting them.
+const CRITICAL: Record<string, string> = {
+  'cancellation.approve': 'Can refund money',
+  'price.manage': 'Changes what customers pay',
+  'user.manage': 'Controls who can sign in and what they can do',
+  'reference_data.manage': 'Changes the Stations and Routes everyone depends on',
+  'station_setting.manage': 'Changes how each Station handles cancellations',
+}
+
 /** What each Permission means and which roles hold it, so an Admin never has to guess from the key. */
 function PermissionGuide() {
   const permsQ = useQuery(listQuery('/permissions'))
@@ -374,7 +383,7 @@ function PermissionGuide() {
     const roles = new Map<string, string[]>()
     for (const g of grantsQ.data ?? []) roles.set(g.permission, [...(roles.get(g.permission) ?? []), g.role])
     return [...(permsQ.data ?? [])]
-      .sort((a, b) => String(a.id).localeCompare(String(b.id)))
+      .sort((a, b) => Number(!!CRITICAL[b.id]) - Number(!!CRITICAL[a.id]) || String(a.id).localeCompare(String(b.id)))
       .map((p) => ({ ...p, roles: ROLE_ORDER.filter((r) => roles.get(p.id)?.includes(r)) }))
   }, [permsQ.data, grantsQ.data])
 
@@ -383,8 +392,18 @@ function PermissionGuide() {
       {
         id: 'key',
         header: 'Permission',
-        accessorFn: (p) => p.id,
-        cell: ({ row }) => <code className="rounded bg-sunk px-1.5 py-0.5 text-xs">{row.original.id}</code>,
+        accessorFn: (p) => `${p.id}${CRITICAL[p.id] ? ' critical' : ''}`,
+        cell: ({ row }) => {
+          const why = CRITICAL[row.original.id]
+          return (
+            <span className="flex flex-col items-start gap-1">
+              <code className={why ? 'rounded bg-madder-wash px-1.5 py-0.5 text-xs font-semibold text-madder-deep' : 'rounded bg-sunk px-1.5 py-0.5 text-xs'}>
+                {row.original.id}
+              </code>
+              {why && <Pill tone="madder">Critical</Pill>}
+            </span>
+          )
+        },
       },
       {
         id: 'does',
@@ -393,6 +412,7 @@ function PermissionGuide() {
         cell: ({ row }) => (
           <span className="block max-w-[56ch] whitespace-normal text-[13px] leading-snug">
             {row.original.description}
+            {CRITICAL[row.original.id] && <span className="font-medium text-madder-deep"> {CRITICAL[row.original.id]}.</span>}
             {row.original.station_bound && <span className="text-ink-soft"> Only at their own Station.</span>}
           </span>
         ),
