@@ -82,20 +82,12 @@ config :ex,
 config :ex, ExWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
+  live_view: [signing_salt: "4dXZwwe8"],
   render_errors: [
     formats: [json: ExWeb.ErrorJSON],
     layout: false
   ],
   pubsub_server: Ex.PubSub
-
-# Configure the mailer
-#
-# By default it uses the "Local" adapter which stores the emails
-# locally. You can see the emails in your browser, at "/dev/mailbox".
-#
-# For production it's recommended to configure a different adapter
-# at the `config/runtime.exs`.
-config :ex, Ex.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure Elixir's Logger
 config :logger, :default_formatter,

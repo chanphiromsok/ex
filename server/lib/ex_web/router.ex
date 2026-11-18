@@ -23,4 +23,7 @@ defmodule ExWeb.Router do
   scope "/", ExWeb do
     get "/health", HealthController, :show
   end
+
+  # LiveDashboard ; see ExWeb.OpsRouter.
+  forward "/", ExWeb.OpsRouter
 end

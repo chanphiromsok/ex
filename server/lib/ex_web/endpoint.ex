@@ -13,6 +13,11 @@ defmodule ExWeb.Endpoint do
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
+  # LiveDashboard (see ExWeb.OpsRouter) talks over a LiveView socket.
+  socket "/live", Phoenix.LiveView.Socket,
+    websocket: [connect_info: [session: @session_options]],
+    longpoll: [connect_info: [session: @session_options]]
+
   if code_reloading? do
     plug AshAi.Mcp.Dev, otp_app: :ex, path: "/ash_ai/mcp"
     plug Phoenix.CodeReloader

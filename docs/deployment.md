@@ -36,4 +36,27 @@ Create the first Admin (idempotent, so running it again does nothing):
 
 ## Verified locally (without Docker)
 
-`MIX_ENV=prod mix assets.deploy && mix release`, then `bin/migrate`, `Ex.Release.seed()`, `PHX_SERVER=true bin/ex start`: `/health` 200, admin sign-in works, `/api/v1/open_api` 200. The `Dockerfile` itself has not been built, because Docker is not installed on this machine.
+`MIX_ENV=prod mix release`, then `bin/migrate`, `Ex.Release.seed()`, `PHX_SERVER=true bin/ex start`: `/health` 200, admin sign-in works, `/api/v1/open_api` 200. The `Dockerfile` itself has not been built, because Docker is not installed on this machine.
+
+## Ops dashboard
+
+LiveDashboard is served at `/ops/dashboard` (in dev: `/dev/dashboard`). It sits behind HTTP basic auth and
+answers 404 until both `DASHBOARD_USER` and `DASHBOARD_PASSWORD` are set. Use a long random password; it is
+sent on every request, so it is only safe because TLS terminates at the load balancer.
+
+## Diagnosing a live node
+
+The release includes [recon](https://github.com/ferd/recon) (loaded, never started). Connect to the running app and call it:
+
+    docker exec -it CONTAINER /app/bin/ex remote     # or: _build/prod/rel/ex/bin/ex remote
+
+| Question | Call |
+|---|---|
+| Which processes use the most memory? | `:recon.proc_count(:memory, 10)` |
+| Which use the most CPU? | `:recon.proc_count(:reductions, 10)` |
+| Binary leak? (runs a GC and shows what was freed) | `:recon.bin_leak(10)` |
+| Details of one process | `:recon.info(pid)` |
+| VM memory by allocator, fragmentation | `:recon_alloc.memory(:used)`, `:recon_alloc.fragmentation(:current)` |
+| Rate-limited tracing | `:recon_trace.calls({Mod, :fun, :return_trace}, 10)` |
+
+Leave the shell with Ctrl+C twice. `:recon_trace` is rate limited, but still stop a trace with `:recon_trace.clear()` when done.
