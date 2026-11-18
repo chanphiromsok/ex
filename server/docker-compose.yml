@@ -35,6 +35,9 @@ services:
       TOKEN_SIGNING_SECRET: ${TOKEN_SIGNING_SECRET:-local-only-token-signing-secret}
       SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@gmail.com}
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-12345678}
+      # Ops dashboard at /ops/dashboard (basic auth). Local-only defaults; override both in any shared environment.
+      DASHBOARD_USER: ${DASHBOARD_USER:-admin}
+      DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD:-admin12345}
     ports:
       - "4001:4000"
     command: sh -c "/app/bin/ex eval Ex.Release.migrate && /app/bin/ex eval Ex.Release.seed && /app/bin/server"
