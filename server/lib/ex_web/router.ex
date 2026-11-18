@@ -2,15 +2,6 @@ defmodule ExWeb.Router do
   use ExWeb, :router
   import AshAuthentication.Plug.Helpers
 
-  pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_live_flash
-    plug :put_root_layout, html: {ExWeb.Layouts, :root}
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
-  end
-
   pipeline :api do
     plug :accepts, ["json"]
     plug :retrieve_from_bearer, :ex
@@ -22,14 +13,6 @@ defmodule ExWeb.Router do
   end
 
   scope "/api/v1" do
-    pipe_through [:api]
-
-    forward "/swaggerui", OpenApiSpex.Plug.SwaggerUI,
-      path: "/api/v1/open_api",
-      default_model_expand_depth: 4
-  end
-
-  scope "/api/v1" do
     pipe_through [:api, :require_actor]
 
     forward "/", ExWeb.AshJsonApiRouter
@@ -38,33 +21,5 @@ defmodule ExWeb.Router do
   # Load balancer probe: no session, no pipeline, excluded from force_ssl in config/prod.exs.
   scope "/", ExWeb do
     get "/health", HealthController, :show
-  end
-
-  scope "/", ExWeb do
-    pipe_through :browser
-
-    get "/", PageController, :home
-  end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", ExWeb do
-  #   pipe_through :api
-  # end
-
-  # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:ex, :dev_routes) do
-    # If you want to use the LiveDashboard in production, you should put
-    # it behind authentication and allow only admins to access it.
-    # If your application does not have an admins-only section yet,
-    # you can use Plug.BasicAuth to set up some basic authentication
-    # as long as you are also using SSL (which you should anyway).
-    import Phoenix.LiveDashboard.Router
-
-    scope "/dev" do
-      pipe_through :browser
-
-      live_dashboard "/dashboard", metrics: ExWeb.Telemetry
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
-    end
   end
 end

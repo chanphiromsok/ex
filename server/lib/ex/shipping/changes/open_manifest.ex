@@ -6,8 +6,7 @@ defmodule Ex.Shipping.Changes.OpenManifest do
   """
   use Ash.Resource.Change
 
-  alias Ex.Network.{Route, Station}
-  require Ash.Query
+  alias Ex.Network.Station
 
   @impl true
   def change(changeset, _opts, %{actor: %{station_id: origin_id} = actor})
