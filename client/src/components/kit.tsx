@@ -26,6 +26,7 @@ export function Page({
   action,
   onBack,
   backLabel = 'Back',
+  bare = false,
   children,
 }: {
   title: ReactNode
@@ -33,6 +34,8 @@ export function Page({
   action?: ReactNode
   onBack?: () => void
   backLabel?: string
+  /** Skip the title block; the sidebar already names the screen. */
+  bare?: boolean
   children: ReactNode
 }) {
   return (
@@ -47,6 +50,7 @@ export function Page({
           {backLabel}
         </button>
       )}
+      {!bare && (
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
           <h1 className="font-serif text-[28px] leading-tight font-normal tracking-[-0.015em] text-balance">{title}</h1>
@@ -54,6 +58,7 @@ export function Page({
         </div>
         {action && <div className="no-print flex items-center gap-2">{action}</div>}
       </header>
+      )}
       <div className="space-y-5">{children}</div>
     </div>
   )

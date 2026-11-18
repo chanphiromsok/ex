@@ -82,8 +82,7 @@ export function Shipments({ showDone, onShowDone }: { showDone: boolean; onShowD
 
   const rows = shipments.data ?? []
   return (
-    <Page title="Shipments" subtitle={shipments.isSuccess ? `${rows.length.toLocaleString('en-US')} ${showDone ? 'on record' : 'still moving'}` : undefined}
->
+    <Page title="Shipments" bare>
       <Err error={shipments.error} />
       <Card flush>
         <DataTable
@@ -92,7 +91,7 @@ export function Shipments({ showDone, onShowDone }: { showDone: boolean; onShowD
           data={rows}
           loading={shipments.isPending}
           empty="No Shipments yet."
-          scrollHeight="max-h-[calc(100vh-15rem)]"
+          scrollHeight="max-h-[calc(100vh-11rem)]"
           toolbar={
             <Segmented
               id="shipment-filter"
