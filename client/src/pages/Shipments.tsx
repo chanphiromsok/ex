@@ -98,6 +98,7 @@ export function Shipments({ showDone, onShowDone }: { showDone: boolean; onShowD
           data={rows}
           loading={shipments.isPending}
           empty="No Shipments yet."
+          scrollHeight="max-h-[calc(100vh-15rem)]"
           search={{ id: 'search', placeholder: 'Invoice, name or phone number', label: 'Find a Shipment', autoFocus: true }}
           initialSort={[{ id: 'received', desc: true }]}
           onRowClick={(s) => navigate({ to: '/shipments/$id', params: { id: s.id } })}

@@ -57,6 +57,7 @@ export function DataTable<T>({
   initialSort,
   footer,
   rowClassName,
+  scrollHeight,
 }: {
   id?: string
   columns: ColumnDef<T, any>[]
@@ -67,6 +68,8 @@ export function DataTable<T>({
   search?: { id?: string; placeholder?: string; label?: string; autoFocus?: boolean }
   /** Extra controls rendered right of the search box. */
   toolbar?: ReactNode
+  /** Tailwind max-height class (e.g. `max-h-[65vh]`). Rows scroll inside it while the search box and header stay put. */
+  scrollHeight?: string
   onRowClick?: (row: T) => void
   rowLabel?: (row: T) => string
   pageSize?: number
@@ -130,8 +133,8 @@ export function DataTable<T>({
         </div>
       )}
 
-      <Table>
-        <TableHeader className="bg-sunk/70">
+      <Table containerClassName={scrollHeight ? cn('overflow-y-auto overscroll-contain', scrollHeight) : undefined}>
+        <TableHeader className={scrollHeight ? 'sticky top-0 z-10 bg-sunk shadow-[0_1px_0_var(--color-thread)]' : 'bg-sunk/70'}>
           {table.getHeaderGroups().map((hg) => (
             <TableRow key={hg.id} className="border-thread hover:bg-transparent">
               {hg.headers.map((h) => {
