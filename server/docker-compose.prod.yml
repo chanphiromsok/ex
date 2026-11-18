@@ -1,0 +1,24 @@
+# Production overlay: Traefik terminates TLS (Cloudflare Origin Certificate) in front of the app.
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+# Put origin.pem and origin.key (Cloudflare: SSL/TLS > Origin Server) in ./traefik/certs/.
+services:
+  traefik:
+    image: traefik:v3.2
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - ./traefik/certs:/certs:ro
+
+  app:
+    environment:
+      PHX_HOST: ex.pongpong.eu.org
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.app.rule=Host(`ex.pongpong.eu.org`)
+      - traefik.http.routers.app.entrypoints=websecure
+      - traefik.http.routers.app.tls=true
+      - traefik.http.services.app.loadbalancer.server.port=4000
