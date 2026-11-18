@@ -4,7 +4,21 @@ defmodule Ex.Accounts.RolePermission do
     otp_app: :ex,
     domain: Ex.Accounts,
     data_layer: AshPostgres.DataLayer,
-    authorizers: [Ash.Policy.Authorizer]
+    authorizers: [Ash.Policy.Authorizer],
+    extensions: [AshJsonApi.Resource]
+
+  json_api do
+    type "role-permission"
+
+    routes do
+      base "/role-permissions"
+
+      index :read do
+        description "Which role holds which Permission by default. Pair with `/permissions` for what each one means."
+        default_fields [:role, :permission]
+      end
+    end
+  end
 
   postgres do
     table "role_permissions"

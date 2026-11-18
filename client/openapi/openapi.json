@@ -1873,6 +1873,72 @@
         },
         "type": "object"
       },
+      "role-permission": {
+        "additionalProperties": false,
+        "description": "A \"Resource object\" representing a role-permission",
+        "properties": {
+          "attributes": {
+            "additionalProperties": false,
+            "description": "An attributes object for a role-permission",
+            "properties": {
+              "permission": {
+                "description": "Field included by default.",
+                "enum": [
+                  "shipment.create",
+                  "shipment.read",
+                  "shipment.mark_in_transit",
+                  "shipment.mark_arrived",
+                  "shipment.collect",
+                  "shipment.add_note",
+                  "cancellation.request",
+                  "cancellation.approve",
+                  "receiver.correct",
+                  "incident.report",
+                  "incident.resolve",
+                  "report.cash",
+                  "report.cancellation",
+                  "price.manage",
+                  "reference_data.manage",
+                  "station_setting.manage",
+                  "user.manage"
+                ],
+                "type": "string"
+              },
+              "role": {
+                "description": "Field included by default.",
+                "enum": [
+                  "staff",
+                  "supervisor",
+                  "admin"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "role",
+              "permission"
+            ],
+            "type": "object"
+          },
+          "id": {
+            "type": "string"
+          },
+          "relationships": {
+            "additionalProperties": false,
+            "description": "A relationships object for a role-permission",
+            "properties": {},
+            "type": "object"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "id"
+        ],
+        "type": "object"
+      },
       "payment-filter": {
         "additionalProperties": false,
         "description": "Filters the query to results matching the given filter object",
@@ -2579,6 +2645,216 @@
           },
           "not_eq": {
             "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "role-permission-filter-permission": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {
+            "enum": [
+              "shipment.create",
+              "shipment.read",
+              "shipment.mark_in_transit",
+              "shipment.mark_arrived",
+              "shipment.collect",
+              "shipment.add_note",
+              "cancellation.request",
+              "cancellation.approve",
+              "receiver.correct",
+              "incident.report",
+              "incident.resolve",
+              "report.cash",
+              "report.cancellation",
+              "price.manage",
+              "reference_data.manage",
+              "station_setting.manage",
+              "user.manage"
+            ],
+            "type": "string"
+          },
+          "greater_than": {
+            "enum": [
+              "shipment.create",
+              "shipment.read",
+              "shipment.mark_in_transit",
+              "shipment.mark_arrived",
+              "shipment.collect",
+              "shipment.add_note",
+              "cancellation.request",
+              "cancellation.approve",
+              "receiver.correct",
+              "incident.report",
+              "incident.resolve",
+              "report.cash",
+              "report.cancellation",
+              "price.manage",
+              "reference_data.manage",
+              "station_setting.manage",
+              "user.manage"
+            ],
+            "type": "string"
+          },
+          "greater_than_or_equal": {
+            "enum": [
+              "shipment.create",
+              "shipment.read",
+              "shipment.mark_in_transit",
+              "shipment.mark_arrived",
+              "shipment.collect",
+              "shipment.add_note",
+              "cancellation.request",
+              "cancellation.approve",
+              "receiver.correct",
+              "incident.report",
+              "incident.resolve",
+              "report.cash",
+              "report.cancellation",
+              "price.manage",
+              "reference_data.manage",
+              "station_setting.manage",
+              "user.manage"
+            ],
+            "type": "string"
+          },
+          "in": {
+            "items": {
+              "enum": [
+                "shipment.create",
+                "shipment.read",
+                "shipment.mark_in_transit",
+                "shipment.mark_arrived",
+                "shipment.collect",
+                "shipment.add_note",
+                "cancellation.request",
+                "cancellation.approve",
+                "receiver.correct",
+                "incident.report",
+                "incident.resolve",
+                "report.cash",
+                "report.cancellation",
+                "price.manage",
+                "reference_data.manage",
+                "station_setting.manage",
+                "user.manage"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "enum": [
+              "shipment.create",
+              "shipment.read",
+              "shipment.mark_in_transit",
+              "shipment.mark_arrived",
+              "shipment.collect",
+              "shipment.add_note",
+              "cancellation.request",
+              "cancellation.approve",
+              "receiver.correct",
+              "incident.report",
+              "incident.resolve",
+              "report.cash",
+              "report.cancellation",
+              "price.manage",
+              "reference_data.manage",
+              "station_setting.manage",
+              "user.manage"
+            ],
+            "type": "string"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "enum": [
+              "shipment.create",
+              "shipment.read",
+              "shipment.mark_in_transit",
+              "shipment.mark_arrived",
+              "shipment.collect",
+              "shipment.add_note",
+              "cancellation.request",
+              "cancellation.approve",
+              "receiver.correct",
+              "incident.report",
+              "incident.resolve",
+              "report.cash",
+              "report.cancellation",
+              "price.manage",
+              "reference_data.manage",
+              "station_setting.manage",
+              "user.manage"
+            ],
+            "type": "string"
+          },
+          "less_than": {
+            "enum": [
+              "shipment.create",
+              "shipment.read",
+              "shipment.mark_in_transit",
+              "shipment.mark_arrived",
+              "shipment.collect",
+              "shipment.add_note",
+              "cancellation.request",
+              "cancellation.approve",
+              "receiver.correct",
+              "incident.report",
+              "incident.resolve",
+              "report.cash",
+              "report.cancellation",
+              "price.manage",
+              "reference_data.manage",
+              "station_setting.manage",
+              "user.manage"
+            ],
+            "type": "string"
+          },
+          "less_than_or_equal": {
+            "enum": [
+              "shipment.create",
+              "shipment.read",
+              "shipment.mark_in_transit",
+              "shipment.mark_arrived",
+              "shipment.collect",
+              "shipment.add_note",
+              "cancellation.request",
+              "cancellation.approve",
+              "receiver.correct",
+              "incident.report",
+              "incident.resolve",
+              "report.cash",
+              "report.cancellation",
+              "price.manage",
+              "reference_data.manage",
+              "station_setting.manage",
+              "user.manage"
+            ],
+            "type": "string"
+          },
+          "not_eq": {
+            "enum": [
+              "shipment.create",
+              "shipment.read",
+              "shipment.mark_in_transit",
+              "shipment.mark_arrived",
+              "shipment.collect",
+              "shipment.add_note",
+              "cancellation.request",
+              "cancellation.approve",
+              "receiver.correct",
+              "incident.report",
+              "incident.resolve",
+              "report.cash",
+              "report.cancellation",
+              "price.manage",
+              "reference_data.manage",
+              "station_setting.manage",
+              "user.manage"
+            ],
             "type": "string"
           }
         },
@@ -3644,6 +3920,54 @@
         "type": "object"
       },
       "shipment-filter-origin_station_id": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "greater_than": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "greater_than_or_equal": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "in": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "less_than": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "less_than_or_equal": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "not_eq": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "role-permission-filter-id": {
         "additionalProperties": false,
         "properties": {
           "eq": {
@@ -6470,6 +6794,40 @@
           }
         },
         "type": "object"
+      },
+      "role-permission-filter": {
+        "additionalProperties": false,
+        "description": "Filters the query to results matching the given filter object",
+        "example": "",
+        "properties": {
+          "and": {
+            "items": {
+              "$ref": "#/components/schemas/role-permission-filter"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "id": {
+            "$ref": "#/components/schemas/role-permission-filter-id"
+          },
+          "not": {
+            "$ref": "#/components/schemas/role-permission-filter"
+          },
+          "or": {
+            "items": {
+              "$ref": "#/components/schemas/role-permission-filter"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "permission": {
+            "$ref": "#/components/schemas/role-permission-filter-permission"
+          },
+          "role": {
+            "$ref": "#/components/schemas/role-permission-filter-role"
+          }
+        },
+        "type": "deepObject"
       },
       "parcel-filter-measurement_type": {
         "additionalProperties": false,
@@ -12508,6 +12866,90 @@
         },
         "type": "object"
       },
+      "role-permission-filter-role": {
+        "additionalProperties": false,
+        "properties": {
+          "eq": {
+            "enum": [
+              "staff",
+              "supervisor",
+              "admin"
+            ],
+            "type": "string"
+          },
+          "greater_than": {
+            "enum": [
+              "staff",
+              "supervisor",
+              "admin"
+            ],
+            "type": "string"
+          },
+          "greater_than_or_equal": {
+            "enum": [
+              "staff",
+              "supervisor",
+              "admin"
+            ],
+            "type": "string"
+          },
+          "in": {
+            "items": {
+              "enum": [
+                "staff",
+                "supervisor",
+                "admin"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "is_distinct_from": {
+            "enum": [
+              "staff",
+              "supervisor",
+              "admin"
+            ],
+            "type": "string"
+          },
+          "is_nil": {
+            "type": "boolean"
+          },
+          "is_not_distinct_from": {
+            "enum": [
+              "staff",
+              "supervisor",
+              "admin"
+            ],
+            "type": "string"
+          },
+          "less_than": {
+            "enum": [
+              "staff",
+              "supervisor",
+              "admin"
+            ],
+            "type": "string"
+          },
+          "less_than_or_equal": {
+            "enum": [
+              "staff",
+              "supervisor",
+              "admin"
+            ],
+            "type": "string"
+          },
+          "not_eq": {
+            "enum": [
+              "staff",
+              "supervisor",
+              "admin"
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "incident": {
         "additionalProperties": false,
         "description": "A \"Resource object\" representing a incident",
@@ -14893,6 +15335,206 @@
         },
         "tags": [
           "incident"
+        ]
+      }
+    },
+    "/api/v1/role-permissions": {
+      "get": {
+        "callbacks": {},
+        "deprecated": false,
+        "description": "Which role holds which Permission by default. Pair with `/permissions` for what each one means.",
+        "parameters": [
+          {
+            "description": "Filters the query to results with attributes matching the given filter object",
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/role-permission-filter"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Sort order to apply to the results",
+            "explode": false,
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "pattern": "^(id|-id|\\+\\+id|--id|role|-role|\\+\\+role|--role|permission|-permission|\\+\\+permission|--permission)(,(id|-id|\\+\\+id|--id|role|-role|\\+\\+role|--role|permission|-permission|\\+\\+permission|--permission))*$",
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Paginates the response with the limit and offset or keyset pagination.",
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "example": {
+                "limit": 25
+              },
+              "properties": {
+                "after": {
+                  "type": "string"
+                },
+                "before": {
+                  "type": "string"
+                },
+                "count": {
+                  "default": false,
+                  "type": "boolean"
+                },
+                "limit": {
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                "offset": {
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Relationship paths to include in the response",
+            "explode": false,
+            "in": "query",
+            "name": "include",
+            "required": false,
+            "schema": {
+              "pattern": "^()(,())*$",
+              "type": "string"
+            },
+            "style": "form"
+          },
+          {
+            "description": "Limits the response fields to only those listed for each type",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "additionalProperties": true,
+              "example": {
+                "role-permission": "id,role,permission"
+              },
+              "properties": {
+                "role-permission": {
+                  "description": "Comma separated field names for role-permission",
+                  "example": "id,role,permission",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/vnd.api+json": {
+                "schema": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "data": {
+                      "description": "An array of resource objects representing a role-permission",
+                      "items": {
+                        "additionalProperties": false,
+                        "description": "A \"Resource object\" representing a role-permission",
+                        "properties": {
+                          "attributes": {
+                            "additionalProperties": false,
+                            "description": "An attributes object for a role-permission",
+                            "properties": {
+                              "permission": {
+                                "description": "Field included by default.",
+                                "enum": [
+                                  "shipment.create",
+                                  "shipment.read",
+                                  "shipment.mark_in_transit",
+                                  "shipment.mark_arrived",
+                                  "shipment.collect",
+                                  "shipment.add_note",
+                                  "cancellation.request",
+                                  "cancellation.approve",
+                                  "receiver.correct",
+                                  "incident.report",
+                                  "incident.resolve",
+                                  "report.cash",
+                                  "report.cancellation",
+                                  "price.manage",
+                                  "reference_data.manage",
+                                  "station_setting.manage",
+                                  "user.manage"
+                                ],
+                                "type": "string"
+                              },
+                              "role": {
+                                "description": "Field included by default.",
+                                "enum": [
+                                  "staff",
+                                  "supervisor",
+                                  "admin"
+                                ],
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "role",
+                              "permission"
+                            ],
+                            "type": "object"
+                          },
+                          "id": {
+                            "type": "string"
+                          },
+                          "relationships": {
+                            "additionalProperties": false,
+                            "description": "A relationships object for a role-permission",
+                            "properties": {},
+                            "type": "object"
+                          },
+                          "type": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "id"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "included": {
+                      "items": {
+                        "oneOf": []
+                      },
+                      "type": "array",
+                      "uniqueItems": true
+                    },
+                    "meta": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "default": {
+            "$ref": "#/components/responses/errors"
+          }
+        },
+        "tags": [
+          "role-permission"
         ]
       }
     },
@@ -22193,6 +22835,9 @@
     },
     {
       "name": "report-row"
+    },
+    {
+      "name": "role-permission"
     },
     {
       "name": "route"

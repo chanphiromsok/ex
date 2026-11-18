@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { Pencil, UserPlus } from 'lucide-react'
 import { create, update, type Rec } from '#/lib/api'
 import { apiKey, listQuery } from '#/lib/queries'
-import { Bilingual, Button, Card, Err, Num, Page, Tray } from '#/components/kit'
+import { Bilingual, Button, Card, Err, Num, Page, Pill, Tray } from '#/components/kit'
 import { Choice, Combobox, FormField, Segmented, type Option } from '#/components/form'
 import { DataTable, type ColumnDef } from '#/components/data-table'
 import { Input } from '@/components/ui/input'
@@ -359,6 +359,62 @@ export function Users() {
           <Err error={add.error} />
         </Tray>
       </Card>
+      <PermissionGuide />
     </Page>
+  )
+}
+
+const ROLE_ORDER = ['staff', 'supervisor', 'admin'] as const
+
+/** What each Permission means and which roles hold it, so an Admin never has to guess from the key. */
+function PermissionGuide() {
+  const permsQ = useQuery(listQuery('/permissions'))
+  const grantsQ = useQuery(listQuery('/role-permissions'))
+  const rows = useMemo(() => {
+    const roles = new Map<string, string[]>()
+    for (const g of grantsQ.data ?? []) roles.set(g.permission, [...(roles.get(g.permission) ?? []), g.role])
+    return [...(permsQ.data ?? [])]
+      .sort((a, b) => String(a.id).localeCompare(String(b.id)))
+      .map((p) => ({ ...p, roles: ROLE_ORDER.filter((r) => roles.get(p.id)?.includes(r)) }))
+  }, [permsQ.data, grantsQ.data])
+
+  const columns = useMemo<ColumnDef<Rec>[]>(
+    () => [
+      {
+        id: 'key',
+        header: 'Permission',
+        accessorFn: (p) => p.id,
+        cell: ({ row }) => <code className="rounded bg-sunk px-1.5 py-0.5 text-xs">{row.original.id}</code>,
+      },
+      {
+        id: 'does',
+        header: 'What it lets someone do',
+        accessorFn: (p) => p.description,
+        cell: ({ row }) => (
+          <span className="block max-w-[56ch] whitespace-normal text-[13px] leading-snug">
+            {row.original.description}
+            {row.original.station_bound && <span className="text-ink-soft"> Only at their own Station.</span>}
+          </span>
+        ),
+      },
+      {
+        id: 'roles',
+        header: 'Held by',
+        enableSorting: false,
+        accessorFn: (p) => p.roles.join(' '),
+        cell: ({ row }) => (
+          <span className="flex flex-wrap gap-1">
+            {row.original.roles.length === 0 ? <span className="text-ink-faint">—</span> : row.original.roles.map((r: string) => <Pill key={r}>{roleLabel(r)}</Pill>)}
+          </span>
+        ),
+      },
+    ],
+    [],
+  )
+
+  return (
+    <Card flush id="permission-guide" title="What each Permission means" description="A role holds the Permissions below by default. Station-bound ones only work at the person's own Station.">
+      <DataTable id="permissions-table" columns={columns} data={rows} loading={permsQ.isPending || grantsQ.isPending} empty="No Permissions." search={{ placeholder: 'Search a Permission' }} />
+    </Card>
   )
 }

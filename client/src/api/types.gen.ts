@@ -632,6 +632,33 @@ export type PaymentFilterStatusEventId = {
 };
 
 /**
+ * A "Resource object" representing a role-permission
+ */
+export type RolePermission = {
+    /**
+     * An attributes object for a role-permission
+     */
+    attributes?: {
+        /**
+         * Field included by default.
+         */
+        permission: 'shipment.create' | 'shipment.read' | 'shipment.mark_in_transit' | 'shipment.mark_arrived' | 'shipment.collect' | 'shipment.add_note' | 'cancellation.request' | 'cancellation.approve' | 'receiver.correct' | 'incident.report' | 'incident.resolve' | 'report.cash' | 'report.cancellation' | 'price.manage' | 'reference_data.manage' | 'station_setting.manage' | 'user.manage';
+        /**
+         * Field included by default.
+         */
+        role: 'staff' | 'supervisor' | 'admin';
+    };
+    id: string;
+    /**
+     * A relationships object for a role-permission
+     */
+    relationships?: {
+        [key: string]: never;
+    };
+    type: string;
+};
+
+/**
  * Filters the query to results matching the given filter object
  */
 export type PaymentFilter = unknown;
@@ -796,6 +823,19 @@ export type PaymentFilterCreatedById = {
     less_than?: string;
     less_than_or_equal?: string;
     not_eq?: string;
+};
+
+export type RolePermissionFilterPermission = {
+    eq?: 'shipment.create' | 'shipment.read' | 'shipment.mark_in_transit' | 'shipment.mark_arrived' | 'shipment.collect' | 'shipment.add_note' | 'cancellation.request' | 'cancellation.approve' | 'receiver.correct' | 'incident.report' | 'incident.resolve' | 'report.cash' | 'report.cancellation' | 'price.manage' | 'reference_data.manage' | 'station_setting.manage' | 'user.manage';
+    greater_than?: 'shipment.create' | 'shipment.read' | 'shipment.mark_in_transit' | 'shipment.mark_arrived' | 'shipment.collect' | 'shipment.add_note' | 'cancellation.request' | 'cancellation.approve' | 'receiver.correct' | 'incident.report' | 'incident.resolve' | 'report.cash' | 'report.cancellation' | 'price.manage' | 'reference_data.manage' | 'station_setting.manage' | 'user.manage';
+    greater_than_or_equal?: 'shipment.create' | 'shipment.read' | 'shipment.mark_in_transit' | 'shipment.mark_arrived' | 'shipment.collect' | 'shipment.add_note' | 'cancellation.request' | 'cancellation.approve' | 'receiver.correct' | 'incident.report' | 'incident.resolve' | 'report.cash' | 'report.cancellation' | 'price.manage' | 'reference_data.manage' | 'station_setting.manage' | 'user.manage';
+    in?: Array<'shipment.create' | 'shipment.read' | 'shipment.mark_in_transit' | 'shipment.mark_arrived' | 'shipment.collect' | 'shipment.add_note' | 'cancellation.request' | 'cancellation.approve' | 'receiver.correct' | 'incident.report' | 'incident.resolve' | 'report.cash' | 'report.cancellation' | 'price.manage' | 'reference_data.manage' | 'station_setting.manage' | 'user.manage'>;
+    is_distinct_from?: 'shipment.create' | 'shipment.read' | 'shipment.mark_in_transit' | 'shipment.mark_arrived' | 'shipment.collect' | 'shipment.add_note' | 'cancellation.request' | 'cancellation.approve' | 'receiver.correct' | 'incident.report' | 'incident.resolve' | 'report.cash' | 'report.cancellation' | 'price.manage' | 'reference_data.manage' | 'station_setting.manage' | 'user.manage';
+    is_nil?: boolean;
+    is_not_distinct_from?: 'shipment.create' | 'shipment.read' | 'shipment.mark_in_transit' | 'shipment.mark_arrived' | 'shipment.collect' | 'shipment.add_note' | 'cancellation.request' | 'cancellation.approve' | 'receiver.correct' | 'incident.report' | 'incident.resolve' | 'report.cash' | 'report.cancellation' | 'price.manage' | 'reference_data.manage' | 'station_setting.manage' | 'user.manage';
+    less_than?: 'shipment.create' | 'shipment.read' | 'shipment.mark_in_transit' | 'shipment.mark_arrived' | 'shipment.collect' | 'shipment.add_note' | 'cancellation.request' | 'cancellation.approve' | 'receiver.correct' | 'incident.report' | 'incident.resolve' | 'report.cash' | 'report.cancellation' | 'price.manage' | 'reference_data.manage' | 'station_setting.manage' | 'user.manage';
+    less_than_or_equal?: 'shipment.create' | 'shipment.read' | 'shipment.mark_in_transit' | 'shipment.mark_arrived' | 'shipment.collect' | 'shipment.add_note' | 'cancellation.request' | 'cancellation.approve' | 'receiver.correct' | 'incident.report' | 'incident.resolve' | 'report.cash' | 'report.cancellation' | 'price.manage' | 'reference_data.manage' | 'station_setting.manage' | 'user.manage';
+    not_eq?: 'shipment.create' | 'shipment.read' | 'shipment.mark_in_transit' | 'shipment.mark_arrived' | 'shipment.collect' | 'shipment.add_note' | 'cancellation.request' | 'cancellation.approve' | 'receiver.correct' | 'incident.report' | 'incident.resolve' | 'report.cash' | 'report.cancellation' | 'price.manage' | 'reference_data.manage' | 'station_setting.manage' | 'user.manage';
 };
 
 export type SizeClassFilterPrice = {
@@ -1085,6 +1125,19 @@ export type ReceiverCorrectionFilterPhone = {
 };
 
 export type ShipmentFilterOriginStationId = {
+    eq?: string;
+    greater_than?: string;
+    greater_than_or_equal?: string;
+    in?: Array<string>;
+    is_distinct_from?: string;
+    is_nil?: boolean;
+    is_not_distinct_from?: string;
+    less_than?: string;
+    less_than_or_equal?: string;
+    not_eq?: string;
+};
+
+export type RolePermissionFilterId = {
     eq?: string;
     greater_than?: string;
     greater_than_or_equal?: string;
@@ -1931,6 +1984,11 @@ export type LocationFilterNameEn = {
     string_ends_with?: string;
     string_starts_with?: string;
 };
+
+/**
+ * Filters the query to results matching the given filter object
+ */
+export type RolePermissionFilter = unknown;
 
 export type ParcelFilterMeasurementType = {
     eq?: 'kg' | 'size';
@@ -3782,6 +3840,19 @@ export type ShipmentFilterDeclaredValue = {
     };
 };
 
+export type RolePermissionFilterRole = {
+    eq?: 'staff' | 'supervisor' | 'admin';
+    greater_than?: 'staff' | 'supervisor' | 'admin';
+    greater_than_or_equal?: 'staff' | 'supervisor' | 'admin';
+    in?: Array<'staff' | 'supervisor' | 'admin'>;
+    is_distinct_from?: 'staff' | 'supervisor' | 'admin';
+    is_nil?: boolean;
+    is_not_distinct_from?: 'staff' | 'supervisor' | 'admin';
+    less_than?: 'staff' | 'supervisor' | 'admin';
+    less_than_or_equal?: 'staff' | 'supervisor' | 'admin';
+    not_eq?: 'staff' | 'supervisor' | 'admin';
+};
+
 /**
  * A "Resource object" representing a incident
  */
@@ -4684,6 +4755,95 @@ export type PatchApiV1IncidentsByIdResolveResponses = {
 };
 
 export type PatchApiV1IncidentsByIdResolveResponse = PatchApiV1IncidentsByIdResolveResponses[keyof PatchApiV1IncidentsByIdResolveResponses];
+
+export type GetApiV1RolePermissionsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        /**
+         * Filters the query to results with attributes matching the given filter object
+         */
+        filter?: RolePermissionFilter;
+        /**
+         * Sort order to apply to the results
+         */
+        sort?: string;
+        /**
+         * Paginates the response with the limit and offset or keyset pagination.
+         */
+        page?: {
+            after?: string;
+            before?: string;
+            count?: boolean;
+            limit?: number;
+            offset?: number;
+        };
+        /**
+         * Relationship paths to include in the response
+         */
+        include?: string;
+        /**
+         * Limits the response fields to only those listed for each type
+         */
+        fields?: {
+            /**
+             * Comma separated field names for role-permission
+             */
+            'role-permission'?: string;
+            [key: string]: unknown;
+        };
+    };
+    url: '/api/v1/role-permissions';
+};
+
+export type GetApiV1RolePermissionsErrors = {
+    /**
+     * General Error
+     */
+    default: Errors;
+};
+
+export type GetApiV1RolePermissionsError = GetApiV1RolePermissionsErrors[keyof GetApiV1RolePermissionsErrors];
+
+export type GetApiV1RolePermissionsResponses = {
+    /**
+     * Success
+     */
+    200: {
+        /**
+         * An array of resource objects representing a role-permission
+         */
+        data?: Array<{
+            /**
+             * An attributes object for a role-permission
+             */
+            attributes?: {
+                /**
+                 * Field included by default.
+                 */
+                permission: 'shipment.create' | 'shipment.read' | 'shipment.mark_in_transit' | 'shipment.mark_arrived' | 'shipment.collect' | 'shipment.add_note' | 'cancellation.request' | 'cancellation.approve' | 'receiver.correct' | 'incident.report' | 'incident.resolve' | 'report.cash' | 'report.cancellation' | 'price.manage' | 'reference_data.manage' | 'station_setting.manage' | 'user.manage';
+                /**
+                 * Field included by default.
+                 */
+                role: 'staff' | 'supervisor' | 'admin';
+            };
+            id: string;
+            /**
+             * A relationships object for a role-permission
+             */
+            relationships?: {
+                [key: string]: never;
+            };
+            type: string;
+        }>;
+        included?: Array<unknown>;
+        meta?: {
+            [key: string]: unknown;
+        };
+    };
+};
+
+export type GetApiV1RolePermissionsResponse = GetApiV1RolePermissionsResponses[keyof GetApiV1RolePermissionsResponses];
 
 export type DeleteApiV1LocationsByIdData = {
     body?: never;
