@@ -11,7 +11,7 @@ import type { Session } from '#/lib/auth'
 import { apiKey, listQuery, recordQuery } from '#/lib/queries'
 import { formatPhone, phoneSchema } from '#/lib/phone'
 import { Button, Card, Err, Num, Page, Pill } from '#/components/kit'
-import { Choice, FormField } from '#/components/form'
+import { Choice, FormField, Segmented } from '#/components/form'
 import { DataTable, type ColumnDef } from '#/components/data-table'
 import { StatusTag, StatusWeave } from '#/components/StatusWeave'
 import { Input } from '@/components/ui/input'
@@ -83,13 +83,7 @@ export function Shipments({ showDone, onShowDone }: { showDone: boolean; onShowD
   const rows = shipments.data ?? []
   return (
     <Page title="Shipments" subtitle={shipments.isSuccess ? `${rows.length.toLocaleString('en-US')} ${showDone ? 'on record' : 'still moving'}` : undefined}
-      action={
-        <label className="flex items-center gap-2 text-sm text-ink-soft">
-          <input id="show-completed" type="checkbox" checked={showDone} onChange={(e) => onShowDone(e.target.checked)} />
-          Show completed
-        </label>
-      }
-    >
+>
       <Err error={shipments.error} />
       <Card flush>
         <DataTable
@@ -99,6 +93,19 @@ export function Shipments({ showDone, onShowDone }: { showDone: boolean; onShowD
           loading={shipments.isPending}
           empty="No Shipments yet."
           scrollHeight="max-h-[calc(100vh-15rem)]"
+          toolbar={
+            <Segmented
+              id="shipment-filter"
+              aria-label="Filter Shipments"
+              className="w-auto"
+              value={showDone ? 'all' : 'moving'}
+              onChange={(v) => onShowDone(v === 'all')}
+              options={[
+                { value: 'moving', label: 'Still moving' },
+                { value: 'all', label: 'All' },
+              ]}
+            />
+          }
           search={{ id: 'search', placeholder: 'Invoice, name or phone number', label: 'Find a Shipment', autoFocus: true }}
           initialSort={[{ id: 'received', desc: true }]}
           onRowClick={(s) => navigate({ to: '/shipments/$id', params: { id: s.id } })}
