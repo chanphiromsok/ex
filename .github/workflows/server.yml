@@ -160,6 +160,14 @@ jobs:
           if docker buildx imagetools inspect "$IMAGE:${{ needs.plan.outputs.tag }}" > /dev/null 2>&1; then
             echo "skip=true" >> "$GITHUB_OUTPUT"; echo "Image already built, skipping."
           fi
+      # Package page description: tag + the commit subject it was built from.
+      - id: desc
+        if: steps.exists.outputs.skip != 'true'
+        env:
+          TAG: ${{ needs.plan.outputs.tag }}
+        run: |
+          subject="$(git log -1 --format=%s | tr -d '\r' | cut -c1-200)"
+          echo "text=$TAG: $subject" >> "$GITHUB_OUTPUT"
       - if: steps.exists.outputs.skip != 'true'
         uses: docker/setup-buildx-action@v3
       - if: steps.exists.outputs.skip != 'true'
@@ -175,6 +183,9 @@ jobs:
           labels: |
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.revision=${{ needs.plan.outputs.sha }}
+            org.opencontainers.image.version=${{ needs.plan.outputs.tag }}
+            org.opencontainers.image.title=ex
+            org.opencontainers.image.description=${{ steps.desc.outputs.text }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
