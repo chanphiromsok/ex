@@ -1,22 +1,19 @@
-# Sourced by deploy.sh and reset-db.sh. Runs from the folder holding the compose files.
+# Sourced by deploy.sh and reset-db.sh. Runs from server/ (where .deployed-tag lives).
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
-# CI writes the decrypted env file to /etc/ex/ex.env. Without it, compose falls back to ./.env.
-ENV_FILE="${ENV_FILE:-/etc/ex/ex.env}"
+# Pick the environment: EX_ENV=uat (default) reads /etc/ex/uat.env, EX_ENV=prod reads /etc/ex/prod.env.
+# ENV_FILE overrides the path, e.g. ENV_FILE=./.env for a by-hand test.
+EX_ENV="${EX_ENV:-uat}"
+ENV_FILE="$(realpath "${ENV_FILE:-/etc/ex/$EX_ENV.env}" 2> /dev/null || echo "${ENV_FILE:-/etc/ex/$EX_ENV.env}")"
+[ -f "$ENV_FILE" ] || { echo "env file $ENV_FILE not found" >&2; return 1 2> /dev/null || exit 1; }
+export ENV_FILE
 
-dc() {
-  if [ -f "$ENV_FILE" ]; then
-    docker compose --env-file "$ENV_FILE" -f docker-compose.yml -f docker-compose.prod.yml "$@"
-  else
-    docker compose -f docker-compose.yml -f docker-compose.prod.yml "$@"
-  fi
-}
+dc() { docker compose --env-file "$ENV_FILE" -f deploy/docker-compose.yml "$@"; }
 
-# Asks Traefik from inside its container, so the request goes through the real routing
-# (temporary plain-HTTP router, Host localhost). Switch to the HTTPS router when that one is removed.
+# Asks the app from the Traefik container, so it works for any host or entrypoint.
 healthy() {
   for _ in $(seq 30); do
-    dc exec -T traefik wget -q -O /dev/null --header "Host: localhost" http://127.0.0.1/health 2> /dev/null && return 0
+    dc exec -T traefik wget -q -O /dev/null http://app:4000/health 2> /dev/null && return 0
     sleep 2
   done
   return 1

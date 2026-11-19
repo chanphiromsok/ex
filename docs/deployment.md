@@ -23,7 +23,19 @@ The `Dockerfile` builds a Mix release in one stage and copies only the release i
 
 Local Docker (`server/docker-compose.yml` alone) has no default credentials either. Put `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`, `DASHBOARD_USER` and `DASHBOARD_PASSWORD` in the git-ignored `server/.env` if you want an Admin seeded and the dashboard on. Only the signing secrets have local-only defaults, and the prod overlay rejects running without real ones.
 
-UAT values live encrypted in `server/.env.uat`, committed ([dotenvx](https://dotenvx.com)). Only the private key `DOTENV_PRIVATE_KEY_UAT` can read them; it is in the git-ignored `server/.env.keys`, the `uat` GitHub Environment secret, and your password manager. On every deploy CI decrypts the file and writes it to `/etc/ex/ex.env` on the droplet (`chmod 600`); `deploy/*.sh` pass it to compose with `--env-file`. Without that file the scripts fall back to `server/.env`.
+UAT values live encrypted in `server/.env.uat`, committed ([dotenvx](https://dotenvx.com)). Only the private key `DOTENV_PRIVATE_KEY_UAT` can read them; it is in the git-ignored `server/.env.keys`, the `uat` GitHub Environment secret, and your password manager. On every deploy CI decrypts the file and writes it to `/etc/ex/uat.env` on the droplet (`chmod 600`).
+
+### One compose file, switch the env
+
+The droplet runs `server/deploy/docker-compose.yml` only (Traefik, Postgres, app). Nothing in it changes between environments; the env file does:
+
+| | `/etc/ex/uat.env` (from `server/.env.uat`) | `/etc/ex/prod.env` (later, from `server/.env.prod`) |
+|---|---|---|
+| `APP_HOST` | `159.223.95.98` | the domain |
+| `APP_ENTRYPOINT` | `web` (plain HTTP) | `websecure` (HTTPS, Let's Encrypt certificate for `APP_HOST`) |
+| secrets | own values | own values, own `DOTENV_PRIVATE_KEY_PROD` |
+
+`deploy/*.sh` pick the file with `EX_ENV` (default `uat` → `/etc/ex/uat.env`, `EX_ENV=prod` → `/etc/ex/prod.env`) or a path in `ENV_FILE`, and pass it to compose as `--env-file` and to the app as `env_file`. `server/docker-compose.yml` stays the local-dev file.
 
     cd server
     dotenvx set API_DOCS true -f .env.uat --plain     # non-secret
@@ -34,11 +46,14 @@ Commit the change; the next deploy applies it. The repo is public, so the cipher
 
 | Variable | Required | Notes |
 |---|---|---|
-| `DATABASE_URL` | yes | `ecto://USER:PASS@HOST:PORT/DB` |
+| `DATABASE_URL` | set by the compose file | `ecto://ex:ex@db/ex` (the Postgres container). Phase B: Managed Postgres URL |
 | `DATABASE_SSL` | **Phase B** | `true` on Managed Postgres; use `verify_peer` with DO's CA certificate |
 | `SECRET_KEY_BASE` | yes | `mix phx.gen.secret` |
 | `TOKEN_SIGNING_SECRET` | yes | signs access tokens; changing it signs everyone out |
-| `PHX_HOST` | yes | `159-223-95-98.sslip.io` in Phase A |
+| `APP_HOST` | yes | host Traefik routes to the app |
+| `APP_ENTRYPOINT` | no | `web` or `websecure` (default) |
+| `TRAEFIK_ACME_EMAIL` | no | Let's Encrypt account email (optional) |
+| `PHX_HOST` | no | default `ex.pongpong.eu.org`; the host the app puts in URLs |
 | `PORT` | no | default 4000 |
 | `POOL_SIZE` | no | Phase A: 3. Phase B: keep `pool x containers` inside the database's connection limit, leaving room for `bin/migrate` |
 | `CORS_ORIGINS` | Phase A | comma-separated exact client origins (worker URL, preview URLs). Name to be fixed when the plug is built |
@@ -59,7 +74,7 @@ Commit the change; the next deploy applies it. The repo is public, so the cipher
    - set `PermitRootLogin no` and `PasswordAuthentication no` in `sshd_config`;
    - write `/etc/docker/daemon.json` with `{"log-driver":"json-file","log-opts":{"max-size":"10m","max-file":"3"}}` and restart Docker.
 4. Create the `deploy` user and add it to the `docker` group. The `docker` group is effectively root; this user limits mistakes, it is not a security boundary.
-5. As root: `install -d -o deploy -g deploy -m 700 /etc/ex /opt/ex` (CI writes `/etc/ex/ex.env` and copies the compose files to `/opt/ex/server`).
+5. As root: `install -d -o deploy -g deploy -m 700 /etc/ex /opt/ex` (CI writes `/etc/ex/uat.env` and copies `deploy/` to `/opt/ex/server`). The stack keeps the compose project name `ex`, so the first CI deploy takes over containers started by hand and keeps the `ex_pgdata` volume.
 6. Give CI an SSH key for `deploy` (on your laptop):
 
        ssh-keygen -t ed25519 -N '' -C ci-deploy -f ci_deploy
@@ -78,7 +93,7 @@ Commit the change; the next deploy applies it. The repo is public, so the cipher
 
    In the Environment's **Deployment branches** setting choose **No restriction**: PR deploys run on `refs/pull/<n>/merge`, which a "protected branches only" rule rejects.
 
-   Optional variable `DEPLOY_PATH`: the folder holding the compose files (default `/opt/ex/server`). Put the Cloudflare origin certificate in its `traefik/certs/` when you have one.
+   Optional variable `DEPLOY_PATH`: the folder holding the compose files (default `/opt/ex/server`).
 8. Add a free uptime check on `/health` that alerts to Telegram.
 
 The droplet needs no registry login: each deploy logs in with the job's short-lived token and logs out after.
@@ -107,9 +122,9 @@ From the terminal: `gh workflow run server.yml --ref <branch> -f action=build` (
 - **Build once.** Adding `deploy:uat` after `build` on the same commit reuses the image.
 - **Tag a tested commit.** `git tag v1.0.0 <sha> && git push origin v1.0.0` fails if that commit was never built on `release/**`.
 
-A deploy job: checks the image exists, decrypts `server/.env.uat` to `/etc/ex/ex.env`, copies `docker-compose*.yml`, `traefik/*.yml` and `deploy/` to the droplet, then runs `deploy/deploy.sh <tag>`.
+A deploy job: checks the image exists, decrypts `server/.env.uat` to `/etc/ex/uat.env`, copies `deploy/` to the droplet, then runs `deploy/deploy.sh <tag>`.
 
-`deploy/deploy.sh <tag>`: pull the image, run `/app/bin/migrate` in a one-off container, `up -d`, then ask Traefik for `/health` for up to a minute. On success it writes the tag to `.deployed-tag`. On failure it prints the app logs, starts the previous tag again and exits 1, which fails the job.
+`deploy/deploy.sh <tag>`: pull the image, run `/app/bin/migrate` in a one-off container, `up -d`, then ask the app for `/health` (from the Traefik container) for up to a minute. On success it writes the tag to `.deployed-tag`. On failure it prints the app logs, starts the previous tag again and exits 1, which fails the job.
 
 ### Reset the UAT database
 
@@ -118,7 +133,9 @@ PR branches can leave migrations the next PR doesn't have. **Actions → uat res
 ### By hand (CI down)
 
     cd /opt/ex/server
-    ./deploy/deploy.sh sha-4a2fab2      # uses /etc/ex/ex.env, else ./.env
+    ./deploy/deploy.sh sha-4a2fab2                  # /etc/ex/uat.env
+    EX_ENV=prod ./deploy/deploy.sh 1.0.0            # /etc/ex/prod.env
+    ENV_FILE=./.env ./deploy/deploy.sh sha-4a2fab2  # any file
 
 Rules:
 - Migrations are additive (add, switch over, drop later). The old container serves traffic while `bin/migrate` runs, and a rollback does not undo a migration.

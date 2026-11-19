@@ -14,7 +14,7 @@ This document covers the **API side**: the Phoenix + Ash server, its database, a
 |---|---|---|
 | Purpose | Testers only, no real customer data | Real stations and customers |
 | Hostname | `159-223-95-98.sslip.io` (no domain yet) | Real domain behind Cloudflare |
-| TLS | Traefik + Let's Encrypt (TLS-ALPN-01) | Cloudflare proxy, SSL mode Full (strict), Origin Certificate on Traefik |
+| TLS | Traefik + Let's Encrypt (HTTP-01), once a domain exists; plain HTTP on the IP until then | Cloudflare proxy, SSL mode Full (strict), Origin Certificate on Traefik |
 | Server | One DO Droplet, Singapore, 1 GB + 2 GB swap | Prod droplet (sized from Phase B numbers); the Phase A droplet becomes staging |
 | Database | `postgres:17-alpine` container on the droplet | DO Managed Postgres, `DATABASE_SSL=true`, `verify_peer` with DO's CA |
 | Firewall | DO cloud firewall: 22 (key only), 443 | 22 (key only), 443 from Cloudflare IP ranges only |
@@ -96,7 +96,7 @@ flowchart LR
 - **Traefik** is the only process listening publicly (443). It reaches Docker through a read-only socket proxy, not the raw `docker.sock`, and its version is pinned.
 - No container publishes a host port except Traefik. (The local compose file maps `4001:4000` for development; the server overlay removes it.)
 - **Phase A TLS:** Let's Encrypt via TLS-ALPN-01 (works on 443 alone) for the sslip.io hostname; `acme.json` lives on a volume so restarts do not re-issue the certificate (sslip.io shares Let's Encrypt rate limits with its other users). The temporary droplet-IP exceptions in `server/config/prod.exs` (plain HTTP and `check_origin`) are removed.
-- **Phase B TLS:** Cloudflare proxy, Full (strict), Cloudflare Origin Certificate on Traefik (already in `server/docker-compose.prod.yml`).
+- **Phase B TLS:** Cloudflare proxy, Full (strict), certificate still to decide: Let's Encrypt from `server/deploy/docker-compose.yml` (set `APP_ENTRYPOINT=websecure`; HTTP-01 needs `/.well-known/acme-challenge` reachable on port 80 through Cloudflare) or a Cloudflare Origin Certificate (needs a Traefik file provider again).
 - **Client access (ADR-0011):**
   - Phase A: a CORS plug in `server/lib/ex_web/endpoint.ex`, before the router, so preflight requests are answered before the rate limiter. Exact allowed origins come from runtime config (worker URL, preview URLs, localhost). Allows the `Authorization` header, `max_age` 7200, no credentials mode (bearer tokens).
   - Phase B: a Workers **route** sends `app.domain/*` to the client worker and `app.domain/api/*` to the origin with no worker. Not a Workers Custom Domain, which would capture `/api` too. Same origin, so CORS is removed.

@@ -251,8 +251,8 @@ jobs:
         run: |
           [ -n "$DOTENV_PRIVATE_KEY_UAT" ] || { echo "::error::Missing secret DOTENV_PRIVATE_KEY_UAT in the uat environment"; exit 1; }
           umask 077
-          npx -y @dotenvx/dotenvx@2.38.2 decrypt -f server/.env.uat --stdout > "$RUNNER_TEMP/ex.env"
-          if grep -q 'encrypted:' "$RUNNER_TEMP/ex.env"; then echo "::error::Decryption failed (wrong key?)"; exit 1; fi
+          npx -y @dotenvx/dotenvx@2.38.2 decrypt -f server/.env.uat --stdout > "$RUNNER_TEMP/uat.env"
+          if grep -q 'encrypted:' "$RUNNER_TEMP/uat.env"; then echo "::error::Decryption failed (wrong key?)"; exit 1; fi
 
       - uses: ./.github/actions/ssh
         with:
@@ -263,10 +263,9 @@ jobs:
 
       - name: Copy compose files, scripts and env
         run: |
-          tar -C server -czf - docker-compose.yml docker-compose.prod.yml \
-              traefik/traefik.yml traefik/dynamic.yml deploy \
+          tar -C server -czf - deploy \
             | ssh droplet "mkdir -p '$DEPLOY_PATH' && tar -C '$DEPLOY_PATH' -xzf -"
-          ssh droplet 'umask 077 && cat > /etc/ex/ex.env' < "$RUNNER_TEMP/ex.env"
+          ssh droplet 'umask 077 && cat > /etc/ex/uat.env' < "$RUNNER_TEMP/uat.env"
 
       - name: Deploy
         run: |
