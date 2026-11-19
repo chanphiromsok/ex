@@ -28,7 +28,8 @@ defmodule Ex.Repo.Migrations.AddManifestsAndStationExternalId do
             type: :uuid,
             prefix: "public",
             on_delete: :restrict
-          ), null: false
+          ),
+          null: false
 
       add :destination_station_id,
           references(:stations,
@@ -37,7 +38,8 @@ defmodule Ex.Repo.Migrations.AddManifestsAndStationExternalId do
             type: :uuid,
             prefix: "public",
             on_delete: :restrict
-          ), null: false
+          ),
+          null: false
     end
 
     create unique_index(
@@ -54,7 +56,8 @@ defmodule Ex.Repo.Migrations.AddManifestsAndStationExternalId do
             type: :uuid,
             prefix: "public",
             on_delete: :restrict
-          ), null: false
+          ),
+          null: false
     end
 
     create index(:manifests, [:origin_station_id])

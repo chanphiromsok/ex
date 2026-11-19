@@ -7,19 +7,6 @@ defmodule Ex.Accounts.RolePermission do
     authorizers: [Ash.Policy.Authorizer],
     extensions: [AshJsonApi.Resource]
 
-  json_api do
-    type "role-permission"
-
-    routes do
-      base "/role-permissions"
-
-      index :read do
-        description "Which role holds which Permission by default. Pair with `/permissions` for what each one means."
-        default_fields [:role, :permission]
-      end
-    end
-  end
-
   postgres do
     table "role_permissions"
     repo Ex.Repo
@@ -32,6 +19,19 @@ defmodule Ex.Accounts.RolePermission do
       check_constraint :role, "role_values",
         check: "role IN ('staff', 'supervisor', 'admin')",
         message: "unknown role"
+    end
+  end
+
+  json_api do
+    type "role-permission"
+
+    routes do
+      base "/role-permissions"
+
+      index :read do
+        description "Which role holds which Permission by default. Pair with `/permissions` for what each one means."
+        default_fields [:role, :permission]
+      end
     end
   end
 

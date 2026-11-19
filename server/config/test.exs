@@ -28,7 +28,6 @@ config :ex, ExWeb.Endpoint,
   secret_key_base: "50Q0Ddkphtz1wRolforEKbR8on6+NnYQ5x0qFjlUvK7xXTzTMuIeQtTqnpJHLwcC",
   server: false
 
-
 # Print only warnings and errors during test
 config :logger, level: :warning
 

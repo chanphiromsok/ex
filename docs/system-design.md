@@ -1,129 +1,198 @@
 # System design
 
-Status: proposal. Describes what exists today and the stages for growth. Capacity numbers are rough estimates, not measurements; load test before relying on them (see "Validation").
+Status: agreed for Phase A (test), planned for Phase B (launch). Capacity numbers are rough estimates, not measurements; load test before relying on them (see "Validation"). The step-by-step runbook is `docs/deployment.md`.
 
 ## 1. What the system is
 
 A parcel-by-bus platform: staff at stations register shipments, put them on bus manifests, track status, take payments, and handle cancellations and incidents. Staff use a React web client; everything goes through one JSON:API.
 
-## 2. Current architecture (built)
+This document covers the **API side**: the Phoenix + Ash server, its database, and how it is built, deployed and scaled. The client (TanStack Start) is built and deployed separately to Cloudflare Workers (ADR-0011); this document only fixes how it reaches the API.
+
+## 2. Two phases
+
+| | Phase A: test (now) | Phase B: launch (later) |
+|---|---|---|
+| Purpose | Testers only, no real customer data | Real stations and customers |
+| Hostname | `159-223-95-98.sslip.io` (no domain yet) | Real domain behind Cloudflare |
+| TLS | Traefik + Let's Encrypt (TLS-ALPN-01) | Cloudflare proxy, SSL mode Full (strict), Origin Certificate on Traefik |
+| Server | One DO Droplet, Singapore, 1 GB + 2 GB swap | Prod droplet (sized from Phase B numbers); the Phase A droplet becomes staging |
+| Database | `postgres:17-alpine` container on the droplet | DO Managed Postgres, `DATABASE_SSL=true`, `verify_peer` with DO's CA |
+| Firewall | DO cloud firewall: 22 (key only), 443 | 22 (key only), 443 from Cloudflare IP ranges only |
+| Client → API | Cross-origin, CORS allow-list | Same origin through a Workers route; CORS removed |
+| Client IP for rate limits | Right-most untrusted `x-forwarded-for` | `CF-Connecting-IP` |
+| Backups | None (test data is disposable) | PITR + nightly `pg_dump` to another provider |
+| Error tracking | Logs only | Sentry (free tier) |
+| API docs (`/api/docs`, `/api/v1/open_api`) | On | Off |
+
+Phase B starts when a real domain is bought and the numbers in section 9 are known. See ADR-0010.
+
+### Phase A
 
 ```mermaid
 flowchart LR
-    U[Staff browser<br/>React client] -->|HTTPS| LB[Caddy / Load balancer<br/>TLS, x-forwarded-*]
-    LB --> API[Phoenix + Ash API<br/>Mix release, stateless]
-    API -->|Ecto, pool| PG[(PostgreSQL)]
-    API -->|HTTP| SCH[Bus schedule service<br/>Ex.Schedule.Http]
-    API --> ETS[(Hammer ETS<br/>rate-limit counters)]
-    OPS[Operator] -->|basic auth| DASH[/ops/dashboard/]
-    DASH --- API
+    U[Staff browser] -->|HTTPS| W[Client<br/>Cloudflare Workers<br/>*.workers.dev]
+    U -->|HTTPS, CORS| T
+    subgraph D[Droplet 1 GB, Singapore]
+      T[Traefik :443<br/>Let's Encrypt] --> A[API container<br/>image from GHCR]
+      A --> P[(Postgres 17<br/>container)]
+      T -. read-only .-> SP[docker socket proxy]
+    end
+    A -->|HTTP| SCH[Bus schedule service]
+    GH[GitHub Actions] -->|push image| GHCR[(GHCR)]
+    GH -->|SSH deploy| D
+    UP[Uptime check] -->|/health| T
+    UP -->|alert| TG[Telegram]
 ```
 
-| Concern | Today |
-|---|---|
-| API | Phoenix + Ash, JSON:API under `/api/v1`, OpenAPI at `/api/open_api`, Scalar docs at `/api/docs` |
-| Auth | AshAuthentication: short-lived bearer access token + rotating refresh token (`refresh_tokens`, family + reuse detection) |
-| Authorization | Permissions as data (`permissions`, `role_permissions`); `HasPermission` check plus a station-scope check |
-| Rate limiting | Per-IP 300/min, sign-in/refresh 10/min (plug), per-account sign-in 5 per 15 min (AshRateLimiter); Hammer ETS, per node |
-| Data | One Postgres, uuid keys, KHR money, append-only history tables (see `docs/erd.md`) |
-| Ops | LiveDashboard at `/ops/dashboard` behind basic auth; `/health` checks the DB |
-| Packaging | `Dockerfile` builds a Mix release; `bin/migrate`, `bin/server` |
+### Phase B
 
-Design rules already in force: stateless API (no server session), money never floats, history written in the same transaction as the change, append-only enforced by both Ash (no update/destroy action) and Postgres triggers.
+```mermaid
+flowchart LR
+    U[Staff browser] -->|HTTPS app.domain| CF[Cloudflare<br/>proxy + WAF]
+    CF -->|route app.domain/*| W[Client Worker]
+    CF -->|route app.domain/api/*<br/>no worker| T
+    subgraph D[Prod droplet]
+      T[Traefik :443<br/>Origin cert] --> A[API container]
+    end
+    A -->|TLS verify_peer| M[(DO Managed Postgres<br/>PITR)]
+    M -. nightly pg_dump .-> B2[(Off-provider<br/>object storage)]
+    A --> SCH[Bus schedule service]
+    A -.errors.-> S[Sentry]
+```
 
 ## 3. Principles for scale
 
 1. **Stateless app tier.** Any request can hit any server. Do not add local state that must survive a request (files, sessions, in-memory queues).
 2. **Postgres is the system of record and the first bottleneck.** Protect it: indexes, pagination, connection budget, then replicas.
-3. **Slow work leaves the request path.** Reports, emails, schedule syncs, exports go to a job queue.
+3. **Slow work leaves the request path.** Reports, notifications, schedule syncs and exports go to a job queue once they exist (ADR-0012).
 4. **Idempotent writes.** `shipments.idempotency_key` already exists; keep that pattern for any create that a client may retry (payments next).
 5. **Make cheap things stay cheap.** Add a component only when a measured limit says so.
+6. **Everything that changes is backward compatible for one release.** Database migrations and the API contract are additive: add, switch over, remove later. The old container keeps running while migrations run, a rollback does not undo a migration, and the client deploys on its own schedule.
 
-## 4. Staged plan
+## 4. Build and deploy
 
-### Stage 1: MVP launch
+Images are built only by CI; the droplet never compiles anything. Secrets are set by hand on the droplet and never pass through CI (ADR-0009).
 
 ```mermaid
 flowchart LR
-    B[Browser] --> CDN[Static client<br/>Spaces/CDN]
-    B -->|HTTPS| C[Caddy] --> A[API container<br/>2 GB Droplet]
-    A --> M[(Managed Postgres<br/>daily backup + PITR)]
-    A --> S[Schedule service]
+    P[push to release/*] --> T[test<br/>mix test + Postgres service]
+    T --> B[build linux/amd64 image]
+    B --> R[push ghcr.io/.../ex:SHA]
+    R --> S[SSH as deploy user]
+    S --> PU[compose pull]
+    PU --> MI[compose run --rm app bin/migrate]
+    MI --> UP[compose up -d]
+    UP --> H{GET /health 200?}
+    H -->|no| RB[redeploy previous SHA]
 ```
 
-- One Droplet (2 GB), Docker, Caddy for TLS, `--restart unless-stopped`.
-- Managed Postgres, `DATABASE_SSL=true`, `POOL_SIZE` 10.
-- Client built to static files and served from a CDN, not the API.
-- Monitoring: uptime check on `/health`, error tracking, `/ops/dashboard`.
-- Deploy: build `linux/amd64` image, push to registry, `bin/migrate`, restart, check `/health`.
-- Firewall: 22 (your IP only if possible), 80, 443.
+- `release/*` deploys to the test droplet (Phase A) and later staging (Phase B) automatically.
+- Prod (Phase B) is deployed by hand by choosing a SHA that has already passed on staging. Image tags are SHAs and are never reused.
+- The droplet runs `image: ghcr.io/<owner>/ex:${TAG}` and never builds. It keeps no registry credential: each deploy logs in with the job's short-lived `GITHUB_TOKEN` and logs out afterwards.
+- Migrations run as their own step, before the new container takes traffic. Seeding is not part of startup; the first Admin is created once by hand.
+- Order between the two deploy targets: an API change the client needs ships first, and the API stays compatible with the client version that is live.
+
+## 5. Edge, TLS and client access
+
+- **Traefik** is the only process listening publicly (443). It reaches Docker through a read-only socket proxy, not the raw `docker.sock`, and its version is pinned.
+- No container publishes a host port except Traefik. (The local compose file maps `4001:4000` for development; the server overlay removes it.)
+- **Phase A TLS:** Let's Encrypt via TLS-ALPN-01 (works on 443 alone) for the sslip.io hostname; `acme.json` lives on a volume so restarts do not re-issue the certificate (sslip.io shares Let's Encrypt rate limits with its other users). The temporary droplet-IP exceptions in `server/config/prod.exs` (plain HTTP and `check_origin`) are removed.
+- **Phase B TLS:** Cloudflare proxy, Full (strict), Cloudflare Origin Certificate on Traefik (already in `server/docker-compose.prod.yml`).
+- **Client access (ADR-0011):**
+  - Phase A: a CORS plug in `server/lib/ex_web/endpoint.ex`, before the router, so preflight requests are answered before the rate limiter. Exact allowed origins come from runtime config (worker URL, preview URLs, localhost). Allows the `Authorization` header, `max_age` 7200, no credentials mode (bearer tokens).
+  - Phase B: a Workers **route** sends `app.domain/*` to the client worker and `app.domain/api/*` to the origin with no worker. Not a Workers Custom Domain, which would capture `/api` too. Same origin, so CORS is removed.
+
+## 6. Scaling stages (Phase B and after)
+
+### Stage 1: launch
+
+One prod droplet, Managed Postgres, Cloudflare in front. `POOL_SIZE` set so `pool x containers` stays inside the database plan's connection limit (about 22 usable on the smallest plan), keeping a few for `bin/migrate` and manual sessions.
 
 ### Stage 2: first growth (trigger: sustained CPU > 60% or p95 latency rising)
 
 ```mermaid
 flowchart LR
-    B[Browser] --> LB[DO Load Balancer<br/>TLS]
+    CF[Cloudflare] --> LB[DO Load Balancer]
     LB --> A1[API 1]
     LB --> A2[API 2]
     A1 & A2 --> PGB[PgBouncer pool]
     PGB --> M[(Postgres primary)]
-    A1 & A2 --> R[(Redis<br/>rate limits, cache)]
-    A1 & A2 -.enqueue.-> O[Oban workers<br/>jobs in Postgres]
+    A1 & A2 --> R[(Redis<br/>shared rate limits)]
 ```
 
-- Two or more API nodes behind a load balancer. No code change needed because the API is stateless.
-- **Shared rate limiter:** switch Hammer to the Redis backend; ETS counts are per node, so limits multiply with node count.
-- **Oban** for background work and scheduled jobs (expired token cleanup, schedule sync, exports).
-- **Connection budget:** `POOL_SIZE x nodes` below the database limit; use PgBouncer (transaction mode) when it gets tight.
+- Two or more API nodes behind a load balancer. No code change, because the API is stateless.
+- **Redis** for Hammer: ETS counters are per node, so limits multiply with node count. Redis arrives with the second node, not before.
+- **Connection budget:** `POOL_SIZE x nodes` below the database limit; PgBouncer (transaction mode) when it gets tight.
 - Cache hot, rarely changing reads (permissions, roles, reference data, pricing) with short TTLs and invalidate on write.
-- Optional: cluster the nodes (`dns_cluster` is already a dependency) if you later need PubSub across nodes.
+- Cluster the nodes (`dns_cluster` is already a dependency) only if PubSub across nodes is needed.
 
 ### Stage 3: high traffic (trigger: primary DB CPU or connections saturated after tuning)
 
-- Read replica(s) for lists, reports and search; writes stay on the primary. Route reads explicitly per action, accept replica lag on report screens only.
-- Table partitioning by month for `status_events` and `payments` once in the tens of millions of rows; archive old partitions.
-- Autoscaling (instance pool) or Kubernetes only if traffic is spiky. Not before.
-- Move search/reporting to a separate store only if Postgres full-text and replicas stop being enough.
+- Read replica(s) for lists, reports and search; writes stay on the primary. Route reads explicitly per action and accept replica lag on report screens only.
+- Monthly partitions for `status_events` and `payments` once they reach tens of millions of rows; archive old partitions.
+- Autoscaling or Kubernetes only if traffic is spiky. Not before.
 
-## 5. Cross-cutting design
+## 7. Cross-cutting design
 
-**Security.** TLS at the edge; `force_ssl` trusts `x-forwarded-proto`. Secrets only in environment (`SECRET_KEY_BASE`, `TOKEN_SIGNING_SECRET`, `DATABASE_URL`, `DASHBOARD_*`). Rotate by redeploy; changing the signing secret signs everyone out. Rate limits at three levels (IP, auth endpoints, account). Known gap: `assent` advisory (not reachable, no OAuth in use).
+**Security.**
+- Secrets live only in `/opt/ex/.env` on the droplet (owned by `deploy`, mode 600), with a copy in a password manager. No default credentials anywhere: a missing `SEED_*` or `DASHBOARD_*` value makes the feature fail closed, not fall back to a known password.
+- SSH by key only, no root login, unattended security upgrades. Membership in the `docker` group is effectively root, so the `deploy` user limits mistakes but is not a security boundary.
+- `/ops/dashboard` is not reachable from the internet; open it through `ssh -L`.
+- Rate limits at three levels (IP, auth endpoints, account). The client IP comes from one setting: right-most untrusted `x-forwarded-for` in Phase A, `CF-Connecting-IP` in Phase B. The header is trustworthy in Phase B only because the firewall admits Cloudflare alone.
+- Changing `TOKEN_SIGNING_SECRET` signs everyone out.
 
-**Data lifecycle.** Delete expired `refresh_tokens` and `tokens` on a schedule (not done yet). Keep `shipments`, `status_events`, `payments` indefinitely; plan partitioning before they are large, because converting later needs a migration window.
+**Background work (ADR-0012).** `AshAuthentication.Supervisor` already removes expired `tokens`. A small periodic GenServer deletes expired `refresh_tokens` with an idempotent `DELETE`, so it is safe when several nodes run it. Oban (AshOban) arrives with the first real retryable job, such as SMS or Telegram notifications.
 
-**Observability.** Telemetry already exposed to LiveDashboard. Add: structured JSON logs with request id, error tracker, p95/p99 latency and DB pool queue time, alerts on `/health`, 5xx rate, DB connections and disk. Use `pgbot` (`top_queries`, `suggest_indexes`, `vacuum_health`) after real traffic exists.
+**Data lifecycle.** Keep `shipments`, `status_events`, `payments` indefinitely; plan partitioning before they are large, because converting later needs a migration window.
 
-**Reliability.** Backups: managed daily plus point-in-time recovery; do a restore test before launch. Deploy: migrate before the new version takes traffic; migrations must be backward compatible with the previous release (add column, then use it, then drop later). Build large indexes `concurrently`. Rollback = redeploy previous image tag, so keep images tagged by git SHA.
+**Observability.**
+- Phase A: free external uptime check on `/health` alerting to Telegram; Docker log rotation in `/etc/docker/daemon.json` (`json-file`, `max-size 10m`, `max-file 3`) so it covers every container; LiveDashboard over an SSH tunnel; `recon` for live diagnosis.
+- Phase B adds: Sentry, structured JSON logs with request id, p95/p99 latency and DB pool queue time, alerts on 5xx rate, DB connections and disk. Use `pgbot` (`top_queries`, `suggest_indexes`, `vacuum_health`) once real traffic exists.
+
+**Reliability (Phase B targets).**
+- Recovery point: at most about 5 minutes of lost data (Managed Postgres point-in-time recovery).
+- Recovery time: about 2 hours (new droplet, CI deploy, `.env` from the password manager).
+- A nightly `pg_dump` is copied to object storage at a different provider (for example Backblaze B2), in case the DigitalOcean account itself is lost or locked.
+- One restore drill before launch.
+- Rollback means redeploying the previous SHA; additive migrations make that safe.
+- Build large indexes `concurrently` (see `docs/database-health.md`).
 
 **API behaviour under load.** Paginate every list (keyset for the big tables). Cap page size. Return 429 with `retry-after` (done). Keep request timeouts short and fail fast to protect the DB pool.
 
-**Environments.** dev (local Postgres, `/dev` dashboard), staging (same Droplet type, separate DB, optional), prod. Same image across all.
+## 8. Capacity guess and validation
 
-## 6. Capacity guess and validation
+Rough expectation, unmeasured: a single small droplet should serve a few hundred simple requests per second; shipment creation (several inserts in a transaction) will be far lower. With `RELEASE_MODE=interactive` the release uses about 150-170 MB; a 1 GB droplet with 2 GB swap holds the app, Postgres, Traefik and a migrate container at once.
 
-Rough expectation, unmeasured: a 2 GB Droplet running this API against a small managed Postgres should serve a few hundred simple requests per second; shipment creation (several inserts in a transaction) will be far lower. The release holds about 300 MB of VM memory at idle, of which about 35 MB is the Unicode collation table loaded by a dependency.
-
-Before launch:
-1. Load test with `k6`: login, list shipments, create shipment, status update, at 2x expected peak.
+Before Phase B:
+1. Load test with `k6`: login, list shipments, create shipment, status update, at 2x expected peak (morning departures).
 2. Watch DB pool queue time, p95 latency and CPU; find the first limit.
 3. Fix the limit (index, query, pool, size) and repeat. Record results in this doc.
 
-## 7. Open decisions
+## 9. Open before Phase B
 
-| Decision | Options | Needed to decide |
-|---|---|---|
-| Hosting | Droplet + Caddy (recommended) or App Platform | domain, how much ops you want |
-| Database | Managed Postgres (recommended) or container on the Droplet | budget, data-loss tolerance |
-| Shared rate limit | Redis at stage 2 or accept looser limits | when a second node is added |
-| Job queue | Oban (Postgres) | first slow job appearing |
-| Expected load | users, requests per second now and in a year | needed to size stage 1 |
+| Question | Why it matters |
+|---|---|
+| Stations, staff, shipments per day now and in a year | Sizes the prod droplet, database plan and `POOL_SIZE` |
+| Time of the first bus departure | Sets the morning peak and the safe deploy window |
+| Monthly infrastructure budget | Picks the droplet and database plans |
+| Real domain | Cloudflare zone, Origin Certificate, Workers route |
 
-## 8. Immediate work list
+## 10. Work list
 
-1. Write prod `docker-compose.yml`, `Caddyfile`, deploy script (stage 1).
-2. Expiry cleanup job for `refresh_tokens` / `tokens`.
-3. Check foreign-key and list-query indexes with `pgbot`.
-4. Confirm pagination and max page size on all list endpoints.
-5. Reconcile `shipments.status` (stored column) with `docs/schema.md` ("never stored").
-6. Load test plan with `k6`.
-7. Fix stale note in `docs/deployment.md` (Docker is installed; image never built yet).
+Phase A (code changes, separate from this document):
+1. GitHub Actions workflow: test with a Postgres service, build `linux/amd64`, push to GHCR by SHA, SSH deploy with migrate step and `/health` check, rollback to previous SHA.
+2. Server compose for the droplet: `image:` from GHCR, `env_file: /opt/ex/.env`, Postgres container, Traefik with Let's Encrypt TLS-ALPN on the sslip.io host, `acme.json` volume, docker socket proxy, no published app port (`ports: !reset []`).
+3. Remove `seed` from the container command and the fallback `SEED_*` / `DASHBOARD_*` values from `server/docker-compose.yml`.
+4. Remove the temporary droplet-IP entries from `server/config/prod.exs` (`check_origin`, `force_ssl` host exclusions).
+5. CORS plug in the endpoint with a runtime origin allow-list.
+6. Rate-limit client IP: one runtime setting, right-most untrusted `x-forwarded-for` (Phase A) or `CF-Connecting-IP` (Phase B).
+7. Periodic GenServer that deletes expired `refresh_tokens`.
+8. Gate `/api/docs` and `/api/v1/open_api` behind a runtime flag (on in test, off in prod).
+9. Make `/ops/dashboard` unreachable through Traefik.
+10. Droplet setup: `deploy` user, swap, firewall, unattended upgrades, Docker log rotation, uptime check to Telegram.
+
+Phase B:
+1. Domain, Cloudflare zone, Full (strict), Origin Certificate, Workers route for `/api/*`, remove CORS.
+2. Managed Postgres with `verify_peer` (`server/config/runtime.exs:45` uses `verify_none` today), PITR, nightly off-provider dump, restore drill.
+3. Firewall 443 to Cloudflare ranges, switch rate-limit IP setting to `CF-Connecting-IP`.
+4. Sentry, structured logs, alerts. Load test.

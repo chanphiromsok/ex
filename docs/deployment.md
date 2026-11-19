@@ -1,54 +1,105 @@
-# Deployment (Docker, DigitalOcean)
+# Deployment runbook
 
-The `Dockerfile` builds a Mix release (`mix release`) in one image stage and copies only the release into a slim Debian runner. The image listens on `$PORT` (default 4000) and runs `bin/server`.
+How the API is built, configured and deployed. Why it is set up this way: `docs/system-design.md` and ADR-0009 to ADR-0012. The client is deployed separately to Cloudflare Workers and is not covered here.
+
+Phase A (test, now): one DigitalOcean droplet in Singapore, reached at `159-223-95-98.sslip.io`. Phase B (launch) changes are marked **Phase B**.
+
+> Status: this runbook describes the agreed setup. Items in `docs/system-design.md` section 10 (CI workflow, droplet compose, CORS and so on) must be built before every step here works as written.
+
+## Image
+
+The `Dockerfile` builds a Mix release in one stage and copies only the release into a slim Debian runner. The image listens on `$PORT` (default 4000) and runs `bin/server`. Images are built only by GitHub Actions, for `linux/amd64`, and pushed to `ghcr.io/<owner>/ex:<git SHA>`. The droplet never builds.
 
 ## Environment variables
+
+Set by hand in `/opt/ex/.env` on the droplet. CI never sees them. Keep a copy in a password manager; it is needed to rebuild the droplet.
 
 | Variable | Required | Notes |
 |---|---|---|
 | `DATABASE_URL` | yes | `ecto://USER:PASS@HOST:PORT/DB` |
-| `DATABASE_SSL` | for managed DB | `true` on DigitalOcean Managed PostgreSQL (encrypts, does not verify the certificate) |
+| `DATABASE_SSL` | **Phase B** | `true` on Managed Postgres; use `verify_peer` with DO's CA certificate |
 | `SECRET_KEY_BASE` | yes | `mix phx.gen.secret` |
-| `TOKEN_SIGNING_SECRET` | yes | signs access tokens; changing it signs everyone out. Generate with `mix phx.gen.secret` |
-| `PHX_HOST` | yes | public hostname, used to build URLs |
-| `PORT` | no | default 4000; App Platform sets it for you |
-| `POOL_SIZE` | no | default 10; keep `pool_size x instances` below the database's connection limit |
-| `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` | first deploy | read by the seed command; the dev defaults must never reach production |
+| `TOKEN_SIGNING_SECRET` | yes | signs access tokens; changing it signs everyone out |
+| `PHX_HOST` | yes | `159-223-95-98.sslip.io` in Phase A |
+| `PORT` | no | default 4000 |
+| `POOL_SIZE` | no | Phase A: 3. Phase B: keep `pool x containers` inside the database's connection limit, leaving room for `bin/migrate` |
+| `CORS_ORIGINS` | Phase A | comma-separated exact client origins (worker URL, preview URLs). Name to be fixed when the plug is built |
+| `CLIENT_IP_SOURCE` | no | `x-forwarded-for` (Phase A) or `cf-connecting-ip` (Phase B). Name to be fixed when the plug is built |
+| `API_DOCS` | no | `true` on test, unset in prod. Name to be fixed when built |
+| `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` | first deploy only | no defaults; remove from `.env` after seeding |
+| `DASHBOARD_USER`, `DASHBOARD_PASSWORD` | optional | no defaults; the dashboard answers 404 until both are set |
 
-## Every deploy
+## One-time droplet setup
 
-1. Build and push the image.
-2. Run `/app/bin/migrate` before the new version takes traffic (App Platform: a *pre-deploy job*; Droplet: `docker run --rm --env-file .env IMAGE bin/migrate`).
-3. Start the container (`bin/server`). Health check: `GET /health` (200 when the database answers; excluded from the HTTPS redirect).
+1. Create the droplet: Ubuntu 24.04, 1 GB, Singapore, SSH key only.
+2. DO cloud firewall: inbound 22 and 443 only. **Phase B:** 443 from Cloudflare IP ranges only.
+3. As root:
+   - add 2 GB swap;
+   - install Docker Engine and the compose plugin;
+   - enable `unattended-upgrades`;
+   - set `PermitRootLogin no` and `PasswordAuthentication no` in `sshd_config`;
+   - write `/etc/docker/daemon.json` with `{"log-driver":"json-file","log-opts":{"max-size":"10m","max-file":"3"}}` and restart Docker.
+4. Create the `deploy` user, add it to the `docker` group, and install the CI public key in its `authorized_keys`. The `docker` group is effectively root; this user limits mistakes, it is not a security boundary.
+5. As `deploy`: create `/opt/ex/` and write `/opt/ex/.env` (`chmod 600`) with at least `SECRET_KEY_BASE` and `TOKEN_SIGNING_SECRET`; the prod overlay refuses to start without them. CI copies the compose files, Traefik config and `deploy/deploy.sh` on every deploy, so nothing else is put there by hand (except Origin certificates in `traefik/certs/` in Phase B).
+6. GitHub repo, **Settings > Environments > `test`**, add secrets:
+   - `DEPLOY_HOST`: `159.223.95.98`
+   - `DEPLOY_USER`: `deploy`
+   - `DEPLOY_SSH_KEY`: private key of a key pair made for CI only (`ssh-keygen -t ed25519 -f ex-ci -N ""`); the public half goes in `deploy`'s `authorized_keys`
+   - `DEPLOY_KNOWN_HOSTS`: output of `ssh-keyscan 159.223.95.98`
+7. Add a free uptime check on `/health` that alerts to Telegram.
+
+If the droplet already runs the stack from a cloned repo, stop it there first (`docker compose down`, without `-v`). The compose project is named `ex` in both places, so `/opt/ex` takes over the same `ex_pgdata` volume.
+
+## Every deploy (CI does this)
+
+`.github/workflows/server.yml`:
+
+| Trigger | Jobs |
+|---|---|
+| Pull request touching `server/` | test |
+| Push to `release/**` touching `server/` | test, build, deploy |
+| Manual run, `tag` empty | test, build, deploy |
+| Manual run, `tag` = a SHA | deploy only (redeploy or roll back to that image) |
+
+1. **test:** `mix format --check-formatted`, `mix compile --warnings-as-errors`, `mix test` against a Postgres 17 service.
+2. **build:** `linux/amd64` image pushed to `ghcr.io/<owner>/ex:<SHA>`.
+3. **deploy** (GitHub Environment `test`, one at a time): copies the compose files, Traefik config and `deploy/deploy.sh` to `/opt/ex`, logs the droplet in to GHCR with the job's short-lived token, runs `deploy.sh <SHA>`, then logs out.
+
+`server/deploy/deploy.sh <tag>` on the droplet: pull the image, run `/app/bin/migrate` in a one-off container, `up -d`, then ask Traefik for `/health` for up to a minute. On success it writes the tag to `/opt/ex/.deployed-tag`; on failure it prints the app logs, starts the previous tag again and exits 1, so the workflow run fails. It can also be run by hand (`docker login ghcr.io` first if the image is not on the droplet yet).
+
+Rules:
+- Migrations are additive (add, switch over, drop later). The old container serves traffic while `bin/migrate` runs, and a rollback does not undo a migration.
+- API changes stay compatible with the live client; ship the API before the client that needs it.
+- **Phase B:** prod is deployed by hand with a SHA that has already passed on staging. Tags are never reused.
 
 ## First deploy only
 
-Create the first Admin (idempotent, so running it again does nothing):
+Create the first Admin (idempotent; running it again does nothing). Put `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` in `.env` first, then remove them afterwards:
 
-    /app/bin/ex eval "Ex.Release.seed()"
+    cd /opt/ex
+    TAG=$(cat .deployed-tag) docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+      run --rm -l traefik.enable=false app /app/bin/ex eval "Ex.Release.seed()"
 
 ## Checks before the first real deploy
 
-- TLS terminates at the load balancer; `force_ssl` trusts `x-forwarded-proto`.
-- The migrations in `server/priv/repo/migrations` also create the permission and role tables' data, so no extra seeding is needed for them.
-- While the table has little data a plain index build is fine. After launch, build new indexes `concurrently` in their own migration (see `docs/database-health.md`).
-- Expired refresh tokens are never deleted yet.
-
-## Verified locally (without Docker)
-
-`MIX_ENV=prod mix release`, then `bin/migrate`, `Ex.Release.seed()`, `PHX_SERVER=true bin/ex start`: `/health` 200, admin sign-in works, `/api/v1/open_api` 200. The `Dockerfile` itself has not been built, because Docker is not installed on this machine.
+- No container except Traefik publishes a host port.
+- The temporary droplet-IP entries in `server/config/prod.exs` are gone; `force_ssl` trusts `x-forwarded-proto`.
+- Traefik serves a valid Let's Encrypt certificate (Phase A) or the Cloudflare Origin Certificate with Full (strict) (Phase B).
+- The migrations also create the permission and role data, so no extra seeding is needed for them.
+- After launch, build new indexes `concurrently` in their own migration (see `docs/database-health.md`).
 
 ## Ops dashboard
 
-LiveDashboard is served at `/ops/dashboard` (in dev: `/dev/dashboard`). It sits behind HTTP basic auth and
-answers 404 until both `DASHBOARD_USER` and `DASHBOARD_PASSWORD` are set. Use a long random password; it is
-sent on every request, so it is only safe because TLS terminates at the load balancer.
+LiveDashboard is at `/ops/dashboard` (in dev: `/dev/dashboard`), behind HTTP basic auth, and answers 404 until both `DASHBOARD_USER` and `DASHBOARD_PASSWORD` are set. It is not routed through Traefik. Open it through an SSH tunnel to the app container's port, for example:
+
+    ssh -L 4000:<app container IP>:4000 deploy@<droplet>
+    # then browse http://localhost:4000/ops/dashboard
 
 ## Diagnosing a live node
 
 The release includes [recon](https://github.com/ferd/recon) (loaded, never started). Connect to the running app and call it:
 
-    docker exec -it CONTAINER /app/bin/ex remote     # or: _build/prod/rel/ex/bin/ex remote
+    docker compose exec app /app/bin/ex remote
 
 | Question | Call |
 |---|---|
@@ -60,3 +111,10 @@ The release includes [recon](https://github.com/ferd/recon) (loaded, never start
 | Rate-limited tracing | `:recon_trace.calls({Mod, :fun, :return_trace}, 10)` |
 
 Leave the shell with Ctrl+C twice. `:recon_trace` is rate limited, but still stop a trace with `:recon_trace.clear()` when done.
+
+## Phase B additions
+
+- Managed Postgres: PITR on, `DATABASE_SSL=true` with `verify_peer`, nightly `pg_dump` copied to object storage at a different provider, one restore drill before launch.
+- Cloudflare: proxy on, Full (strict), Workers route `app.domain/api/*` with no worker; remove `CORS_ORIGINS`; set `CLIENT_IP_SOURCE=cf-connecting-ip`.
+- Sentry DSN, alerts on 5xx rate, DB connections and disk.
+- Rebuild a droplet from scratch: create it with the steps above, restore `.env` from the password manager, deploy the last good SHA. Target: back up within about 2 hours.

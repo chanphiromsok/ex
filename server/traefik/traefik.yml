@@ -1,4 +1,8 @@
 entryPoints:
+  # TEMPORARY: plain HTTP on the droplet IP until a hostname with a certificate exists.
+  # No trustedIPs: X-Forwarded-* from clients is discarded on this entrypoint.
+  web:
+    address: ":80"
   websecure:
     address: ":443"
     forwardedHeaders:

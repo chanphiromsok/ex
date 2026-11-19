@@ -18,6 +18,8 @@ services:
 
   app:
     build: .
+    # CI pushes ghcr.io/<owner>/ex:<git SHA>; the droplet runs that with TAG set. Locally `--build` tags it :local.
+    image: ghcr.io/chanphiromsok/ex:${TAG:-local}
     depends_on:
       db:
         condition: service_healthy
