@@ -2,7 +2,7 @@
 
 How the API is built, configured and deployed. Why it is set up this way: `docs/system-design.md` and ADR-0009 to ADR-0012. The client is deployed separately to Cloudflare Workers and is not covered here.
 
-Phase A (UAT, now): one DigitalOcean droplet in Singapore, reached at `159-223-95-98.sslip.io`. Phase B (launch) changes are marked **Phase B**.
+Phase A (UAT, now): one DigitalOcean droplet in Singapore, reached over plain HTTP at `http://159.223.95.98` (ADR-0010). Phase B (launch) changes are marked **Phase B**.
 
 > Status: CI/CD, UAT deploys and encrypted env are built. CORS, the client-IP source and the Phase B items in `docs/system-design.md` section 10 are not.
 
