@@ -1,8 +1,8 @@
 # Server CI/CD. Trigger map (docs/deployment.md has the full picture):
 #
-#   PR opened / pushed (no label)        test
-#   PR label `build`                     test → build pr-<n>-<sha> (+ sha-<sha>)
-#   PR label `deploy:uat`                test → build pr-<n>-<sha> (+ sha-<sha>) → deploy to UAT
+#   PR opened / pushed                   test (labels don't rebuild on new commits)
+#   PR label `build` added               test → build pr-<n>-<sha> (+ sha-<sha>)
+#   PR label `deploy:uat` added          test → build pr-<n>-<sha> (+ sha-<sha>) → deploy to UAT
 #   push to a branch                     nothing (the PR run tests it; build with the PR label)
 #   tag v1.2.3                           rename sha-<sha> → 1.2.3, 1.2, latest (no rebuild)
 #   Run workflow: build | build-deploy | deploy <tag>
@@ -55,12 +55,10 @@ jobs:
           REPO: ${{ github.repository }}
           PR_ACTION: ${{ github.event.action }}
           ADDED_LABEL: ${{ github.event.label.name }}
-          PR_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
           INPUT_ACTION: ${{ inputs.action }}
           INPUT_TAG: ${{ inputs.tag }}
         run: |
           test=false build=false deploy=false promote=false sha="$SHA" tag="" tags=""
-          has() { jq -e --arg l "$1" 'index($l) != null' <<< "$PR_LABELS" > /dev/null; }
 
           case "$EVENT" in
             pull_request)
@@ -70,10 +68,12 @@ jobs:
                 :
               else
                 test=true
+                # Build/deploy only at the moment the label is added. Later pushes just test;
+                # to build a new commit: re-add the label, or Run workflow → build / build-deploy.
                 # Fork PRs get tests only: their code never runs with secrets or push rights.
-                if [ "$PR_REPO" = "$REPO" ]; then
-                  has "$DEPLOY_LABEL" && build=true deploy=true
-                  has "$BUILD_LABEL" && build=true
+                if [ "$PR_REPO" = "$REPO" ] && [ "$PR_ACTION" = labeled ]; then
+                  [ "$ADDED_LABEL" = "$DEPLOY_LABEL" ] && build=true deploy=true
+                  [ "$ADDED_LABEL" = "$BUILD_LABEL" ] && build=true
                 fi
               fi ;;
             push)

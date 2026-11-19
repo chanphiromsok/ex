@@ -104,9 +104,9 @@ If the stack already runs from another folder, stop it there first (`docker comp
 
 | What you do | test | build | deploy to UAT |
 |---|---|---|---|
-| Open or push a PR (no label) | ✅ | · | · |
-| PR label `build` (new commits rebuild) | ✅ | ✅ `pr-<n>-<sha>` + `sha-<sha>` | · |
-| PR label `deploy:uat` (new commits redeploy) | ✅ | ✅ `pr-<n>-<sha>` + `sha-<sha>` | ✅ |
+| Open or push a PR (labels or not) | ✅ | · | · |
+| Add PR label `build` | ✅ | ✅ `pr-<n>-<sha>` + `sha-<sha>` | · |
+| Add PR label `deploy:uat` | ✅ | ✅ `pr-<n>-<sha>` + `sha-<sha>` | ✅ |
 | Push a branch (no PR event) | · | · | · |
 | Push git tag `v1.2.3` | · | renames `sha-<sha>` | · |
 | Actions → server → Run workflow: `build` | ✅ | ✅ `sha-<sha>` | · |
@@ -117,6 +117,7 @@ From the terminal: `gh workflow run server.yml --ref <branch> -f action=build` (
 
 - **One PR owns UAT.** When a `deploy:uat` PR deploys, CI removes the label from any other PR and comments on both. Deploys queue one at a time.
 - **Fork PRs** get tests only; labels on them do nothing.
+- **New commits don't rebuild.** A label builds only when it is added. To build or deploy a later commit: remove and re-add the label, or Actions → server → Run workflow → `build` / `build-deploy` on the branch. (Re-run on an old run rebuilds that old commit.)
 - **Build once.** Adding `deploy:uat` after `build` on the same commit reuses the image.
 - **Tag a tested commit.** `git tag v1.0.0 <sha> && git push origin v1.0.0` fails if that commit was never built (PR label `build`, or Run workflow → `build`).
 
