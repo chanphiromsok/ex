@@ -1,38 +1,113 @@
-# API (server/) pipeline. See docs/deployment.md and ADR-0009.
-#   pull request        -> test
-#   push to release/**  -> test, build and push ghcr.io/<owner>/ex:<SHA> and :latest
-#   manual run          -> same as push
-# Deploying is manual for now: pull the image on the droplet (docs/deployment.md).
+# Server CI/CD. Trigger map (docs/deployment.md has the full picture):
+#
+#   PR opened / pushed (no label)        test
+#   PR label `build`                     test → build pr-<n>-<sha>
+#   PR label `deploy:uat`                test → build pr-<n>-<sha> → deploy to UAT
+#   push release/**                      test → build sha-<sha>, release-<x.y.z>
+#   tag v1.2.3                           rename sha-<sha> → 1.2.3, 1.2, latest (no rebuild)
+#   Run workflow: build | build-deploy | deploy <tag>
 name: server
 
 on:
   pull_request:
-    paths: ["server/**", ".github/workflows/server.yml"]
+    types: [opened, synchronize, reopened, labeled]
   push:
     branches: ["release/**"]
-    paths: ["server/**", ".github/workflows/server.yml"]
+    tags: ["v*"]
+    paths: ["server/**", ".github/workflows/server.yml", ".github/actions/**"]
   workflow_dispatch:
-
-concurrency:
-  group: server-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    inputs:
+      action:
+        description: What to do with the selected branch
+        type: choice
+        options: [build, build-deploy, deploy]
+        default: build
+      tag:
+        description: "Only for deploy: an existing image tag (sha-4a2fab2, pr-18-c3f9a1b, 1.0.0)"
+        required: false
 
 permissions:
   contents: read
 
 env:
   IMAGE: ghcr.io/${{ github.repository_owner }}/ex
+  BUILD_LABEL: build
+  DEPLOY_LABEL: deploy:uat
 
 jobs:
+  # Decides what this run does, so the jobs below only read outputs.
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      test: ${{ steps.p.outputs.test }}
+      build: ${{ steps.p.outputs.build }}
+      deploy: ${{ steps.p.outputs.deploy }}
+      promote: ${{ steps.p.outputs.promote }}
+      sha: ${{ steps.p.outputs.sha }}
+      tag: ${{ steps.p.outputs.tag }}
+      tags: ${{ steps.p.outputs.tags }}
+    steps:
+      - id: p
+        env:
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          REF_NAME: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          REPO: ${{ github.repository }}
+          PR_ACTION: ${{ github.event.action }}
+          ADDED_LABEL: ${{ github.event.label.name }}
+          PR_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+          INPUT_ACTION: ${{ inputs.action }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          test=false build=false deploy=false promote=false sha="$SHA" tag="" tags=""
+          has() { jq -e --arg l "$1" 'index($l) != null' <<< "$PR_LABELS" > /dev/null; }
+
+          case "$EVENT" in
+            pull_request)
+              sha="$PR_SHA"; tag="pr-$PR_NUMBER-${PR_SHA::7}"; tags="$IMAGE:$tag"
+              # Any other label added to the PR: nothing new to do for this commit.
+              if [ "$PR_ACTION" = labeled ] && [ "$ADDED_LABEL" != "$BUILD_LABEL" ] && [ "$ADDED_LABEL" != "$DEPLOY_LABEL" ]; then
+                :
+              else
+                test=true
+                # Fork PRs get tests only: their code never runs with secrets or push rights.
+                if [ "$PR_REPO" = "$REPO" ]; then
+                  has "$DEPLOY_LABEL" && build=true deploy=true
+                  has "$BUILD_LABEL" && build=true
+                fi
+              fi ;;
+            push)
+              if [[ "$REF" == refs/tags/v* ]]; then
+                promote=true; tag="sha-${SHA::7}"
+              else
+                test=true build=true; tag="sha-${SHA::7}"
+                tags="$IMAGE:$tag,$IMAGE:${REF_NAME//\//-}"
+              fi ;;
+            workflow_dispatch)
+              case "$INPUT_ACTION" in
+                build)        test=true build=true; tag="sha-${SHA::7}"; tags="$IMAGE:$tag" ;;
+                build-deploy) test=true build=true deploy=true; tag="sha-${SHA::7}"; tags="$IMAGE:$tag" ;;
+                deploy)
+                  [[ "$INPUT_TAG" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]] || { echo "::error::action=deploy needs a tag like sha-4a2fab2"; exit 1; }
+                  deploy=true; tag="$INPUT_TAG" ;;
+              esac ;;
+          esac
+
+          { echo "test=$test"; echo "build=$build"; echo "deploy=$deploy"; echo "promote=$promote"
+            echo "sha=$sha"; echo "tag=$tag"; echo "tags=$tags"; } | tee -a "$GITHUB_OUTPUT"
+
   test:
+    needs: plan
+    if: needs.plan.outputs.test == 'true'
     runs-on: ubuntu-24.04
     defaults:
       run:
         working-directory: server
-    env:
-      MIX_ENV: test
     services:
-      # config/test.exs connects as postgres/postgres on localhost.
       postgres:
         image: postgres:17-alpine
         env:
@@ -40,19 +115,17 @@ jobs:
           POSTGRES_PASSWORD: postgres
         ports: ["5432:5432"]
         options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      MIX_ENV: test
     steps:
       - uses: actions/checkout@v4
-
-      # Keep in sync with ELIXIR_VERSION / OTP_VERSION in server/Dockerfile.
+      # Same versions as server/Dockerfile.
       - uses: erlef/setup-beam@v1
         with:
           elixir-version: "1.20.5"
           otp-version: "29.1.2"
-
       - uses: actions/cache@v4
         with:
           path: |
@@ -60,36 +133,165 @@ jobs:
             server/_build
           key: mix-test-${{ runner.os }}-${{ hashFiles('server/mix.lock') }}
           restore-keys: mix-test-${{ runner.os }}-
-
       - run: mix deps.get
       - run: mix format --check-formatted
       - run: mix compile --warnings-as-errors
       - run: mix test
 
   build:
-    needs: test
-    if: ${{ github.event_name != 'pull_request' }}
+    needs: [plan, test]
+    if: needs.plan.outputs.build == 'true'
     runs-on: ubuntu-24.04
     permissions:
       contents: read
       packages: write
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: docker/build-push-action@v6
+      # `build` then `deploy:uat` on the same commit: the image is already there.
+      - id: exists
+        run: |
+          if docker buildx imagetools inspect "$IMAGE:${{ needs.plan.outputs.tag }}" > /dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"; echo "Image already built, skipping."
+          fi
+      - if: steps.exists.outputs.skip != 'true'
+        uses: docker/setup-buildx-action@v3
+      - if: steps.exists.outputs.skip != 'true'
+        uses: docker/build-push-action@v6
         with:
           context: server
           platforms: linux/amd64
           push: true
-          tags: |
-            ${{ env.IMAGE }}:${{ github.sha }}
-            ${{ env.IMAGE }}:latest
-          # Links the package to this repo (shows on the repo page, inherits its access).
-          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          # one manifest per image, so ghcr cleanup can't delete a child of a kept tag
+          provenance: false
+          sbom: false
+          tags: ${{ needs.plan.outputs.tags }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ needs.plan.outputs.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # Tag v1.2.3: give the already-tested sha-<commit> image its version names.
+  promote:
+    needs: plan
+    if: needs.plan.outputs.promote == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - env:
+          SRC: ${{ env.IMAGE }}:${{ needs.plan.outputs.tag }}
+          VERSION_TAG: ${{ github.ref_name }}
+        run: |
+          docker buildx imagetools inspect "$SRC" > /dev/null 2>&1 || {
+            echo "::error::$SRC not found. Push this commit to a release/** branch first so CI builds it, then tag."
+            exit 1; }
+          v="${VERSION_TAG#v}"
+          args=(-t "$IMAGE:$v")
+          # Pre-releases (v1.1.0-rc.1) get only their own name.
+          if [[ "$v" != *-* ]]; then
+            args+=(-t "$IMAGE:${v%.*}")
+            newest="$(git tag -l 'v*' | grep -v -- - | sort -V | tail -1)"
+            [ "$newest" = "$VERSION_TAG" ] && args+=(-t "$IMAGE:latest")
+          fi
+          docker buildx imagetools create "${args[@]}" "$SRC"
+          echo "Promoted $SRC → ${args[*]}"
+
+  deploy:
+    needs: [plan, build]
+    # Runs after a successful build, or straight away for `Run workflow: deploy`.
+    if: >-
+      always() && needs.plan.outputs.deploy == 'true' &&
+      (needs.build.result == 'success' || needs.plan.outputs.build == 'false')
+    runs-on: ubuntu-24.04
+    environment:
+      name: uat
+      url: http://159.223.95.98
+    # One deploy at a time; a newer one waits, and replaces any older one still waiting.
+    concurrency:
+      group: deploy-uat
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      packages: read
+      pull-requests: write
+      issues: write
+    env:
+      TAG: ${{ needs.plan.outputs.tag }}
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH || '/opt/ex/server' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.plan.outputs.sha }}
+
+      - name: Check the image exists
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker buildx imagetools inspect "$IMAGE:$TAG" > /dev/null || { echo "::error::$IMAGE:$TAG not found"; exit 1; }
+
+      - name: Decrypt server/.env.uat
+        env:
+          DOTENV_PRIVATE_KEY_UAT: ${{ secrets.DOTENV_PRIVATE_KEY_UAT }}
+        run: |
+          [ -n "$DOTENV_PRIVATE_KEY_UAT" ] || { echo "::error::Missing secret DOTENV_PRIVATE_KEY_UAT in the uat environment"; exit 1; }
+          umask 077
+          npx -y @dotenvx/dotenvx@2.38.2 decrypt -f server/.env.uat --stdout > "$RUNNER_TEMP/ex.env"
+          if grep -q 'encrypted:' "$RUNNER_TEMP/ex.env"; then echo "::error::Decryption failed (wrong key?)"; exit 1; fi
+
+      - uses: ./.github/actions/ssh
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          user: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          known-hosts: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+
+      - name: Copy compose files, scripts and env
+        run: |
+          tar -C server -czf - docker-compose.yml docker-compose.prod.yml \
+              traefik/traefik.yml traefik/dynamic.yml deploy \
+            | ssh droplet "mkdir -p '$DEPLOY_PATH' && tar -C '$DEPLOY_PATH' -xzf -"
+          ssh droplet 'umask 077 && cat > /etc/ex/ex.env' < "$RUNNER_TEMP/ex.env"
+
+      - name: Deploy
+        run: |
+          # The job token can pull the image for this run only; the droplet keeps no registry login.
+          echo "${{ secrets.GITHUB_TOKEN }}" | ssh droplet docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          status=0
+          ssh droplet "cd '$DEPLOY_PATH' && ./deploy/deploy.sh '$TAG'" || status=$?
+          ssh droplet docker logout ghcr.io || true
+          exit $status
+
+      - name: Mark this PR as the one on UAT
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const label = process.env.DEPLOY_LABEL;
+            const me = context.payload.pull_request.number;
+            // Only one PR can hold the UAT droplet: take the label off the others.
+            const prs = await github.paginate(github.rest.pulls.list, { ...context.repo, state: 'open' });
+            for (const pr of prs) {
+              if (pr.number !== me && pr.labels.some(l => l.name === label)) {
+                await github.rest.issues.removeLabel({ ...context.repo, issue_number: pr.number, name: label });
+                await github.rest.issues.createComment({ ...context.repo, issue_number: pr.number,
+                  body: `UAT now runs #${me}; removed \`${label}\` here. Add it again to redeploy this PR.` });
+              }
+            }
+            await github.rest.issues.createComment({ ...context.repo, issue_number: me,
+              body: `✅ Deployed \`${process.env.TAG}\` to UAT: http://159.223.95.98` });

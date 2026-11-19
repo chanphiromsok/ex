@@ -39,3 +39,6 @@ npm-debug.log
 # Droplet-only files (secrets, last deployed image tag)
 /.env
 /.deployed-tag
+
+# dotenvx private keys: never commit (password manager + GitHub secret DOTENV_PRIVATE_KEY_TEST)
+.env.keys

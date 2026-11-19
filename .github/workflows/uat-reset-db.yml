@@ -1,0 +1,34 @@
+# Actions → "uat reset db" → Run workflow, type RESET.
+# Wipes the UAT database, migrates, seeds the admin from server/.env.uat, and restarts
+# the image that was running. For when PR deploys leave the schema in a mixed state.
+name: uat reset db
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: Type RESET to delete all UAT data
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  reset:
+    if: inputs.confirm == 'RESET'
+    runs-on: ubuntu-24.04
+    environment: uat
+    concurrency:
+      group: deploy-uat
+      cancel-in-progress: false
+    env:
+      DEPLOY_PATH: ${{ vars.DEPLOY_PATH || '/opt/ex/server' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/ssh
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          user: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          known-hosts: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+      - run: ssh droplet "cd '$DEPLOY_PATH' && ./deploy/reset-db.sh --yes"

@@ -1,24 +1,12 @@
 #!/usr/bin/env bash
-# Runs on the droplet, from /opt/ex/deploy/: deploy.sh <image tag>
+# Runs on the droplet: deploy/deploy.sh <image tag>   (e.g. sha-4a2fab2, pr-18-c3f9a1b, 1.0.0)
 # Pulls the image, runs migrations, swaps the app container, checks /health,
 # and goes back to the previous tag if the check fails. CI calls it; it also works by hand.
 set -euo pipefail
-cd "$(dirname "$0")/.."
+source "$(dirname "$0")/common.sh"
 
 new="${1:?usage: deploy.sh <image tag>}"
 prev="$(cat .deployed-tag 2>/dev/null || true)"
-
-dc() { docker compose -f docker-compose.yml -f docker-compose.prod.yml "$@"; }
-
-# Asks Traefik from inside its container, so the request goes through the real routing
-# (temporary plain-HTTP router, Host localhost). Switch to the HTTPS router when that one is removed.
-healthy() {
-  for _ in $(seq 30); do
-    dc exec -T traefik wget -q -O /dev/null --header "Host: localhost" http://127.0.0.1/health 2> /dev/null && return 0
-    sleep 2
-  done
-  return 1
-}
 
 export TAG="$new"
 echo "==> pull $TAG"

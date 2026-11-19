@@ -1,0 +1,22 @@
+# Run by hand (Actions → ghcr cleanup): keeps the newest 30 images of ghcr.io/<owner>/ex and deletes older ones.
+# Version tags (1.2.3, 1.2), latest and release-* are never deleted.
+name: ghcr cleanup
+
+# Not scheduled yet: images pushed before provenance was turned off have child manifests
+# this action could delete. Add `schedule: [{cron: "0 3 * * 0"}]` once those are gone.
+on:
+  workflow_dispatch:
+
+permissions:
+  packages: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/delete-package-versions@v5
+        with:
+          package-name: ex
+          package-type: container
+          min-versions-to-keep: 30
+          ignore-versions: '^(\d+\.\d+(\.\d+)?(-.+)?|latest|release-.+)$'
