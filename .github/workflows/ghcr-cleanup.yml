@@ -1,11 +1,17 @@
-# Run by hand (Actions → ghcr cleanup): keeps the newest 30 images of ghcr.io/<owner>/ex and deletes older ones.
+# Run by hand (Actions → ghcr cleanup): keeps the newest 30 tagged images of ghcr.io/<owner>/ex and deletes older ones.
 # Version tags (1.2.3, 1.2), latest and release-* are never deleted.
+# Untagged versions are never deleted either: old images pushed with provenance have untagged
+# child manifests that a kept tag still points to.
+# Uses gh api instead of actions/delete-package-versions, which still targets Node 20.
 name: ghcr cleanup
 
-# Not scheduled yet: images pushed before provenance was turned off have child manifests
-# this action could delete. Add `schedule: [{cron: "0 3 * * 0"}]` once those are gone.
 on:
   workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Only list what would be deleted
+        type: boolean
+        default: true
 
 permissions:
   packages: write
@@ -13,10 +19,27 @@ permissions:
 jobs:
   cleanup:
     runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      OWNER: ${{ github.repository_owner }}
+      KEEP: 30
+      PROTECT: '^([0-9]+\.[0-9]+(\.[0-9]+)?(-.+)?|latest|release-.+)$'
+      DRY_RUN: ${{ inputs.dry-run }}
     steps:
-      - uses: actions/delete-package-versions@v5
-        with:
-          package-name: ex
-          package-type: container
-          min-versions-to-keep: 30
-          ignore-versions: '^(\d+\.\d+(\.\d+)?(-.+)?|latest|release-.+)$'
+      - run: |
+          base="/users/$OWNER/packages/container/ex/versions"
+          # tagged, unprotected versions, newest first; skip the newest $KEEP
+          gh api --paginate "$base?per_page=100" --jq '.[]' \
+            | jq -s --arg re "$PROTECT" --argjson keep "$KEEP" '
+                map(select((.metadata.container.tags | length) > 0
+                  and (.metadata.container.tags | any(test($re)) | not)))
+                | sort_by(.created_at) | reverse | .[$keep:]
+                | .[] | "\(.id) \(.metadata.container.tags | join(","))"' -r \
+            | while read -r id tags; do
+                if [ "$DRY_RUN" = true ]; then
+                  echo "would delete $id ($tags)"
+                else
+                  echo "deleting $id ($tags)"
+                  gh api -X DELETE "$base/$id"
+                fi
+              done
