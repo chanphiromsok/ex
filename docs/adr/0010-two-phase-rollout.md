@@ -4,7 +4,7 @@ There is no usable domain yet (the free domain is waiting for Cloudflare approva
 
 **Phase A (test):** one 1 GB DigitalOcean droplet in Singapore running Traefik, the API and a Postgres container. Traefik gets a Let's Encrypt certificate for `159-223-95-98.sslip.io` with the TLS-ALPN-01 challenge, so testing is over real HTTPS on port 443 alone. Testers only; no real customer data, so no backups. Firewall 22 and 443.
 
-**Phase B (launch):** real domain behind Cloudflare (Full strict, Origin Certificate on Traefik), firewall 443 to Cloudflare ranges only, DO Managed Postgres with point-in-time recovery plus a nightly dump at another provider, Sentry. The Phase A droplet becomes staging; prod is deployed by hand with a SHA proven on staging. Load numbers, budget and the first departure time are collected before Phase B and size it.
+**Phase B (launch):** real domain behind Cloudflare (Full strict, Let's Encrypt from `server/deploy/docker-compose.yml` (`APP_ENTRYPOINT=websecure`); port 80 stays open for the HTTP-01 challenge), firewall 443 to Cloudflare ranges, DO Managed Postgres with point-in-time recovery plus a nightly dump at another provider, Sentry. The Phase A droplet becomes staging; prod is deployed by hand with a SHA proven on staging. Load numbers, budget and the first departure time are collected before Phase B and size it.
 
 Rejected: plain HTTP on the droplet IP (passwords and tokens in clear text, and it needed temporary exceptions in `server/config/prod.exs`). Rejected: a self-signed certificate (every tester has to click through warnings).
 

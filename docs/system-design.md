@@ -14,7 +14,7 @@ This document covers the **API side**: the Phoenix + Ash server, its database, a
 |---|---|---|
 | Purpose | Testers only, no real customer data | Real stations and customers |
 | Hostname | `159-223-95-98.sslip.io` (no domain yet) | Real domain behind Cloudflare |
-| TLS | Traefik + Let's Encrypt (HTTP-01), once a domain exists; plain HTTP on the IP until then | Cloudflare proxy, SSL mode Full (strict), Origin Certificate on Traefik |
+| TLS | Traefik + Let's Encrypt (HTTP-01), once a domain exists; plain HTTP on the IP until then | Cloudflare proxy, SSL mode Full (strict), Let's Encrypt from `server/deploy/docker-compose.yml` (`APP_ENTRYPOINT=websecure`) |
 | Server | One DO Droplet, Singapore, 1 GB + 2 GB swap | Prod droplet (sized from Phase B numbers); the Phase A droplet becomes staging |
 | Database | `postgres:17-alpine` container on the droplet | DO Managed Postgres, `DATABASE_SSL=true`, `verify_peer` with DO's CA |
 | Firewall | DO cloud firewall: 22 (key only), 443 | 22 (key only), 443 from Cloudflare IP ranges only |
@@ -174,7 +174,7 @@ Before Phase B:
 | Stations, staff, shipments per day now and in a year | Sizes the prod droplet, database plan and `POOL_SIZE` |
 | Time of the first bus departure | Sets the morning peak and the safe deploy window |
 | Monthly infrastructure budget | Picks the droplet and database plans |
-| Real domain | Cloudflare zone, Origin Certificate, Workers route |
+| Real domain | Cloudflare zone, Let's Encrypt on Traefik, Workers route |
 
 ## 10. Work list
 
@@ -192,7 +192,7 @@ Phase A (code changes, separate from this document):
 11. ~~`RELEASE_COOKIE` from `.env`; the cookie built into the public image is known.~~ Done.
 
 Phase B:
-1. Domain, Cloudflare zone, Full (strict), Origin Certificate, Workers route for `/api/*`, remove CORS.
+1. Domain, Cloudflare zone, Full (strict), `/etc/ex/prod.env` with `APP_ENTRYPOINT=websecure`, Workers route for `/api/*`, remove CORS.
 2. Managed Postgres with `verify_peer` (`server/config/runtime.exs:45` uses `verify_none` today), PITR, nightly off-provider dump, restore drill.
-3. Firewall 443 to Cloudflare ranges, switch rate-limit IP setting to `CF-Connecting-IP`.
+3. Firewall 443 to Cloudflare ranges, switch rate-limit IP setting to `CF-Connecting-IP`, and add Traefik `--entrypoints.websecure.forwardedHeaders.trustedIPs=<Cloudflare ranges>` (the old traefik.yml had it).
 4. Sentry, structured logs, alerts. Load test.

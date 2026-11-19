@@ -147,8 +147,8 @@ Rules:
 Create the first Admin from `SEED_ADMIN_*` (idempotent; running it again does nothing):
 
     cd /opt/ex/server
-    source deploy/common.sh && TAG=$(cat .deployed-tag) \
-      dc run --rm -l traefik.enable=false app /app/bin/ex eval "Ex.Release.seed()"
+    bash -c 'source deploy/common.sh && TAG=$(cat .deployed-tag) \
+      dc run --rm -l traefik.enable=false app /app/bin/ex eval "Ex.Release.seed()"'
 
 The seed only creates the admin if it doesn't exist; it never changes an existing password. After a seed into an empty database (or `uat reset db`), the password is `dotenvx get SEED_ADMIN_PASSWORD -f server/.env.uat`. An admin created before that keeps its old password.
 
@@ -156,7 +156,7 @@ The seed only creates the admin if it doesn't exist; it never changes an existin
 
 - No container except Traefik publishes a host port.
 - The temporary droplet-IP entries in `server/config/prod.exs` are gone; `force_ssl` trusts `x-forwarded-proto`.
-- Traefik serves a valid Let's Encrypt certificate (Phase A) or the Cloudflare Origin Certificate with Full (strict) (Phase B).
+- Traefik serves a valid Let's Encrypt certificate (Phase A) for `APP_HOST` (`APP_ENTRYPOINT=websecure`), with Cloudflare on Full (strict) in Phase B.
 - The migrations also create the permission and role data, so no extra seeding is needed for them.
 - After launch, build new indexes `concurrently` in their own migration (see `docs/database-health.md`).
 
