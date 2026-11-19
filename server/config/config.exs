@@ -76,7 +76,9 @@ config :spark,
 config :ex,
   ecto_repos: [Ex.Repo],
   generators: [timestamp_type: :utc_datetime],
-  ash_domains: [Ex.Accounts, Ex.Network, Ex.Pricing, Ex.Shipping]
+  ash_domains: [Ex.Accounts, Ex.Network, Ex.Pricing, Ex.Shipping],
+  # /api/docs and /api/v1/open_api (ExWeb.Plugs.ApiDocs). Prod reads API_DOCS in runtime.exs.
+  api_docs: true
 
 # Configure the endpoint
 config :ex, ExWeb.Endpoint,

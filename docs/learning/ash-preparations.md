@@ -157,7 +157,7 @@ Rule of thumb: if it needs the **result of the query**, use `after_action`; if i
 
 ```elixir
 Ex.Accounts.User
-|> Ash.Query.for_read(:sign_in_with_password, %{email: "admin@gmail.com", password: "12345678"})
+|> Ash.Query.for_read(:sign_in_with_password, %{email: "<your admin email>", password: "<its password>"})
 |> Ash.read_one!(authorize?: false)
 |> Map.get(:__metadata__)
 ```

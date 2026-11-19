@@ -181,14 +181,15 @@ Before Phase B:
 Phase A (code changes, separate from this document):
 1. GitHub Actions workflow: test with a Postgres service, build `linux/amd64`, push to GHCR by SHA, SSH deploy with migrate step and `/health` check, rollback to previous SHA.
 2. Server compose for the droplet: `image:` from GHCR, `env_file: /opt/ex/.env`, Postgres container, Traefik with Let's Encrypt TLS-ALPN on the sslip.io host, `acme.json` volume, docker socket proxy, no published app port (`ports: !reset []`).
-3. Remove `seed` from the container command and the fallback `SEED_*` / `DASHBOARD_*` values from `server/docker-compose.yml`.
+3. ~~Remove `seed` from the container command and the fallback `SEED_*` / `DASHBOARD_*` values from `server/docker-compose.yml`.~~ Done.
 4. Remove the temporary droplet-IP entries from `server/config/prod.exs` (`check_origin`, `force_ssl` host exclusions).
 5. CORS plug in the endpoint with a runtime origin allow-list.
 6. Rate-limit client IP: one runtime setting, right-most untrusted `x-forwarded-for` (Phase A) or `CF-Connecting-IP` (Phase B).
 7. Periodic GenServer that deletes expired `refresh_tokens`.
-8. Gate `/api/docs` and `/api/v1/open_api` behind a runtime flag (on in test, off in prod).
-9. Make `/ops/dashboard` unreachable through Traefik.
+8. ~~Gate `/api/docs` and `/api/v1/open_api` behind a runtime flag (on in test, off in prod).~~ Done.
+9. ~~Make `/ops/dashboard` unreachable through Traefik.~~ Done.
 10. Droplet setup: `deploy` user, swap, firewall, unattended upgrades, Docker log rotation, uptime check to Telegram.
+11. ~~`RELEASE_COOKIE` from `.env`; the cookie built into the public image is known.~~ Done.
 
 Phase B:
 1. Domain, Cloudflare zone, Full (strict), Origin Certificate, Workers route for `/api/*`, remove CORS.

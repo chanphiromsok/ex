@@ -26,9 +26,13 @@ services:
     command: ["/app/bin/server"]
     environment:
       PHX_HOST: ex.pongpong.eu.org
-      # Secrets come from /opt/ex/.env; refuse to start with the base file's local-only values.
+      # Secrets come from server/.env next to this file; refuse to start with the base file's local-only values.
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:?set SECRET_KEY_BASE in .env}
       TOKEN_SIGNING_SECRET: ${TOKEN_SIGNING_SECRET:?set TOKEN_SIGNING_SECRET in .env}
+      # Erlang distribution cookie. The one built into the image is public (public repo and image).
+      RELEASE_COOKIE: ${RELEASE_COOKIE:?set RELEASE_COOKIE in .env}
+      # /api/docs and /api/v1/open_api answer 404 unless this is true.
+      API_DOCS: ${API_DOCS:-false}
       # Empty unless set in .env: the dashboard then answers 404 instead of using a known password.
       DASHBOARD_USER: ${DASHBOARD_USER:-}
       DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD:-}
@@ -36,11 +40,12 @@ services:
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
     labels:
       - traefik.enable=true
-      - traefik.http.routers.app.rule=Host(`ex.pongpong.eu.org`)
+      # /ops (LiveDashboard) and /live (its socket) are never routed; use the SSH tunnel in docs/deployment.md.
+      - traefik.http.routers.app.rule=Host(`ex.pongpong.eu.org`) && !PathPrefix(`/ops`) && !PathPrefix(`/live`)
       - traefik.http.routers.app.entrypoints=websecure
       - traefik.http.routers.app.tls=true
       - traefik.http.services.app.loadbalancer.server.port=4000
       # TEMPORARY: plain HTTP by IP (and localhost for testing on a Mac). Remove with the :80 entrypoint.
-      - traefik.http.routers.app-ip.rule=Host(`159.223.95.98`) || Host(`localhost`)
+      - traefik.http.routers.app-ip.rule=(Host(`159.223.95.98`) || Host(`localhost`)) && !PathPrefix(`/ops`) && !PathPrefix(`/live`)
       - traefik.http.routers.app-ip.entrypoints=web
       - traefik.http.routers.app-ip.service=app

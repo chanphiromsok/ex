@@ -33,13 +33,18 @@ services:
       # a tighter allocator. Scheduler count is left at the default (one per CPU).
       RELEASE_MODE: interactive
       ERL_FLAGS: "+MBas aobf +MHas aobf +MMmcs 0"
+      # Local-only signing secrets so `docker compose up` works with no setup. Public, so never
+      # used outside this machine: the prod overlay requires real values from .env.
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-local-only-secret-key-base-local-only-secret-key-base-local-only-0000}
       TOKEN_SIGNING_SECRET: ${TOKEN_SIGNING_SECRET:-local-only-token-signing-secret}
-      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@gmail.com}
-      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-12345678}
-      # Ops dashboard at /ops/dashboard (basic auth). Local-only defaults; override both in any shared environment.
-      DASHBOARD_USER: ${DASHBOARD_USER:-admin}
-      DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD:-admin12345}
+      # No default credentials. Put these in the git-ignored server/.env; when unset, no Admin is
+      # seeded and /ops/dashboard answers 404.
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+      DASHBOARD_USER: ${DASHBOARD_USER:-}
+      DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD:-}
+      # Local-only API docs at /api/docs.
+      API_DOCS: "true"
     ports:
       - "4001:4000"
     command: sh -c "/app/bin/ex eval Ex.Release.migrate && /app/bin/ex eval Ex.Release.seed && /app/bin/server"

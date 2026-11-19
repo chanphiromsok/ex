@@ -12,6 +12,8 @@ The `Dockerfile` builds a Mix release in one stage and copies only the release i
 
 ## Environment variables
 
+Local Docker (`server/docker-compose.yml` alone) has no default credentials either. Put `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`, `DASHBOARD_USER` and `DASHBOARD_PASSWORD` in the git-ignored `server/.env` if you want an Admin seeded and the dashboard on. Only the signing secrets have local-only defaults, and the prod overlay rejects running without real ones.
+
 Set by hand in `/opt/ex/server/.env` on the droplet. CI never sees them. Keep a copy in a password manager; it is needed to rebuild the droplet.
 
 | Variable | Required | Notes |
@@ -25,8 +27,9 @@ Set by hand in `/opt/ex/server/.env` on the droplet. CI never sees them. Keep a 
 | `POOL_SIZE` | no | Phase A: 3. Phase B: keep `pool x containers` inside the database's connection limit, leaving room for `bin/migrate` |
 | `CORS_ORIGINS` | Phase A | comma-separated exact client origins (worker URL, preview URLs). Name to be fixed when the plug is built |
 | `CLIENT_IP_SOURCE` | no | `x-forwarded-for` (Phase A) or `cf-connecting-ip` (Phase B). Name to be fixed when the plug is built |
-| `API_DOCS` | no | `true` on test, unset in prod. Name to be fixed when built |
-| `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` | first deploy only | no defaults; remove from `.env` after seeding |
+| `RELEASE_COOKIE` | yes | Erlang distribution cookie, `openssl rand -hex 32`. The one built into the image is public |
+| `API_DOCS` | no | `true` serves `/api/docs` and `/api/v1/open_api`; anything else answers 404 |
+| `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD` | first deploy only | no defaults; without them the seed creates nothing. Remove from `.env` after seeding |
 | `DASHBOARD_USER`, `DASHBOARD_PASSWORD` | optional | no defaults; the dashboard answers 404 until both are set |
 
 ## One-time droplet setup
@@ -40,8 +43,8 @@ Set by hand in `/opt/ex/server/.env` on the droplet. CI never sees them. Keep a 
    - set `PermitRootLogin no` and `PasswordAuthentication no` in `sshd_config`;
    - write `/etc/docker/daemon.json` with `{"log-driver":"json-file","log-opts":{"max-size":"10m","max-file":"3"}}` and restart Docker.
 4. Create the `deploy` user and add it to the `docker` group. The `docker` group is effectively root; this user limits mistakes, it is not a security boundary.
-5. As `deploy`: clone the repo to `/opt/ex` (it is private, so use a deploy key or a token) and write `/opt/ex/server/.env` (`chmod 600`, git-ignored) with at least `SECRET_KEY_BASE` and `TOKEN_SIGNING_SECRET`; the prod overlay refuses to start without them.
-6. Log the droplet in to GHCR once. The image is private (it belongs to a private repo), so create a classic GitHub token with only the `read:packages` scope, then:
+5. As `deploy`: clone the repo to `/opt/ex` (public, so plain `git clone` works) and write `/opt/ex/server/.env` (`chmod 600`, git-ignored) with at least `SECRET_KEY_BASE`, `TOKEN_SIGNING_SECRET` (`openssl rand -hex 64` each) and `RELEASE_COOKIE` (`openssl rand -hex 32`); the prod overlay refuses to start without them.
+6. Only if the GHCR package is private: log the droplet in to GHCR once. Create a classic GitHub token with only the `read:packages` scope, then:
 
        echo <token> | docker login ghcr.io -u <github user> --password-stdin
 
@@ -96,7 +99,7 @@ Create the first Admin (idempotent; running it again does nothing). Put `SEED_AD
 
 ## Ops dashboard
 
-LiveDashboard is at `/ops/dashboard` (in dev: `/dev/dashboard`), behind HTTP basic auth, and answers 404 until both `DASHBOARD_USER` and `DASHBOARD_PASSWORD` are set. It is not routed through Traefik. Open it through an SSH tunnel to the app container's port, for example:
+LiveDashboard is at `/ops/dashboard` (in dev: `/dev/dashboard`), behind HTTP basic auth, and answers 404 until both `DASHBOARD_USER` and `DASHBOARD_PASSWORD` are set. Traefik never routes `/ops` or `/live`, so it is not reachable from the internet. Open it through an SSH tunnel to the app container's port, for example:
 
     ssh -L 4000:<app container IP>:4000 deploy@<droplet>
     # then browse http://localhost:4000/ops/dashboard

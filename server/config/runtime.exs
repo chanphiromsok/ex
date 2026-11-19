@@ -65,6 +65,9 @@ if config_env() == :prod do
 
   config :ex, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
+  # API docs are off in prod unless API_DOCS=true (see ExWeb.Plugs.ApiDocs).
+  config :ex, :api_docs, System.get_env("API_DOCS") in ~w(true 1)
+
   config :ex, ExWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
     http: [
