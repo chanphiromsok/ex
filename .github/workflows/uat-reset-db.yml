@@ -24,7 +24,7 @@ jobs:
     env:
       DEPLOY_PATH: ${{ vars.DEPLOY_PATH || '/opt/ex/server' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/ssh
         with:
           host: ${{ secrets.DEPLOY_HOST }}
