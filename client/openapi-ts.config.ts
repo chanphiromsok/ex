@@ -4,7 +4,7 @@ export default defineConfig({
   input: './openapi/openapi.json',
   output: { path: './src/api', clean: true },
   plugins: [
-    '@hey-api/client-fetch',
+    { name: '@hey-api/client-fetch', runtimeConfigPath: '#/lib/api-config' },
     '@hey-api/typescript',
     '@hey-api/sdk',
     '@tanstack/react-query',
