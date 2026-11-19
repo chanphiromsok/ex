@@ -1,10 +1,10 @@
 # Deployment runbook
 
-How the API is built, configured and deployed. Why it is set up this way: `docs/system-design.md` and ADR-0009 to ADR-0012. The client is deployed separately to Cloudflare Workers and is not covered here.
+How the API is built, configured and deployed. Why it is set up this way: `docs/system-design.md` and ADR-0009 to ADR-0012. The client is not covered here: in UAT it runs locally and its Vite dev server proxies `/api` to the droplet; from Phase B it is on Cloudflare Workers (ADR-0011).
 
 Phase A (UAT, now): one DigitalOcean droplet in Singapore, reached over plain HTTP at `http://159.223.95.98` (ADR-0010). Phase B (launch) changes are marked **Phase B**.
 
-> Status: CI/CD, UAT deploys and encrypted env are built. CORS, the client-IP source and the Phase B items in `docs/system-design.md` section 10 are not.
+> Status: CI/CD, UAT deploys and encrypted env are built. The client-IP source and the Phase B items in `docs/system-design.md` section 10 are not.
 
 ## Image
 
@@ -56,7 +56,6 @@ Commit the change; the next deploy applies it. The repo is public, so the cipher
 | `PHX_HOST` | no | default `ex.pongpong.eu.org`; the host the app puts in URLs |
 | `PORT` | no | default 4000 |
 | `POOL_SIZE` | no | Phase A: 3. Phase B: keep `pool x containers` inside the database's connection limit, leaving room for `bin/migrate` |
-| `CORS_ORIGINS` | Phase A | comma-separated exact client origins (worker URL, preview URLs). Name to be fixed when the plug is built |
 | `CLIENT_IP_SOURCE` | no | `x-forwarded-for` (Phase A) or `cf-connecting-ip` (Phase B). Name to be fixed when the plug is built |
 | `RELEASE_COOKIE` | yes | Erlang distribution cookie, `openssl rand -hex 32`. The one built into the image is public |
 | `API_DOCS` | no | `true` serves `/api/docs` and `/api/v1/open_api`; anything else answers 404 |
@@ -187,6 +186,6 @@ Leave the shell with Ctrl+C twice. `:recon_trace` is rate limited, but still sto
 ## Phase B additions
 
 - Managed Postgres: PITR on, `DATABASE_SSL=true` with `verify_peer`, nightly `pg_dump` copied to object storage at a different provider, one restore drill before launch.
-- Cloudflare: proxy on, Full (strict), Workers route `app.domain/api/*` with no worker; remove `CORS_ORIGINS`; set `CLIENT_IP_SOURCE=cf-connecting-ip`.
+- Cloudflare: proxy on, Full (strict), Workers routes `app.domain/*` to the client worker and `app.domain/api/*` with no worker; set `CLIENT_IP_SOURCE=cf-connecting-ip`.
 - Sentry DSN, alerts on 5xx rate, DB connections and disk.
 - Rebuild a droplet from scratch: create it with the steps above, add the private key from the password manager to the GitHub Environment, run `deploy` with the last good tag. Target: back up within about 2 hours.

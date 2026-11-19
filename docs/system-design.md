@@ -18,7 +18,7 @@ This document covers the **API side**: the Phoenix + Ash server, its database, a
 | Server | One DO Droplet, Singapore, 1 GB + 2 GB swap | Prod droplet (sized from Phase B numbers); the Phase A droplet becomes staging |
 | Database | `postgres:17-alpine` container on the droplet | DO Managed Postgres, `DATABASE_SSL=true`, `verify_peer` with DO's CA |
 | Firewall | DO cloud firewall: 22 (key only), 443 | 22 (key only), 443 from Cloudflare IP ranges only |
-| Client → API | Cross-origin, CORS allow-list | Same origin through a Workers route; CORS removed |
+| Client → API | Same origin: local Vite dev server proxies `/api` | Same origin through a Workers route |
 | Client IP for rate limits | Right-most untrusted `x-forwarded-for` | `CF-Connecting-IP` |
 | Backups | None (test data is disposable) | PITR + nightly `pg_dump` to another provider |
 | Error tracking | Logs only | Sentry (free tier) |
@@ -30,10 +30,10 @@ Phase B starts when a real domain is bought and the numbers in section 9 are kno
 
 ```mermaid
 flowchart LR
-    U[Staff browser] -->|HTTPS| W[Client<br/>Cloudflare Workers<br/>*.workers.dev]
-    U -->|HTTPS, CORS| T
+    U[Tester browser] --> V[Client<br/>Vite dev server<br/>localhost]
+    V -->|HTTP /api| T
     subgraph D[Droplet 1 GB, Singapore]
-      T[Traefik :443<br/>Let's Encrypt] --> A[API container<br/>image from GHCR]
+      T[Traefik :80<br/>droplet IP] --> A[API container<br/>image from GHCR]
       A --> P[(Postgres 17<br/>container)]
       T -. read-only .-> SP[docker socket proxy]
     end
@@ -98,8 +98,8 @@ flowchart LR
 - **Phase A TLS:** none. Traefik serves the IP on the `web` entrypoint; the client's Vite dev server proxies `/api` there. The temporary droplet-IP exceptions in `server/config/prod.exs` (plain HTTP and `check_origin`) stay until Phase B.
 - **Phase B TLS:** Cloudflare proxy, Full (strict), Let's Encrypt from `server/deploy/docker-compose.yml` (`APP_ENTRYPOINT=websecure`; HTTP-01 needs `/.well-known/acme-challenge` reachable on port 80 through Cloudflare; `acme.json` on the `letsencrypt` volume). Origin Certificate rejected in ADR-0010.
 - **Client access (ADR-0011):**
-  - Phase A: a CORS plug in `server/lib/ex_web/endpoint.ex`, before the router, so preflight requests are answered before the rate limiter. Exact allowed origins come from runtime config (worker URL, preview URLs, localhost). Allows the `Authorization` header, `max_age` 7200, no credentials mode (bearer tokens).
-  - Phase B: a Workers **route** sends `app.domain/*` to the client worker and `app.domain/api/*` to the origin with no worker. Not a Workers Custom Domain, which would capture `/api` too. Same origin, so CORS is removed.
+  - Phase A: the client runs locally; `client/vite.config.ts` proxies `/api` to the droplet (`changeOrigin: true`). Same origin, no CORS.
+  - Phase B: a Workers **route** sends `app.domain/*` to the client worker and `app.domain/api/*` to the origin with no worker. Not a Workers Custom Domain, which would capture `/api` too. Still same origin; the API never has a CORS plug.
 
 ## 6. Scaling stages (Phase B and after)
 
@@ -183,7 +183,7 @@ Phase A (code changes, separate from this document):
 2. ~~Server compose for the droplet.~~ Done: `server/deploy/docker-compose.yml`, switched by `/etc/ex/<env>.env`. Still open: docker socket proxy.
 3. ~~Remove `seed` from the container command and the fallback `SEED_*` / `DASHBOARD_*` values from `server/docker-compose.yml`.~~ Done.
 4. Phase B: remove the temporary droplet-IP entries from `server/config/prod.exs` (`check_origin`, `force_ssl` host exclusions).
-5. CORS plug in the endpoint with a runtime origin allow-list.
+5. ~~CORS plug.~~ Not needed (ADR-0011): the client is always same-origin.
 6. Rate-limit client IP: one runtime setting, right-most untrusted `x-forwarded-for` (Phase A) or `CF-Connecting-IP` (Phase B).
 7. Periodic GenServer that deletes expired `refresh_tokens`.
 8. ~~Gate `/api/docs` and `/api/v1/open_api` behind a runtime flag (on in test, off in prod).~~ Done.
@@ -192,7 +192,7 @@ Phase A (code changes, separate from this document):
 11. ~~`RELEASE_COOKIE` from `.env`; the cookie built into the public image is known.~~ Done.
 
 Phase B:
-1. Domain, Cloudflare zone, Full (strict), `/etc/ex/prod.env` with `APP_ENTRYPOINT=websecure`, Workers route for `/api/*`, remove CORS.
+1. Domain, Cloudflare zone, Full (strict), `/etc/ex/prod.env` with `APP_ENTRYPOINT=websecure`, Workers routes for the client and `/api/*`.
 2. Managed Postgres with `verify_peer` (`server/config/runtime.exs:45` uses `verify_none` today), PITR, nightly off-provider dump, restore drill.
 3. Firewall 443 to Cloudflare ranges, switch rate-limit IP setting to `CF-Connecting-IP`, and add Traefik `--entrypoints.websecure.forwardedHeaders.trustedIPs=<Cloudflare ranges>` (the old traefik.yml had it).
 4. Sentry, structured logs, alerts. Load test.
