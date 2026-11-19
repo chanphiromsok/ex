@@ -13,11 +13,10 @@ The `Dockerfile` builds a Mix release in one stage and copies only the release i
 | Tag | Made by | Example |
 |---|---|---|
 | `pr-<n>-<sha7>` | PR with the `build` or `deploy:uat` label | `pr-18-c3f9a1b` |
-| `sha-<sha7>` | push to `release/**`, or Run workflow | `sha-4a2fab2` |
-| `release-<x.y.z>` | push to `release/x.y.z` (moves with the branch) | `release-1.0.0` |
+| `sha-<sha7>` | the same PR builds (always pushed next to `pr-`), or Run workflow | `sha-4a2fab2` |
 | `1.2.3`, `1.2`, `latest` | git tag `v1.2.3`: renames the existing `sha-` image, no rebuild | `1.0.0` |
 
-`latest` only moves to the highest stable version; a pre-release (`v1.1.0-rc.1`) gets only its own name. The `ghcr cleanup` workflow (run by hand for now) keeps the newest 30 images and never deletes version tags, `latest` or `release-*`.
+`latest` only moves to the highest stable version; a pre-release (`v1.1.0-rc.1`) gets only its own name. The `ghcr cleanup` workflow (run by hand for now) keeps the newest 30 images and never deletes version tags or `latest`.
 
 ## Environment variables
 
@@ -106,9 +105,9 @@ If the stack already runs from another folder, stop it there first (`docker comp
 | What you do | test | build | deploy to UAT |
 |---|---|---|---|
 | Open or push a PR (no label) | ✅ | · | · |
-| PR label `build` | ✅ | ✅ `pr-<n>-<sha>` | · |
-| PR label `deploy:uat` (new commits redeploy) | ✅ | ✅ `pr-<n>-<sha>` | ✅ |
-| Push or merge to `release/**` | ✅ | ✅ `sha-<sha>`, `release-x.y.z` | · |
+| PR label `build` (new commits rebuild) | ✅ | ✅ `pr-<n>-<sha>` + `sha-<sha>` | · |
+| PR label `deploy:uat` (new commits redeploy) | ✅ | ✅ `pr-<n>-<sha>` + `sha-<sha>` | ✅ |
+| Push a branch (no PR event) | · | · | · |
 | Push git tag `v1.2.3` | · | renames `sha-<sha>` | · |
 | Actions → server → Run workflow: `build` | ✅ | ✅ `sha-<sha>` | · |
 | Run workflow: `build-deploy` | ✅ | ✅ `sha-<sha>` | ✅ |
@@ -119,7 +118,7 @@ From the terminal: `gh workflow run server.yml --ref <branch> -f action=build` (
 - **One PR owns UAT.** When a `deploy:uat` PR deploys, CI removes the label from any other PR and comments on both. Deploys queue one at a time.
 - **Fork PRs** get tests only; labels on them do nothing.
 - **Build once.** Adding `deploy:uat` after `build` on the same commit reuses the image.
-- **Tag a tested commit.** `git tag v1.0.0 <sha> && git push origin v1.0.0` fails if that commit was never built on `release/**`.
+- **Tag a tested commit.** `git tag v1.0.0 <sha> && git push origin v1.0.0` fails if that commit was never built (PR label `build`, or Run workflow → `build`).
 
 A deploy job: checks the image exists, decrypts `server/.env.uat` to `/etc/ex/uat.env`, copies `deploy/` to the droplet, then runs `deploy/deploy.sh <tag>`.
 

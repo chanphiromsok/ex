@@ -1,9 +1,9 @@
 # Server CI/CD. Trigger map (docs/deployment.md has the full picture):
 #
 #   PR opened / pushed (no label)        test
-#   PR label `build`                     test → build pr-<n>-<sha>
-#   PR label `deploy:uat`                test → build pr-<n>-<sha> → deploy to UAT
-#   push release/**                      test → build sha-<sha>, release-<x.y.z>
+#   PR label `build`                     test → build pr-<n>-<sha> (+ sha-<sha>)
+#   PR label `deploy:uat`                test → build pr-<n>-<sha> (+ sha-<sha>) → deploy to UAT
+#   push to a branch                     nothing (the PR run tests it; build with the PR label)
 #   tag v1.2.3                           rename sha-<sha> → 1.2.3, 1.2, latest (no rebuild)
 #   Run workflow: build | build-deploy | deploy <tag>
 name: server
@@ -12,9 +12,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, labeled]
   push:
-    branches: ["release/**"]
     tags: ["v*"]
-    paths: ["server/**", ".github/workflows/server.yml", ".github/actions/**"]
   workflow_dispatch:
     inputs:
       action:
@@ -50,8 +48,6 @@ jobs:
       - id: p
         env:
           EVENT: ${{ github.event_name }}
-          REF: ${{ github.ref }}
-          REF_NAME: ${{ github.ref_name }}
           SHA: ${{ github.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_SHA: ${{ github.event.pull_request.head.sha }}
@@ -68,7 +64,7 @@ jobs:
 
           case "$EVENT" in
             pull_request)
-              sha="$PR_SHA"; tag="pr-$PR_NUMBER-${PR_SHA::7}"; tags="$IMAGE:$tag"
+              sha="$PR_SHA"; tag="pr-$PR_NUMBER-${PR_SHA::7}"; tags="$IMAGE:$tag,$IMAGE:sha-${PR_SHA::7}"
               # Any other label added to the PR: nothing new to do for this commit.
               if [ "$PR_ACTION" = labeled ] && [ "$ADDED_LABEL" != "$BUILD_LABEL" ] && [ "$ADDED_LABEL" != "$DEPLOY_LABEL" ]; then
                 :
@@ -81,12 +77,7 @@ jobs:
                 fi
               fi ;;
             push)
-              if [[ "$REF" == refs/tags/v* ]]; then
-                promote=true; tag="sha-${SHA::7}"
-              else
-                test=true build=true; tag="sha-${SHA::7}"
-                tags="$IMAGE:$tag,$IMAGE:${REF_NAME//\//-}"
-              fi ;;
+              promote=true; tag="sha-${SHA::7}" ;;
             workflow_dispatch)
               case "$INPUT_ACTION" in
                 build)        test=true build=true; tag="sha-${SHA::7}"; tags="$IMAGE:$tag" ;;
@@ -211,7 +202,7 @@ jobs:
           VERSION_TAG: ${{ github.ref_name }}
         run: |
           docker buildx imagetools inspect "$SRC" > /dev/null 2>&1 || {
-            echo "::error::$SRC not found. Push this commit to a release/** branch first so CI builds it, then tag."
+            echo "::error::$SRC not found. Build this commit first (PR label build, or Run workflow → build), then tag."
             exit 1; }
           v="${VERSION_TAG#v}"
           args=(-t "$IMAGE:$v")
