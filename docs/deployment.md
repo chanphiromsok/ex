@@ -12,7 +12,7 @@ The `Dockerfile` builds a Mix release in one stage and copies only the release i
 
 ## Environment variables
 
-Set by hand in `/opt/ex/.env` on the droplet. CI never sees them. Keep a copy in a password manager; it is needed to rebuild the droplet.
+Set by hand in `/opt/ex/server/.env` on the droplet. CI never sees them. Keep a copy in a password manager; it is needed to rebuild the droplet.
 
 | Variable | Required | Notes |
 |---|---|---|
@@ -39,33 +39,39 @@ Set by hand in `/opt/ex/.env` on the droplet. CI never sees them. Keep a copy in
    - enable `unattended-upgrades`;
    - set `PermitRootLogin no` and `PasswordAuthentication no` in `sshd_config`;
    - write `/etc/docker/daemon.json` with `{"log-driver":"json-file","log-opts":{"max-size":"10m","max-file":"3"}}` and restart Docker.
-4. Create the `deploy` user, add it to the `docker` group, and install the CI public key in its `authorized_keys`. The `docker` group is effectively root; this user limits mistakes, it is not a security boundary.
-5. As `deploy`: create `/opt/ex/` and write `/opt/ex/.env` (`chmod 600`) with at least `SECRET_KEY_BASE` and `TOKEN_SIGNING_SECRET`; the prod overlay refuses to start without them. CI copies the compose files, Traefik config and `deploy/deploy.sh` on every deploy, so nothing else is put there by hand (except Origin certificates in `traefik/certs/` in Phase B).
-6. GitHub repo, **Settings > Environments > `test`**, add secrets:
-   - `DEPLOY_HOST`: `159.223.95.98`
-   - `DEPLOY_USER`: `deploy`
-   - `DEPLOY_SSH_KEY`: private key of a key pair made for CI only (`ssh-keygen -t ed25519 -f ex-ci -N ""`); the public half goes in `deploy`'s `authorized_keys`
-   - `DEPLOY_KNOWN_HOSTS`: output of `ssh-keyscan 159.223.95.98`
+4. Create the `deploy` user and add it to the `docker` group. The `docker` group is effectively root; this user limits mistakes, it is not a security boundary.
+5. As `deploy`: clone the repo to `/opt/ex` (it is private, so use a deploy key or a token) and write `/opt/ex/server/.env` (`chmod 600`, git-ignored) with at least `SECRET_KEY_BASE` and `TOKEN_SIGNING_SECRET`; the prod overlay refuses to start without them.
+6. Log the droplet in to GHCR once. The image is private (it belongs to a private repo), so create a classic GitHub token with only the `read:packages` scope, then:
+
+       echo <token> | docker login ghcr.io -u <github user> --password-stdin
+
 7. Add a free uptime check on `/health` that alerts to Telegram.
 
-If the droplet already runs the stack from a cloned repo, stop it there first (`docker compose down`, without `-v`). The compose project is named `ex` in both places, so `/opt/ex` takes over the same `ex_pgdata` volume.
+If the stack already runs from another checkout, stop it there first (`docker compose down`, without `-v`). The compose project is named `ex` everywhere, so the new checkout takes over the same `ex_pgdata` volume.
 
-## Every deploy (CI does this)
+## Build (CI)
 
 `.github/workflows/server.yml`:
 
 | Trigger | Jobs |
 |---|---|
 | Pull request touching `server/` | test |
-| Push to `release/**` touching `server/` | test, build, deploy |
-| Manual run, `tag` empty | test, build, deploy |
-| Manual run, `tag` = a SHA | deploy only (redeploy or roll back to that image) |
+| Push to `release/**` touching `server/`, or a manual run | test, build |
 
 1. **test:** `mix format --check-formatted`, `mix compile --warnings-as-errors`, `mix test` against a Postgres 17 service.
-2. **build:** `linux/amd64` image pushed to `ghcr.io/<owner>/ex:<SHA>`.
-3. **deploy** (GitHub Environment `test`, one at a time): copies the compose files, Traefik config and `deploy/deploy.sh` to `/opt/ex`, logs the droplet in to GHCR with the job's short-lived token, runs `deploy.sh <SHA>`, then logs out.
+2. **build:** `linux/amd64` image pushed to `ghcr.io/<owner>/ex:<SHA>` and `:latest`.
 
-`server/deploy/deploy.sh <tag>` on the droplet: pull the image, run `/app/bin/migrate` in a one-off container, `up -d`, then ask Traefik for `/health` for up to a minute. On success it writes the tag to `/opt/ex/.deployed-tag`; on failure it prints the app logs, starts the previous tag again and exits 1, so the workflow run fails. It can also be run by hand (`docker login ghcr.io` first if the image is not on the droplet yet).
+CI does not deploy (yet). The SHA of a build is on the run page in the Actions tab, or `git rev-parse HEAD` after pulling.
+
+## Every deploy (by hand, on the droplet)
+
+    cd /opt/ex && git pull          # compose files, Traefik config, deploy script
+    cd server
+    ./deploy/deploy.sh <SHA>        # or: ./deploy/deploy.sh latest
+
+`deploy/deploy.sh <tag>`: pull the image, run `/app/bin/migrate` in a one-off container, `up -d`, then ask Traefik for `/health` for up to a minute. On success it writes the tag to `.deployed-tag`. On failure it prints the app logs, starts the previous tag again and exits 1.
+
+Prefer the SHA: `.deployed-tag` then names the exact build, so a rollback (`./deploy/deploy.sh <older SHA>`) is precise. `latest` is the newest build from any `release/**` branch.
 
 Rules:
 - Migrations are additive (add, switch over, drop later). The old container serves traffic while `bin/migrate` runs, and a rollback does not undo a migration.
@@ -76,7 +82,7 @@ Rules:
 
 Create the first Admin (idempotent; running it again does nothing). Put `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` in `.env` first, then remove them afterwards:
 
-    cd /opt/ex
+    cd /opt/ex/server
     TAG=$(cat .deployed-tag) docker compose -f docker-compose.yml -f docker-compose.prod.yml \
       run --rm -l traefik.enable=false app /app/bin/ex eval "Ex.Release.seed()"
 

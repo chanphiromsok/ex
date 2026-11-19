@@ -78,17 +78,16 @@ flowchart LR
     P[push to release/*] --> T[test<br/>mix test + Postgres service]
     T --> B[build linux/amd64 image]
     B --> R[push ghcr.io/.../ex:SHA]
-    R --> S[SSH as deploy user]
-    S --> PU[compose pull]
+    R -.->|by hand on the droplet| PU[deploy.sh SHA: compose pull]
     PU --> MI[compose run --rm app bin/migrate]
     MI --> UP[compose up -d]
     UP --> H{GET /health 200?}
     H -->|no| RB[redeploy previous SHA]
 ```
 
-- `release/*` deploys to the test droplet (Phase A) and later staging (Phase B) automatically.
+- For now CI only tests and builds; deploying is done by hand on the droplet with `server/deploy/deploy.sh <SHA>`. Automatic deploy of `release/*` to the test droplet (and later staging) can be added back as a CI job that runs the same script over SSH.
 - Prod (Phase B) is deployed by hand by choosing a SHA that has already passed on staging. Image tags are SHAs and are never reused.
-- The droplet runs `image: ghcr.io/<owner>/ex:${TAG}` and never builds. It keeps no registry credential: each deploy logs in with the job's short-lived `GITHUB_TOKEN` and logs out afterwards.
+- The droplet runs `image: ghcr.io/<owner>/ex:${TAG}` and never builds. It pulls with a GitHub token that has only `read:packages`.
 - Migrations run as their own step, before the new container takes traffic. Seeding is not part of startup; the first Admin is created once by hand.
 - Order between the two deploy targets: an API change the client needs ships first, and the API stays compatible with the client version that is live.
 
@@ -135,7 +134,7 @@ flowchart LR
 ## 7. Cross-cutting design
 
 **Security.**
-- Secrets live only in `/opt/ex/.env` on the droplet (owned by `deploy`, mode 600), with a copy in a password manager. No default credentials anywhere: a missing `SEED_*` or `DASHBOARD_*` value makes the feature fail closed, not fall back to a known password.
+- Secrets live only in `/opt/ex/server/.env` on the droplet (owned by `deploy`, mode 600), with a copy in a password manager. No default credentials anywhere: a missing `SEED_*` or `DASHBOARD_*` value makes the feature fail closed, not fall back to a known password.
 - SSH by key only, no root login, unattended security upgrades. Membership in the `docker` group is effectively root, so the `deploy` user limits mistakes but is not a security boundary.
 - `/ops/dashboard` is not reachable from the internet; open it through `ssh -L`.
 - Rate limits at three levels (IP, auth endpoints, account). The client IP comes from one setting: right-most untrusted `x-forwarded-for` in Phase A, `CF-Connecting-IP` in Phase B. The header is trustworthy in Phase B only because the firewall admits Cloudflare alone.

@@ -22,8 +22,7 @@ healthy() {
 
 export TAG="$new"
 echo "==> pull $TAG"
-# Tags are git SHAs and never reused, so an image already on the host is the right one.
-dc pull --policy missing app
+dc pull app
 echo "==> migrate"
 # The old container keeps serving while this runs, so migrations must be additive.
 # The label keeps Traefik from routing to the one-off container.

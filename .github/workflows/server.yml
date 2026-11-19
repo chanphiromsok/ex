@@ -1,7 +1,8 @@
 # API (server/) pipeline. See docs/deployment.md and ADR-0009.
 #   pull request        -> test
-#   push to release/**  -> test, build image, deploy to the test droplet
-#   manual run          -> same as push; with `tag` set, skip test/build and redeploy that image (rollback)
+#   push to release/**  -> test, build and push ghcr.io/<owner>/ex:<SHA> and :latest
+#   manual run          -> same as push
+# Deploying is manual for now: pull the image on the droplet (docs/deployment.md).
 name: server
 
 on:
@@ -11,11 +12,6 @@ on:
     branches: ["release/**"]
     paths: ["server/**", ".github/workflows/server.yml"]
   workflow_dispatch:
-    inputs:
-      tag:
-        description: "Image tag (git SHA) to redeploy. Leave empty to test, build and deploy this commit."
-        required: false
-        default: ""
 
 concurrency:
   group: server-${{ github.ref }}
@@ -29,7 +25,6 @@ env:
 
 jobs:
   test:
-    if: ${{ !inputs.tag }}
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -73,7 +68,7 @@ jobs:
 
   build:
     needs: test
-    if: ${{ github.event_name != 'pull_request' && !inputs.tag }}
+    if: ${{ github.event_name != 'pull_request' }}
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -91,59 +86,10 @@ jobs:
           context: server
           platforms: linux/amd64
           push: true
-          tags: ${{ env.IMAGE }}:${{ github.sha }}
-          # Links the package to this repo, so the deploy job's token can pull it.
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+          # Links the package to this repo (shows on the repo page, inherits its access).
           labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  deploy:
-    needs: build
-    # Runs after a successful build, or on its own for a manual redeploy of an existing tag.
-    if: >-
-      ${{ !cancelled() && github.event_name != 'pull_request' &&
-          (needs.build.result == 'success' || (github.event_name == 'workflow_dispatch' && inputs.tag)) }}
-    runs-on: ubuntu-24.04
-    environment: test
-    concurrency:
-      group: deploy-test
-      cancel-in-progress: false
-    permissions:
-      contents: read
-      packages: read
-    env:
-      TAG: ${{ inputs.tag || github.sha }}
-      TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up SSH
-        env:
-          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
-        run: |
-          install -m 700 -d ~/.ssh
-          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
-          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
-
-      # Secrets stay on the droplet (/opt/ex/.env); only these files are copied.
-      - name: Copy compose files
-        run: |
-          tar -C server -czf - \
-            docker-compose.yml docker-compose.prod.yml \
-            traefik/traefik.yml traefik/dynamic.yml deploy/deploy.sh \
-            | ssh -o BatchMode=yes "$TARGET" 'mkdir -p /opt/ex/traefik/certs && tar -C /opt/ex -xzf -'
-
-      # The job token is only valid while this job runs, so the droplet keeps no registry credential.
-      - name: Deploy
-        env:
-          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          printf '%s' "$GHCR_TOKEN" | ssh -o BatchMode=yes "$TARGET" "
-            docker login ghcr.io -u '${{ github.actor }}' --password-stdin > /dev/null &&
-            /opt/ex/deploy/deploy.sh '$TAG'
-            status=\$?
-            docker logout ghcr.io > /dev/null
-            exit \$status
-          "

@@ -1,8 +1,8 @@
 # Images are built by CI; secrets are set by hand on the droplet
 
-GitHub Actions tests, builds a `linux/amd64` image and pushes it to GHCR tagged by git SHA, then deploys over SSH as a `deploy` user: pull, `bin/migrate` as a one-off container, `up -d`, check `/health`, and redeploy the previous SHA if the check fails. The droplet never compiles; a 1 GB droplet cannot build the release reliably, and the same image then runs everywhere.
+GitHub Actions tests, builds a `linux/amd64` image and pushes it to GHCR tagged by git SHA. Deploying is done by hand on the droplet for now with `server/deploy/deploy.sh <SHA>`: pull, `bin/migrate` as a one-off container, `up -d`, check `/health`, and start the previous SHA again if the check fails. An SSH deploy job can run the same script later. The droplet never compiles; a 1 GB droplet cannot build the release reliably, and the same image then runs everywhere.
 
-Secrets stay in `/opt/ex/.env` on the droplet (owned by `deploy`, mode 600), written by hand, with a copy in a password manager. CI holds only the SSH key and a GHCR token, so a leaked CI secret does not leak the database password or signing secrets.
+Secrets stay in `/opt/ex/server/.env` on the droplet (owned by `deploy`, mode 600), written by hand, with a copy in a password manager. CI holds no droplet credential, and the droplet holds only a `read:packages` token, so a leaked CI secret does not leak the database password or signing secrets.
 
 Rejected: building on the droplet with systemd (the old `docs/deploy-droplet.md`): slow, needs swap to survive, and the build is not reproducible. Rejected: pushing `.env` from GitHub Environment secrets on each deploy: makes the droplet disposable, but the user preferred to keep app secrets off GitHub.
 

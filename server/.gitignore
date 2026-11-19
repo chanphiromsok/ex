@@ -35,3 +35,7 @@ ex-*.tar
 npm-debug.log
 /assets/node_modules/
 
+
+# Droplet-only files (secrets, last deployed image tag)
+/.env
+/.deployed-tag
