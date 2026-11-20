@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/opt/homebrew/Cellar/tsung/1.8.0/share/tsung/tsung-1.0.dtd">
+<!--
+  Real-user load test for the ex API. Run from this folder after ./seed.sh (see README.md):
+      tsung -f ex.xml -l logs start
+
+  Three kinds of user, picked at random for each new session:
+    75%  counter staff   sign in, load reference data, then take 4 shipments (one every 20-60 s)
+    20%  receiving staff sign in, check overdue / incoming shipments and manifests every 30-90 s
+     5%  supervisor      sign in, open the cash and cancellation reports every 60-120 s
+-->
+<tsung loglevel="notice" version="1.0">
+
+  <clients>
+    <!-- use_controller_vm: run users in this Erlang VM; without it Tsung tries to ssh to localhost. -->
+    <client host="localhost" use_controller_vm="true" maxusers="5000"/>
+  </clients>
+
+  <servers>
+    <!-- The IP is also the Host header, which must match APP_HOST on the server. -->
+    <server host="159.223.95.98" port="80" type="tcp"/>
+  </servers>
+
+  <load>
+    <!-- SMOKE TEST: comment out the three phases below and use this one; every request must be 2xx.
+    <arrivalphase phase="1" duration="10" unit="second">
+      <users maxnumber="3" interarrival="3" unit="second"/>
+    </arrivalphase>
+    -->
+    <!-- Warm up: a new user every 10 s (~10 online at once). -->
+    <arrivalphase phase="1" duration="2" unit="minute">
+      <users interarrival="10" unit="second"/>
+    </arrivalphase>
+    <!-- Busy day: a new user every 3 s (~60 online). -->
+    <arrivalphase phase="2" duration="5" unit="minute">
+      <users interarrival="3" unit="second"/>
+    </arrivalphase>
+    <!-- Peak: a new user every second (~180 online). -->
+    <arrivalphase phase="3" duration="5" unit="minute">
+      <users interarrival="1" unit="second"/>
+    </arrivalphase>
+  </load>
+
+  <options>
+    <option name="file_server" id="staff" value="staff.csv"/>
+    <option name="file_server" id="supervisors" value="supervisors.csv"/>
+  </options>
+
+  <sessions>
+
+    <!-- ===================== Counter staff: takes shipments ===================== -->
+    <session name="counter_staff" probability="75" type="ts_http">
+      <setdynvars sourcetype="file" fileid="staff" delimiter=";" order="iter">
+        <var name="login"/>
+        <var name="password"/>
+        <var name="dest"/>
+        <var name="size"/>
+      </setdynvars>
+
+      <transaction name="sign_in">
+        <request subst="true">
+          <match do="abort" when="nomatch">HTTP/1.1 201</match>
+          <dyn_variable name="token" jsonpath="meta.token"/>
+          <http url="/api/v1/users/sign-in" method="POST" content_type="application/vnd.api+json"
+                contents='{"data":{"type":"user","attributes":{"login":"%%_login%%","password":"%%_password%%"}}}'/>
+        </request>
+      </transaction>
+
+      <!-- What the app loads after sign-in. -->
+      <transaction name="load_reference_data">
+        <request subst="true"><http url="/api/v1/pricing/current" method="GET"><http_header name="authorization" value="Bearer %%_token%%"/></http></request>
+        <request subst="true"><http url="/api/v1/size-classes" method="GET"><http_header name="authorization" value="Bearer %%_token%%"/></http></request>
+        <request subst="true"><http url="/api/v1/sale-items" method="GET"><http_header name="authorization" value="Bearer %%_token%%"/></http></request>
+        <request subst="true"><http url="/api/v1/stations" method="GET"><http_header name="authorization" value="Bearer %%_token%%"/></http></request>
+      </transaction>
+
+      <for from="1" to="4" var="n">
+        <!-- A customer walks up, staff types the form. -->
+        <thinktime min="20" max="60" random="true"/>
+
+        <setdynvars sourcetype="random_number" start="100000" end="999999"><var name="sender"/></setdynvars>
+        <setdynvars sourcetype="random_number" start="100000" end="999999"><var name="receiver"/></setdynvars>
+        <setdynvars sourcetype="random_number" start="1" end="25"><var name="kg"/></setdynvars>
+        <!-- A random v4 UUID for idempotency_key. -->
+        <setdynvars sourcetype="eval"
+                    code="fun(_) -> &lt;&lt;A:32,B:16,_:4,C:12,_:2,D:14,E:48&gt;&gt; = crypto:strong_rand_bytes(16), lists:flatten(io_lib:format(&quot;~8.16.0b-~4.16.0b-4~3.16.0b-~1.16.0b~3.16.0b-~12.16.0b&quot;, [A, B, C, 8 + (D bsr 12), D band 4095, E])) end.">
+          <var name="idem"/>
+        </setdynvars>
+
+        <transaction name="create_shipment">
+          <request subst="true">
+            <match do="log" when="nomatch">HTTP/1.1 201</match>
+            <dyn_variable name="shipment_id" jsonpath="data.id"/>
+            <http url="/api/v1/shipments" method="POST" content_type="application/vnd.api+json"
+                  contents='{"data":{"type":"shipment","attributes":{"idempotency_key":"%%_idem%%","sender_name":"Load Test Sender","sender_phone":"012%%_sender%%","receiver_name":"Load Test Receiver","receiver_phone":"097%%_receiver%%","destination_station_id":"%%_dest%%","payment_method":"cash","parcels":[{"measurement_type":"kg","weight_kg":"%%_kg%%"},{"measurement_type":"size","size_class_id":"%%_size%%"}]}}}'>
+              <http_header name="authorization" value="Bearer %%_token%%"/>
+            </http>
+          </request>
+        </transaction>
+
+        <!-- Opens the receipt, then goes back to the list. -->
+        <transaction name="view_shipment">
+          <request subst="true"><http url="/api/v1/shipments/%%_shipment_id%%?include=parcels,payments" method="GET"><http_header name="authorization" value="Bearer %%_token%%"/></http></request>
+        </transaction>
+        <thinktime min="3" max="8" random="true"/>
+        <transaction name="list_shipments">
+          <request subst="true"><http url="/api/v1/shipments?page%5Blimit%5D=25" method="GET"><http_header name="authorization" value="Bearer %%_token%%"/></http></request>
+        </transaction>
+      </for>
+    </session>
+
+    <!-- ===================== Receiving staff: watches incoming work ===================== -->
+    <session name="receiving_staff" probability="20" type="ts_http">
+      <setdynvars sourcetype="file" fileid="staff" delimiter=";" order="iter">
+        <var name="login"/>
+        <var name="password"/>
+        <var name="dest"/>
+        <var name="size"/>
+      </setdynvars>
+
+      <transaction name="sign_in">
+        <request subst="true">
+          <match do="abort" when="nomatch">HTTP/1.1 201</match>
+          <dyn_variable name="token" jsonpath="meta.token"/>
+          <http url="/api/v1/users/sign-in" method="POST" content_type="application/vnd.api+json"
+                contents='{"data":{"type":"user","attributes":{"login":"%%_login%%","password":"%%_password%%"}}}'/>
+        </request>
+      </transaction>
+
+      <for from="1" to="6" var="n">
+        <thinktime min="30" max="90" random="true"/>
+        <transaction name="check_incoming">
+          <request subst="true"><http url="/api/v1/shipments/overdue" method="GET"><http_header name="authorization" value="Bearer %%_token%%"/></http></request>
+          <request subst="true"><http url="/api/v1/shipments?page%5Blimit%5D=25" method="GET"><http_header name="authorization" value="Bearer %%_token%%"/></http></request>
+          <request subst="true"><http url="/api/v1/manifests?page%5Blimit%5D=25" method="GET"><http_header name="authorization" value="Bearer %%_token%%"/></http></request>
+        </transaction>
+      </for>
+    </session>
+
+    <!-- ===================== Supervisor: reads reports ===================== -->
+    <session name="supervisor" probability="5" type="ts_http">
+      <setdynvars sourcetype="file" fileid="supervisors" delimiter=";" order="iter">
+        <var name="login"/>
+        <var name="password"/>
+      </setdynvars>
+
+      <transaction name="sign_in">
+        <request subst="true">
+          <match do="abort" when="nomatch">HTTP/1.1 201</match>
+          <dyn_variable name="token" jsonpath="meta.token"/>
+          <http url="/api/v1/users/sign-in" method="POST" content_type="application/vnd.api+json"
+                contents='{"data":{"type":"user","attributes":{"login":"%%_login%%","password":"%%_password%%"}}}'/>
+        </request>
+      </transaction>
+
+      <for from="1" to="3" var="n">
+        <thinktime min="60" max="120" random="true"/>
+        <transaction name="reports">
+          <request subst="true"><http url="/api/v1/reports/cash?from=2026-01-01&amp;to=2026-12-31" method="GET"><http_header name="authorization" value="Bearer %%_token%%"/></http></request>
+          <request subst="true"><http url="/api/v1/reports/cancellations?from=2026-01-01&amp;to=2026-12-31" method="GET"><http_header name="authorization" value="Bearer %%_token%%"/></http></request>
+          <request subst="true"><http url="/api/v1/shipments?page%5Blimit%5D=25" method="GET"><http_header name="authorization" value="Bearer %%_token%%"/></http></request>
+        </transaction>
+      </for>
+    </session>
+
+  </sessions>
+</tsung>

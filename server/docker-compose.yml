@@ -1,0 +1,108 @@
+# The only compose file: your Mac and every server. The env decides the rest.
+#
+#   Local:   docker compose up --build        no env needed; optional git-ignored server/.env
+#   Server:  deploy/deploy.sh <tag>           env from /etc/ex/<env>.env (uat now, prod later)
+#
+# deploy/common.sh adds the server-only bits: Traefik (COMPOSE_PROFILES=proxy), app port on
+# loopback only (APP_BIND), and a check that the env file has real secrets. Always deploy with
+# deploy.sh on a server; a by-hand `docker compose up` there would use the local fallbacks.
+
+# Fixed project name: keeps the existing containers and the ex_pgdata volume.
+name: ex
+
+services:
+  # Server only (profile proxy). Routes APP_HOST to the app; websecure gets a Let's Encrypt cert.
+  traefik:
+    profiles: [proxy]
+    image: traefik:v3.6
+    restart: unless-stopped
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls.certresolver=letsencrypt
+      - --certificatesresolvers.letsencrypt.acme.email=${TRAEFIK_ACME_EMAIL:-}
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
+
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ex
+      POSTGRES_PASSWORD: ex
+      POSTGRES_DB: ex
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ex"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  app:
+    # Local: built from this folder and tagged :local. Server: deploy.sh pulls the CI image for TAG.
+    build: .
+    image: ghcr.io/chanphiromsok/ex:${TAG:-local}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    # Everything in the env file reaches the app (SEED_*, DASHBOARD_*, ...). Optional locally.
+    env_file:
+      - path: ${ENV_FILE:-.env}
+        required: false
+    environment:
+      PHX_SERVER: "true"
+      PHX_HOST: ${PHX_HOST:-${APP_HOST:-localhost}}
+      PORT: "4000"
+      DATABASE_URL: ecto://ex:ex@db/ex
+      # 10 DB connections: with 3, requests queued for a connection under load and timed out (500s).
+      POOL_SIZE: ${POOL_SIZE:-10}
+      # Memory tuning for the 1 GB droplet.
+      # RELEASE_MODE interactive: load modules on first use, not all at boot.
+      #   https://hexdocs.pm/mix/Mix.Tasks.Release.html (search "RELEASE_MODE")
+      # ERL_FLAGS, see https://www.erlang.org/doc/apps/erts/erts_alloc.html
+      #   +MBas aobf  binary allocator: "address order best fit", less fragmentation
+      #   +MHas aobf  process heap allocator: same strategy
+      #   +MMmcs 0    keep no freed memory segments cached; give them back to the OS
+      RELEASE_MODE: interactive
+      # ERL_FLAGS: "+MBas aobf +MHas aobf +MMmcs 0"
+      # +sbwt none (and the dirty CPU/IO variants): idle schedulers sleep right away instead of
+      # busy-waiting. On 1 vCPU shared with Postgres and Traefik, busy-waiting steals their CPU
+      # and makes `docker stats` show ~100% when the app is not really working.
+      #   https://www.erlang.org/doc/apps/erts/erl_cmd.html (search "+sbwt")
+      ERL_FLAGS: ${ERL_FLAGS:-+sbwt none +sbwtdcpu none +sbwtdio none}
+      # Local-only fallbacks so `docker compose up` works with no setup. They are public:
+      # deploy/common.sh refuses to deploy unless the env file sets real values.
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-local-only-secret-key-base-local-only-secret-key-base-local-only-0000}
+      TOKEN_SIGNING_SECRET: ${TOKEN_SIGNING_SECRET:-local-only-token-signing-secret}
+      RELEASE_COOKIE: ${RELEASE_COOKIE:-local-only-release-cookie}
+      API_DOCS: ${API_DOCS:-true}
+    # Local: 4001 on all interfaces. Server: 127.0.0.1:4001 (SSH tunnel only; the public way in is Traefik).
+    ports:
+      - "${APP_BIND:-4001}:4000"
+    # Seeding is find-or-create and does nothing when SEED_ADMIN_* is unset.
+    command: sh -c "/app/bin/migrate && /app/bin/ex eval Ex.Release.seed && /app/bin/server"
+    labels:
+      - traefik.enable=true
+      # /ops (LiveDashboard) and /live are never public; reach them through an SSH tunnel.
+      - traefik.http.routers.app.rule=Host(`${APP_HOST:-localhost}`) && !PathPrefix(`/ops`) && !PathPrefix(`/live`)
+      - traefik.http.routers.app.entrypoints=${APP_ENTRYPOINT:-websecure}
+      # At most APP_MAX_IN_FLIGHT requests inside the app at once (all clients together); the rest
+      # get 429 right away instead of queueing until the 1 GB droplet runs out of memory.
+      - traefik.http.middlewares.app-cap.inflightreq.amount=${APP_MAX_IN_FLIGHT:-50}
+      - traefik.http.middlewares.app-cap.inflightreq.sourcecriterion.requesthost=true
+      - traefik.http.routers.app.middlewares=app-cap
+      - traefik.http.services.app.loadbalancer.server.port=4000
+
+volumes:
+  pgdata:
+  letsencrypt:

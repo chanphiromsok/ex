@@ -1,0 +1,25 @@
+name: SSH to droplet
+description: Installs the deploy key and pinned host key so later steps can `ssh droplet …`.
+inputs:
+  host: { required: true, description: Droplet IP or hostname }
+  user: { required: true, description: SSH user (in the docker group) }
+  key: { required: true, description: Private deploy key }
+  known-hosts: { required: true, description: Output of ssh-keyscan for the host }
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        HOST: ${{ inputs.host }}
+        USER_: ${{ inputs.user }}
+        KEY: ${{ inputs.key }}
+        KNOWN: ${{ inputs.known-hosts }}
+      run: |
+        for v in HOST USER_ KEY KNOWN; do
+          [ -n "${!v}" ] || { echo "::error::Missing secret for $v in the uat environment"; exit 1; }
+        done
+        install -d -m 700 ~/.ssh
+        printf '%s\n' "$KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+        printf '%s\n' "$KNOWN" > ~/.ssh/known_hosts
+        printf 'Host droplet\n  HostName %s\n  User %s\n  IdentityFile ~/.ssh/deploy_key\n  StrictHostKeyChecking yes\n' \
+          "$HOST" "$USER_" > ~/.ssh/config
