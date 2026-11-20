@@ -55,6 +55,18 @@ cd server
 bash -c 'source deploy/common.sh && dc ps && dc logs --tail 50 app'
 ```
 
+Look inside the running app with [recon](https://ferd.github.io/recon/) (already in the release):
+
+```sh
+cd server
+r() { bash -c "source deploy/common.sh && dc exec -T app /app/bin/ex rpc '$1'"; }
+r 'IO.inspect(:recon.proc_count(:memory, 5))'          # 5 processes using the most memory
+r 'IO.inspect(:recon.proc_count(:message_queue_len, 5))'  # 5 longest mailboxes (stuck work)
+r 'IO.inspect(:recon.bin_leak(5))'                     # processes holding the most binary memory
+r 'IO.inspect(:recon_alloc.memory(:usage))'            # 0..1, how full the allocators are (low = fragmentation)
+r 'IO.inspect(:erlang.memory())'                       # totals: processes, binary, ets, code
+```
+
 ## CI: build and deploy images
 
 Pushes to a PR only run tests. An image is built only when you ask for one:

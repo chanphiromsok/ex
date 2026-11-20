@@ -16,6 +16,9 @@ done
 # Server-only parts of docker-compose.yml: Traefik, and the app port on loopback only.
 export COMPOSE_PROFILES="${COMPOSE_PROFILES:-proxy}" APP_BIND="${APP_BIND:-127.0.0.1:4001}"
 
+# By-hand `dc` commands (logs, exec) use the running tag; deploy.sh sets its own.
+export TAG="${TAG:-$(cat .deployed-tag 2> /dev/null || true)}"
+
 dc() { docker compose --env-file "$ENV_FILE" -f docker-compose.yml "$@"; }
 
 # Asks the app from the Traefik container, so it works for any host or entrypoint.
