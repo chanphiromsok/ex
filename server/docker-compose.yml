@@ -1,10 +1,40 @@
-# Local/test stack: the app plus Postgres. `docker compose up --build`
-# Pinned so the stack (and its pgdata volume) keeps the name it had before the app moved into server/.
+# The only compose file: your Mac and every server. The env decides the rest.
+#
+#   Local:   docker compose up --build        no env needed; optional git-ignored server/.env
+#   Server:  deploy/deploy.sh <tag>           env from /etc/ex/<env>.env (uat now, prod later)
+#
+# deploy/common.sh adds the server-only bits: Traefik (COMPOSE_PROFILES=proxy), app port on
+# loopback only (APP_BIND), and a check that the env file has real secrets. Always deploy with
+# deploy.sh on a server; a by-hand `docker compose up` there would use the local fallbacks.
+
+# Fixed project name: keeps the existing containers and the ex_pgdata volume.
 name: ex
 
 services:
+  # Server only (profile proxy). Routes APP_HOST to the app; websecure gets a Let's Encrypt cert.
+  traefik:
+    profiles: [proxy]
+    image: traefik:v3.6
+    restart: unless-stopped
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.websecure.http.tls.certresolver=letsencrypt
+      - --certificatesresolvers.letsencrypt.acme.email=${TRAEFIK_ACME_EMAIL:-}
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
+
   db:
     image: postgres:17-alpine
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ex
       POSTGRES_PASSWORD: ex
@@ -14,40 +44,48 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ex"]
       interval: 3s
+      timeout: 3s
       retries: 20
 
   app:
+    # Local: built from this folder and tagged :local. Server: deploy.sh pulls the CI image for TAG.
     build: .
-    # CI pushes ghcr.io/<owner>/ex:<git SHA>; the droplet runs that with TAG set. Locally `--build` tags it :local.
     image: ghcr.io/chanphiromsok/ex:${TAG:-local}
+    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
+    # Everything in the env file reaches the app (SEED_*, DASHBOARD_*, ...). Optional locally.
+    env_file:
+      - path: ${ENV_FILE:-.env}
+        required: false
     environment:
       PHX_SERVER: "true"
-      PHX_HOST: localhost
+      PHX_HOST: ${PHX_HOST:-${APP_HOST:-localhost}}
       PORT: "4000"
       DATABASE_URL: ecto://ex:ex@db/ex
       POOL_SIZE: "3"
-      # Memory: load code on first use (about 100 MB less than loading every module at boot) and use
-      # a tighter allocator. Scheduler count is left at the default (one per CPU).
+      # Memory: load code on first use and use a tighter allocator.
       RELEASE_MODE: interactive
       ERL_FLAGS: "+MBas aobf +MHas aobf +MMmcs 0"
-      # Local-only signing secrets so `docker compose up` works with no setup. Public, so never
-      # used outside this machine: the prod overlay requires real values from .env.
+      # Local-only fallbacks so `docker compose up` works with no setup. They are public:
+      # deploy/common.sh refuses to deploy unless the env file sets real values.
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-local-only-secret-key-base-local-only-secret-key-base-local-only-0000}
       TOKEN_SIGNING_SECRET: ${TOKEN_SIGNING_SECRET:-local-only-token-signing-secret}
-      # No default credentials. Put these in the git-ignored server/.env; when unset, no Admin is
-      # seeded and /ops/dashboard answers 404.
-      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-}
-      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
-      DASHBOARD_USER: ${DASHBOARD_USER:-}
-      DASHBOARD_PASSWORD: ${DASHBOARD_PASSWORD:-}
-      # Local-only API docs at /api/docs.
-      API_DOCS: "true"
+      RELEASE_COOKIE: ${RELEASE_COOKIE:-local-only-release-cookie}
+      API_DOCS: ${API_DOCS:-true}
+    # Local: 4001 on all interfaces. Server: 127.0.0.1:4001 (SSH tunnel only; the public way in is Traefik).
     ports:
-      - "4001:4000"
-    command: sh -c "/app/bin/ex eval Ex.Release.migrate && /app/bin/ex eval Ex.Release.seed && /app/bin/server"
+      - "${APP_BIND:-4001}:4000"
+    # Seeding is find-or-create and does nothing when SEED_ADMIN_* is unset.
+    command: sh -c "/app/bin/migrate && /app/bin/ex eval Ex.Release.seed && /app/bin/server"
+    labels:
+      - traefik.enable=true
+      # /ops (LiveDashboard) and /live are never public; reach them through an SSH tunnel.
+      - traefik.http.routers.app.rule=Host(`${APP_HOST:-localhost}`) && !PathPrefix(`/ops`) && !PathPrefix(`/live`)
+      - traefik.http.routers.app.entrypoints=${APP_ENTRYPOINT:-websecure}
+      - traefik.http.services.app.loadbalancer.server.port=4000
 
 volumes:
   pgdata:
+  letsencrypt:

@@ -263,9 +263,9 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           known-hosts: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
 
-      - name: Copy compose files, scripts and env
+      - name: Copy compose file, scripts and env
         run: |
-          tar -C server -czf - deploy \
+          tar -C server -czf - docker-compose.yml deploy \
             | ssh droplet "mkdir -p '$DEPLOY_PATH' && tar -C '$DEPLOY_PATH' -xzf -"
           ssh droplet 'umask 077 && cat > /etc/ex/uat.env' < "$RUNNER_TEMP/uat.env"
 

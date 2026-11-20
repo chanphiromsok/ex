@@ -20,13 +20,13 @@ The `Dockerfile` builds a Mix release in one stage and copies only the release i
 
 ## Environment variables
 
-Local Docker (`server/docker-compose.yml` alone) has no default credentials either. Put `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`, `DASHBOARD_USER` and `DASHBOARD_PASSWORD` in the git-ignored `server/.env` if you want an Admin seeded and the dashboard on. Only the signing secrets have local-only defaults, and the prod overlay rejects running without real ones.
+Local Docker (`server/docker-compose.yml` alone) has no default credentials either. Put `SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`, `DASHBOARD_USER` and `DASHBOARD_PASSWORD` in the git-ignored `server/.env` if you want an Admin seeded and the dashboard on. Only the signing secrets and `RELEASE_COOKIE` have local-only defaults; `deploy/common.sh` refuses to deploy unless the env file sets real ones.
 
 UAT values live encrypted in `server/.env.uat`, committed ([dotenvx](https://dotenvx.com)). Only the private key `DOTENV_PRIVATE_KEY_UAT` can read them; it is in the git-ignored `server/.env.keys`, the `uat` GitHub Environment secret, and your password manager. On every deploy CI decrypts the file and writes it to `/etc/ex/uat.env` on the droplet (`chmod 600`).
 
 ### One compose file, switch the env
 
-The droplet runs `server/deploy/docker-compose.yml` only (Traefik, Postgres, app). Nothing in it changes between environments; the env file does:
+There is one compose file, `server/docker-compose.yml`, for your Mac and every server. Nothing in it changes between environments; the env file does:
 
 | | `/etc/ex/uat.env` (from `server/.env.uat`) | `/etc/ex/prod.env` (later, from `server/.env.prod`) |
 |---|---|---|
@@ -34,7 +34,9 @@ The droplet runs `server/deploy/docker-compose.yml` only (Traefik, Postgres, app
 | `APP_ENTRYPOINT` | `web` (plain HTTP) | `websecure` (HTTPS, Let's Encrypt certificate for `APP_HOST`) |
 | secrets | own values | own values, own `DOTENV_PRIVATE_KEY_PROD` |
 
-`deploy/*.sh` pick the file with `EX_ENV` (default `uat` → `/etc/ex/uat.env`, `EX_ENV=prod` → `/etc/ex/prod.env`) or a path in `ENV_FILE`, and pass it to compose as `--env-file` and to the app as `env_file`. `server/docker-compose.yml` stays the local-dev file.
+Locally (`docker compose up --build`, no env file needed) it builds the image from source, publishes `4001`, uses local-only secrets and skips Traefik. `deploy/common.sh` adds the server parts: Traefik (`COMPOSE_PROFILES=proxy`), the app port on `127.0.0.1:4001` only, and a check that the env file sets `SECRET_KEY_BASE`, `TOKEN_SIGNING_SECRET`, `RELEASE_COOKIE` and `APP_HOST`. So on a server, always go through `deploy/*.sh`; a bare `docker compose up` there would run with the local-only secrets.
+
+`deploy/*.sh` pick the file with `EX_ENV` (default `uat` → `/etc/ex/uat.env`, `EX_ENV=prod` → `/etc/ex/prod.env`) or a path in `ENV_FILE`, and pass it to compose as `--env-file` and to the app as `env_file`.
 
     cd server
     dotenvx set API_DOCS true -f .env.uat --plain     # non-secret
@@ -72,7 +74,7 @@ Commit the change; the next deploy applies it. The repo is public, so the cipher
    - set `PermitRootLogin no` and `PasswordAuthentication no` in `sshd_config`;
    - write `/etc/docker/daemon.json` with `{"log-driver":"json-file","log-opts":{"max-size":"10m","max-file":"3"}}` and restart Docker.
 4. Create the `deploy` user and add it to the `docker` group. The `docker` group is effectively root; this user limits mistakes, it is not a security boundary.
-5. As root: `install -d -o deploy -g deploy -m 700 /etc/ex /opt/ex` (CI writes `/etc/ex/uat.env` and copies `deploy/` to `/opt/ex/server`). The stack keeps the compose project name `ex`, so the first CI deploy takes over containers started by hand and keeps the `ex_pgdata` volume.
+5. As root: `install -d -o deploy -g deploy -m 700 /etc/ex /opt/ex` (CI writes `/etc/ex/uat.env` and copies `docker-compose.yml` and `deploy/` to `/opt/ex/server`). The stack keeps the compose project name `ex`, so the first CI deploy takes over containers started by hand and keeps the `ex_pgdata` volume.
 6. Give CI an SSH key for `deploy` (on your laptop):
 
        ssh-keygen -t ed25519 -N '' -C ci-deploy -f ci_deploy
@@ -121,7 +123,7 @@ From the terminal: `gh workflow run server.yml --ref <branch> -f action=build` (
 - **Build once.** Adding `deploy:uat` after `build` on the same commit reuses the image.
 - **Tag a tested commit.** `git tag v1.0.0 <sha> && git push origin v1.0.0` fails if that commit was never built (PR label `build`, or Run workflow → `build`).
 
-A deploy job: checks the image exists, decrypts `server/.env.uat` to `/etc/ex/uat.env`, copies `deploy/` to the droplet, then runs `deploy/deploy.sh <tag>`.
+A deploy job: checks the image exists, decrypts `server/.env.uat` to `/etc/ex/uat.env`, copies `docker-compose.yml` and `deploy/` to the droplet, then runs `deploy/deploy.sh <tag>`.
 
 `deploy/deploy.sh <tag>`: pull the image, run `/app/bin/migrate` in a one-off container, `up -d`, then ask the app for `/health` (from the Traefik container) for up to a minute. On success it writes the tag to `.deployed-tag`. On failure it prints the app logs, starts the previous tag again and exits 1, which fails the job.
 
@@ -153,7 +155,7 @@ The seed only creates the admin if it doesn't exist; it never changes an existin
 
 ## Checks before the first real deploy
 
-- No container except Traefik publishes a host port.
+- No container except Traefik publishes a public port (the app is on `127.0.0.1:4001` only).
 - The temporary droplet-IP entries in `server/config/prod.exs` are gone; `force_ssl` trusts `x-forwarded-proto`.
 - Traefik serves a valid Let's Encrypt certificate (Phase A) for `APP_HOST` (`APP_ENTRYPOINT=websecure`), with Cloudflare on Full (strict) in Phase B.
 - The migrations also create the permission and role data, so no extra seeding is needed for them.

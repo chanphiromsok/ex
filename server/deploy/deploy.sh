@@ -10,7 +10,8 @@ prev="$(cat .deployed-tag 2>/dev/null || true)"
 
 export TAG="$new"
 echo "==> pull $TAG"
-dc pull app
+# Plain docker pull: fails hard on a missing tag (compose would try to build the app instead).
+docker pull -q "ghcr.io/chanphiromsok/ex:$TAG"
 echo "==> migrate"
 # The old container keeps serving while this runs, so migrations must be additive.
 # The label keeps Traefik from routing to the one-off container.

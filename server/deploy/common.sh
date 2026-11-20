@@ -8,7 +8,15 @@ ENV_FILE="$(realpath "${ENV_FILE:-/etc/ex/$EX_ENV.env}" 2> /dev/null || echo "${
 [ -f "$ENV_FILE" ] || { echo "env file $ENV_FILE not found" >&2; return 1 2> /dev/null || exit 1; }
 export ENV_FILE
 
-dc() { docker compose --env-file "$ENV_FILE" -f deploy/docker-compose.yml "$@"; }
+# The env file must set real values; otherwise docker-compose.yml would fall back to the public local ones.
+for v in SECRET_KEY_BASE TOKEN_SIGNING_SECRET RELEASE_COOKIE APP_HOST; do
+  grep -Eq "^$v=[\"']?[^\"' ]" "$ENV_FILE" || { echo "$ENV_FILE: set $v" >&2; return 1 2> /dev/null || exit 1; }
+done
+
+# Server-only parts of docker-compose.yml: Traefik, and the app port on loopback only.
+export COMPOSE_PROFILES="${COMPOSE_PROFILES:-proxy}" APP_BIND="${APP_BIND:-127.0.0.1:4001}"
+
+dc() { docker compose --env-file "$ENV_FILE" -f docker-compose.yml "$@"; }
 
 # Asks the app from the Traefik container, so it works for any host or entrypoint.
 healthy() {

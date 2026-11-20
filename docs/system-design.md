@@ -14,7 +14,7 @@ This document covers the **API side**: the Phoenix + Ash server, its database, a
 |---|---|---|
 | Purpose | Testers only, no real customer data | Real stations and customers |
 | Hostname | Droplet IP `159.223.95.98` (no domain yet) | Real domain behind Cloudflare |
-| TLS | None: plain HTTP on port 80 (`APP_ENTRYPOINT=web`), testers only | Cloudflare proxy, SSL mode Full (strict), Let's Encrypt from `server/deploy/docker-compose.yml` (`APP_ENTRYPOINT=websecure`) |
+| TLS | None: plain HTTP on port 80 (`APP_ENTRYPOINT=web`), testers only | Cloudflare proxy, SSL mode Full (strict), Let's Encrypt from `server/docker-compose.yml` (`APP_ENTRYPOINT=websecure`) |
 | Server | One DO Droplet, Singapore, 1 GB + 2 GB swap | Prod droplet (sized from Phase B numbers); the Phase A droplet becomes staging |
 | Database | `postgres:17-alpine` container on the droplet | DO Managed Postgres, `DATABASE_SSL=true`, `verify_peer` with DO's CA |
 | Firewall | DO cloud firewall: 22 (key only), 443 | 22 (key only), 443 from Cloudflare IP ranges only |
@@ -94,9 +94,9 @@ flowchart LR
 ## 5. Edge, TLS and client access
 
 - **Traefik** is the only process listening publicly (80, and 443 from Phase B). It reaches Docker through a read-only socket proxy, not the raw `docker.sock`, and its version is pinned.
-- No container publishes a host port except Traefik. (The local compose file maps `4001:4000` for development; `server/deploy/docker-compose.yml` publishes none.)
+- No container publishes a public port except Traefik. (Locally the app is on `4001`; on a server `deploy/common.sh` binds it to `127.0.0.1:4001`, for SSH tunnels only.)
 - **Phase A TLS:** none. Traefik serves the IP on the `web` entrypoint; the client's Vite dev server proxies `/api` there. The temporary droplet-IP exceptions in `server/config/prod.exs` (plain HTTP and `check_origin`) stay until Phase B.
-- **Phase B TLS:** Cloudflare proxy, Full (strict), Let's Encrypt from `server/deploy/docker-compose.yml` (`APP_ENTRYPOINT=websecure`; HTTP-01 needs `/.well-known/acme-challenge` reachable on port 80 through Cloudflare; `acme.json` on the `letsencrypt` volume). Origin Certificate rejected in ADR-0010.
+- **Phase B TLS:** Cloudflare proxy, Full (strict), Let's Encrypt from `server/docker-compose.yml` (`APP_ENTRYPOINT=websecure`; HTTP-01 needs `/.well-known/acme-challenge` reachable on port 80 through Cloudflare; `acme.json` on the `letsencrypt` volume). Origin Certificate rejected in ADR-0010.
 - **Client access (ADR-0011):**
   - Phase A: the client runs locally; `client/vite.config.ts` proxies `/api` to the droplet (`changeOrigin: true`). Same origin, no CORS.
   - Phase B: a Workers **route** sends `app.domain/*` to the client worker and `app.domain/api/*` to the origin with no worker. Not a Workers Custom Domain, which would capture `/api` too. Still same origin; the API never has a CORS plug.
@@ -180,8 +180,8 @@ Before Phase B:
 
 Phase A (code changes, separate from this document):
 1. GitHub Actions workflow: test with a Postgres service, build `linux/amd64`, push to GHCR by SHA, SSH deploy with migrate step and `/health` check, rollback to previous SHA.
-2. ~~Server compose for the droplet.~~ Done: `server/deploy/docker-compose.yml`, switched by `/etc/ex/<env>.env`. Still open: docker socket proxy.
-3. ~~Remove `seed` from the container command and the fallback `SEED_*` / `DASHBOARD_*` values from `server/docker-compose.yml`.~~ Done.
+2. ~~Server compose for the droplet.~~ Done: one `server/docker-compose.yml` for local and servers, switched by `/etc/ex/<env>.env`. Still open: docker socket proxy.
+3. ~~Remove the fallback `SEED_*` / `DASHBOARD_*` values from `server/docker-compose.yml`.~~ Done. The container command still seeds; it is find-or-create and does nothing without `SEED_ADMIN_*`.
 4. Phase B: remove the temporary droplet-IP entries from `server/config/prod.exs` (`check_origin`, `force_ssl` host exclusions).
 5. ~~CORS plug.~~ Not needed (ADR-0011): the client is always same-origin.
 6. Rate-limit client IP: one runtime setting, right-most untrusted `x-forwarded-for` (Phase A) or `CF-Connecting-IP` (Phase B).
