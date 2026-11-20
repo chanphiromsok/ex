@@ -387,6 +387,8 @@ defmodule Ex.Accounts.User do
 
   @doc false
   # Groups sign-in attempts by the login being tried (phone or email), whichever the client sent.
+  # `config :ex, :sign_in_account_limit, false` (RATE_LIMIT=off, load tests on UAT only)
+  # gives every attempt its own key, so the per-account cap never fills.
   def sign_in_key(query, _context) do
     login =
       [:login, :email]
@@ -395,6 +397,10 @@ defmodule Ex.Accounts.User do
       |> String.trim()
       |> String.downcase()
 
-    "sign_in:" <> login
+    if Application.get_env(:ex, :sign_in_account_limit, true) do
+      "sign_in:" <> login
+    else
+      "sign_in:" <> login <> ":" <> Integer.to_string(System.unique_integer([:positive]))
+    end
   end
 end

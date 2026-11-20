@@ -68,6 +68,14 @@ if config_env() == :prod do
   # API docs are off in prod unless API_DOCS=true (see ExWeb.Plugs.ApiDocs).
   config :ex, :api_docs, System.get_env("API_DOCS") in ~w(true 1)
 
+  # RATE_LIMIT=off turns off every rate limit: per client IP (ExWeb.Plugs.RateLimit) and per
+  # account (sign-in, Ex.Accounts.User). For load/spike tests on UAT only, where every simulated
+  # user comes from one IP. Never set it in production.
+  if System.get_env("RATE_LIMIT") == "off" do
+    config :ex, ExWeb.Plugs.RateLimit, enabled: false
+    config :ex, :sign_in_account_limit, false
+  end
+
   config :ex, ExWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
     http: [
