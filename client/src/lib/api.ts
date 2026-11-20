@@ -1,4 +1,4 @@
-import { getSession, signOut } from '#/lib/auth'
+import { authFetch } from '#/lib/auth'
 
 // Minimal JSON:API helper: flattens `{id, attributes}` into one object and
 // resolves `included` relationships. Errors become `Error(detail)`.
@@ -8,16 +8,13 @@ export type Money = { currency: string; amount: string }
 const HEADERS = { 'content-type': 'application/vnd.api+json', accept: 'application/vnd.api+json' }
 
 async function call(method: string, path: string, body?: unknown): Promise<any> {
-  const session = getSession()
-  const res = await fetch(`/api/v1${path}`, {
-    method,
-    headers: { ...HEADERS, ...(session ? { authorization: `Bearer ${session.token}` } : {}) },
-    body: body === undefined ? undefined : JSON.stringify(body),
-  })
-  if (res.status === 401 && session) {
-    signOut()
-    window.location.assign('/login')
-  }
+  const res = await authFetch(
+    new Request(`/api/v1${path}`, {
+      method,
+      headers: HEADERS,
+      body: body === undefined ? undefined : JSON.stringify(body),
+    }),
+  )
   if (res.status === 204) return null
   const json = await res.json().catch(() => null)
   if (!res.ok) {

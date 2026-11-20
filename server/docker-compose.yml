@@ -64,7 +64,8 @@ services:
       PHX_HOST: ${PHX_HOST:-${APP_HOST:-localhost}}
       PORT: "4000"
       DATABASE_URL: ecto://ex:ex@db/ex
-      POOL_SIZE: "3"
+      # 10 DB connections: with 3, requests queued for a connection under load and timed out (500s).
+      POOL_SIZE: ${POOL_SIZE:-10}
       # Memory tuning for the 1 GB droplet.
       # RELEASE_MODE interactive: load modules on first use, not all at boot.
       #   https://hexdocs.pm/mix/Mix.Tasks.Release.html (search "RELEASE_MODE")
@@ -74,6 +75,11 @@ services:
       #   +MMmcs 0    keep no freed memory segments cached; give them back to the OS
       RELEASE_MODE: interactive
       # ERL_FLAGS: "+MBas aobf +MHas aobf +MMmcs 0"
+      # +sbwt none (and the dirty CPU/IO variants): idle schedulers sleep right away instead of
+      # busy-waiting. On 1 vCPU shared with Postgres and Traefik, busy-waiting steals their CPU
+      # and makes `docker stats` show ~100% when the app is not really working.
+      #   https://www.erlang.org/doc/apps/erts/erl_cmd.html (search "+sbwt")
+      ERL_FLAGS: ${ERL_FLAGS:-+sbwt none +sbwtdcpu none +sbwtdio none}
       # Local-only fallbacks so `docker compose up` works with no setup. They are public:
       # deploy/common.sh refuses to deploy unless the env file sets real values.
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-local-only-secret-key-base-local-only-secret-key-base-local-only-0000}
@@ -90,6 +96,11 @@ services:
       # /ops (LiveDashboard) and /live are never public; reach them through an SSH tunnel.
       - traefik.http.routers.app.rule=Host(`${APP_HOST:-localhost}`) && !PathPrefix(`/ops`) && !PathPrefix(`/live`)
       - traefik.http.routers.app.entrypoints=${APP_ENTRYPOINT:-websecure}
+      # At most APP_MAX_IN_FLIGHT requests inside the app at once (all clients together); the rest
+      # get 429 right away instead of queueing until the 1 GB droplet runs out of memory.
+      - traefik.http.middlewares.app-cap.inflightreq.amount=${APP_MAX_IN_FLIGHT:-50}
+      - traefik.http.middlewares.app-cap.inflightreq.sourcecriterion.requesthost=true
+      - traefik.http.routers.app.middlewares=app-cap
       - traefik.http.services.app.loadbalancer.server.port=4000
 
 volumes:
