@@ -55,4 +55,23 @@ cd server
 bash -c 'source deploy/common.sh && dc ps && dc logs --tail 50 app'
 ```
 
+## CI: build and deploy images
+
+Pushes to a PR only run tests. An image is built only when you ask for one:
+
+| You want | Do this | Image tag |
+| --- | --- | --- |
+| Build the latest commit of a branch | `gh workflow run server.yml --ref release/1.0.0 -f action=build` | `sha-<commit>` |
+| Build and deploy to UAT | `gh workflow run server.yml --ref release/1.0.0 -f action=build-deploy` | `sha-<commit>` |
+| Deploy an existing image to UAT | `gh workflow run server.yml --ref release/1.0.0 -f action=deploy -f tag=sha-71206b4` | |
+| Build from a PR | add the label `build` to the PR (remove and re-add it to build again) | `pr-<n>-<commit>` |
+| Build and deploy from a PR | add the label `deploy:uat` | `pr-<n>-<commit>` |
+| Release | push a tag: `git tag v1.0.0 && git push origin v1.0.0` | `1.0.0` |
+
+On GitHub: **Actions → server → Run workflow**, pick the branch and the action.
+
+**Re-run** on an old run rebuilds that run's old commit, and a re-run of a plain push run only tests again. For a new commit use **Run workflow** or the label.
+
+Watch a run: `gh run watch` · images: GitHub → Packages → `ex`.
+
 Full guide: `docs/deployment.md`.
