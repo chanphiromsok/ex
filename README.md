@@ -66,7 +66,7 @@ Pushes to a PR only run tests. An image is built only when you ask for one:
 | Deploy an existing image to UAT | `gh workflow run server.yml --ref release/1.0.0 -f action=deploy -f tag=sha-71206b4` | |
 | Build from a PR | add the label `build` to the PR (remove and re-add it to build again) | `pr-<n>-<commit>` |
 | Build and deploy from a PR | add the label `deploy:uat` | `pr-<n>-<commit>` |
-| Release | push a tag: `git tag v1.0.0 && git push origin v1.0.0` | `1.0.0` |
+| Release (no rebuild: re-tags the `sha-<commit>` image, so build that commit first) | `git tag v1.0.0 && git push origin v1.0.0` | `1.0.0`, `1.0`, `latest` |
 
 On GitHub: **Actions → server → Run workflow**, pick the branch and the action.
 
