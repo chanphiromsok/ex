@@ -65,7 +65,13 @@ services:
       PORT: "4000"
       DATABASE_URL: ecto://ex:ex@db/ex
       POOL_SIZE: "3"
-      # Memory: load code on first use and use a tighter allocator.
+      # Memory tuning for the 1 GB droplet.
+      # RELEASE_MODE interactive: load modules on first use, not all at boot.
+      #   https://hexdocs.pm/mix/Mix.Tasks.Release.html (search "RELEASE_MODE")
+      # ERL_FLAGS, see https://www.erlang.org/doc/apps/erts/erts_alloc.html
+      #   +MBas aobf  binary allocator: "address order best fit", less fragmentation
+      #   +MHas aobf  process heap allocator: same strategy
+      #   +MMmcs 0    keep no freed memory segments cached; give them back to the OS
       RELEASE_MODE: interactive
       ERL_FLAGS: "+MBas aobf +MHas aobf +MMmcs 0"
       # Local-only fallbacks so `docker compose up` works with no setup. They are public:
