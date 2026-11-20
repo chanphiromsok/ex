@@ -9,6 +9,7 @@ defmodule Ex.Shipping.Manifest do
   In transit and show in `remaining_count`.
   """
   use Ash.Resource,
+    primary_read_warning?: false,
     otp_app: :ex,
     domain: Ex.Shipping,
     data_layer: AshPostgres.DataLayer,
@@ -102,7 +103,16 @@ defmodule Ex.Shipping.Manifest do
   end
 
   actions do
-    defaults [:read]
+    read :read do
+      primary? true
+      prepare build(default_sort: [inserted_at: :desc])
+
+      pagination keyset?: true,
+                 required?: false,
+                 default_limit: 50,
+                 max_page_size: 200,
+                 countable: true
+    end
 
     create :open do
       accept [:external_trip_id, :destination_station_id]

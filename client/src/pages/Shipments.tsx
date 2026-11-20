@@ -1,5 +1,5 @@
-import { useMemo } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useEffect, useMemo, useState } from 'react'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,7 +8,8 @@ import { toast } from 'sonner'
 import { ArrowRight, PackageCheck, Printer, Truck, Warehouse } from 'lucide-react'
 import { create, money, update, when, type Rec } from '#/lib/api'
 import type { Session } from '#/lib/auth'
-import { apiKey, listQuery, recordQuery } from '#/lib/queries'
+import { getSaleItemsOptions, getShipmentsByIdOptions, getShipmentsInfiniteOptions, getSizeClassesOptions, getStationsOptions } from '#/api/@tanstack/react-query.gen'
+import { asRow, asRows, resource } from '#/lib/queries'
 import { formatPhone, phoneSchema } from '#/lib/phone'
 import { Button, Card, Err, Num, Page, Pill } from '#/components/kit'
 import { Choice, FormField, Segmented } from '#/components/form'
@@ -17,14 +18,42 @@ import { StatusTag, StatusWeave } from '#/components/StatusWeave'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 
+function useDebounced<T>(value: T, ms: number): T {
+  const [v, setV] = useState(value)
+  useEffect(() => {
+    const t = setTimeout(() => setV(value), ms)
+    return () => clearTimeout(t)
+  }, [value, ms])
+  return v
+}
+
 const stationName = (stations: Rec[] | undefined, id?: string) => stations?.find((s) => s.id === id)?.name_en ?? '—'
 
 export function Shipments({ showDone, onShowDone }: { showDone: boolean; onShowDone: (v: boolean) => void }) {
   const navigate = useNavigate()
-  const shipments = useQuery(
-    listQuery(showDone ? '/shipments' : '/shipments?filter[status][in][]=received&filter[status][in][]=in_transit&filter[status][in][]=arrived'),
-  )
-  const stations = useQuery(listQuery('/stations'))
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(0)
+  const term = useDebounced(search.trim(), 300)
+  const shipments = useInfiniteQuery({
+    ...getShipmentsInfiniteOptions({
+      query: {
+        page:{
+          limit: 20
+        },
+        ...(showDone ? {} : { filter: { status: { in: ['received', 'in_transit', 'arrived'] } } }),
+        ...(term ? { search: term } : {}),
+      },
+    }),
+    initialPageParam: {} as Record<string, unknown>,
+    // The server hands back the next cursor inside `links.next` (page[after]=...).
+    getNextPageParam: (last: any) => {
+      const next = last.links?.next
+      const after = next ? new URL(next, location.origin).searchParams.get('page[after]') : null
+      return after ? { query: { page: { after } } } : undefined
+    },
+    select: (d) => ({ pages: d.pages.map((p) => asRows(p)) }),
+  })
+  const stations = useQuery({ ...getStationsOptions(), select: asRows })
 
   const columns = useMemo<ColumnDef<Rec, any>[]>(
     () => [
@@ -80,7 +109,10 @@ export function Shipments({ showDone, onShowDone }: { showDone: boolean; onShowD
     [stations.data],
   )
 
-  const rows = shipments.data ?? []
+  const pageCount = shipments.data?.pages.length ?? 0
+  const rows = useMemo(() => shipments.data?.pages[page] ?? [], [shipments.data, page])
+  // A new search or filter starts a fresh query, so go back to its first page.
+  useEffect(() => setPage(0), [term, showDone])
   return (
     <Page title="Shipments" bare>
       <Err error={shipments.error} />
@@ -106,6 +138,17 @@ export function Shipments({ showDone, onShowDone }: { showDone: boolean; onShowD
             />
           }
           search={{ id: 'search', placeholder: 'Invoice, name or phone number', label: 'Find a Shipment', autoFocus: true }}
+          serverSearch={{ value: search, onChange: setSearch }}
+          more={{
+            page,
+            hasNext: page + 1 < pageCount || !!shipments.hasNextPage,
+            loading: shipments.isFetchingNextPage,
+            onPrev: () => setPage((n) => Math.max(0, n - 1)),
+            onNext: async () => {
+              if (page + 1 >= pageCount) await shipments.fetchNextPage()
+              setPage((n) => n + 1)
+            },
+          }}
           initialSort={[{ id: 'received', desc: true }]}
           onRowClick={(s) => navigate({ to: '/shipments/$id', params: { id: s.id } })}
           rowLabel={(s) => `Open Invoice #${s.invoice_no}`}
@@ -145,10 +188,10 @@ export function ShipmentDetail({ id, session }: { id: string; session: Session }
   const navigate = useNavigate()
   const onBack = () => navigate({ to: '/shipments', search: { done: undefined } })
   const qc = useQueryClient()
-  const shipment = useQuery(recordQuery(`/shipments/${id}?include=parcels,sale_items,payments,status_events,notes,receiver_corrections`))
-  const saleItems = useQuery(listQuery('/sale-items'))
-  const sizeClasses = useQuery(listQuery('/size-classes'))
-  const stations = useQuery(listQuery('/stations'))
+  const shipment = useQuery({ ...getShipmentsByIdOptions({ path: { id }, query: { include: 'parcels,sale_items,payments,status_events,notes,receiver_corrections' } }), select: asRow })
+  const saleItems = useQuery({ ...getSaleItemsOptions(), select: asRows })
+  const sizeClasses = useQuery({ ...getSizeClassesOptions(), select: asRows })
+  const stations = useQuery({ ...getStationsOptions(), select: asRows })
   const has = (p: string) => session.permissions.includes(p)
 
   const collectForm = useForm({ resolver: zodResolver(collectSchema), defaultValues: { receiver_phone: '' } })
@@ -164,8 +207,8 @@ export function ShipmentDetail({ id, session }: { id: string; session: Session }
       after?.()
       toast.success(done)
       await Promise.all([
-        qc.invalidateQueries({ queryKey: apiKey('shipments') }),
-        also ? qc.invalidateQueries({ queryKey: apiKey(also) }) : null,
+        qc.invalidateQueries(resource('shipments')),
+        also ? qc.invalidateQueries(resource(also)) : null,
       ])
     },
   })

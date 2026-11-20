@@ -3,7 +3,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { money, update, when, type Rec } from '#/lib/api'
 import type { Session } from '#/lib/auth'
-import { apiKey, listQuery } from '#/lib/queries'
+import { getCancellationRequestsInfiniteOptions, getIncidentsInfiniteOptions, getShipmentsOverdueInfiniteOptions, getStationsOptions } from '#/api/@tanstack/react-query.gen'
+import { usePaged } from '#/lib/paged'
+import { asRows, resource } from '#/lib/queries'
 import { formatPhone, phoneHref } from '#/lib/phone'
 import { Button, Card, Err, Num, Page, Pill } from '#/components/kit'
 import { Combobox, Segmented } from '#/components/form'
@@ -29,8 +31,8 @@ const byTime = (a: { original: Rec }, b: { original: Rec }) => String(a.original
 export function Overdue({ session }: { session: Session }) {
   const [station, setStation] = useState('')
   const isAdmin = session.role === 'admin'
-  const stations = useQuery({ ...listQuery('/stations'), enabled: isAdmin })
-  const overdue = useQuery(listQuery(`/shipments/overdue${station ? `?destination_station_id=${station}` : ''}`))
+  const stations = useQuery({ ...{ ...getStationsOptions(), select: asRows }, enabled: isAdmin })
+  const overdue = usePaged(getShipmentsOverdueInfiniteOptions({ query: station ? { destination_station_id: station } : undefined }), station)
 
   const columns = useMemo<ColumnDef<Rec>[]>(
     () => [
@@ -105,7 +107,7 @@ const CANCEL_FILTER = [
 
 export function Cancellations({ session }: { session: Session }) {
   const qc = useQueryClient()
-  const requests = useQuery(listQuery('/cancellation-requests'))
+  const requests = usePaged(getCancellationRequestsInfiniteOptions())
   const [show, setShow] = useState('pending')
   const [rejecting, setRejecting] = useState<Rec | null>(null)
 
@@ -116,8 +118,8 @@ export function Cancellations({ session }: { session: Session }) {
       toast.success(how === 'approve' ? 'Cancellation approved. Refund recorded.' : 'Cancellation rejected.')
       setRejecting(null)
       await Promise.all([
-        qc.invalidateQueries({ queryKey: apiKey('cancellation-requests') }),
-        qc.invalidateQueries({ queryKey: apiKey('shipments') }),
+        qc.invalidateQueries(resource('cancellation-requests')),
+        qc.invalidateQueries(resource('shipments')),
       ])
     },
   })
@@ -242,7 +244,7 @@ const INCIDENT_FILTER = [
 
 export function Incidents({ session }: { session: Session }) {
   const qc = useQueryClient()
-  const incidents = useQuery(listQuery('/incidents'))
+  const incidents = usePaged(getIncidentsInfiniteOptions())
   const [show, setShow] = useState('open')
   const [resolving, setResolving] = useState<Rec | null>(null)
 
@@ -251,7 +253,7 @@ export function Incidents({ session }: { session: Session }) {
     onSuccess: async () => {
       toast.success('Incident resolved.')
       setResolving(null)
-      await qc.invalidateQueries({ queryKey: apiKey('incidents') })
+      await qc.invalidateQueries(resource('incidents'))
     },
   })
   const can = session.permissions.includes('incident.resolve')

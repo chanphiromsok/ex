@@ -6,7 +6,8 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { Minus, Plus, Printer, Trash2 } from 'lucide-react'
 import { create, money } from '#/lib/api'
-import { apiKey, listQuery } from '#/lib/queries'
+import { getPricingCurrentOptions, getSaleItemsOptions, getSizeClassesOptions, getStationsOptions } from '#/api/@tanstack/react-query.gen'
+import { asRows, resource } from '#/lib/queries'
 import { phoneSchema } from '#/lib/phone'
 import { Bilingual, Button, Card, Err, Num, Page } from '#/components/kit'
 import { InvoiceLoader } from '#/components/invoice'
@@ -60,10 +61,10 @@ const riel = (n: number) => money({ amount: String(n), currency: 'KHR' })
 
 export function NewShipment({ stationId }: { stationId: string | null }) {
   const qc = useQueryClient()
-  const stationsQ = useQuery(listQuery('/stations'))
-  const sizesQ = useQuery(listQuery('/size-classes'))
-  const itemsQ = useQuery(listQuery('/sale-items'))
-  const pricingQ = useQuery(listQuery('/pricing/current'))
+  const stationsQ = useQuery({ ...getStationsOptions(), select: asRows })
+  const sizesQ = useQuery({ ...getSizeClassesOptions(), select: asRows })
+  const itemsQ = useQuery({ ...getSaleItemsOptions(), select: asRows })
+  const pricingQ = useQuery({ ...getPricingCurrentOptions(), select: asRows })
 
   const stations = (stationsQ.data ?? []).filter((s) => s.active && s.id !== stationId)
   const sizes = (sizesQ.data ?? []).filter((s) => s.active)
@@ -109,7 +110,7 @@ export function NewShipment({ stationId }: { stationId: string | null }) {
     },
     onSuccess: (s) => {
       toast.success(`Invoice #${s.invoice_no} created`)
-      return qc.invalidateQueries({ queryKey: apiKey('shipments') })
+      return qc.invalidateQueries(resource('shipments'))
     },
   })
 

@@ -6,7 +6,8 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { ArrowRight, MoreHorizontal, Plus, Trash2 } from 'lucide-react'
 import { create, remove, update, type Rec } from '#/lib/api'
-import { apiKey, listQuery } from '#/lib/queries'
+import { getLocationsOptions, getRoutesOptions, getStationsOptions } from '#/api/@tanstack/react-query.gen'
+import { asRows, resource } from '#/lib/queries'
 import { Bilingual, Button, Card, Err, Page, Pill, Tray } from '#/components/kit'
 import { Combobox, FormField, type Option } from '#/components/form'
 import { DataTable, type ColumnDef } from '#/components/data-table'
@@ -33,13 +34,13 @@ const byName = (a: { original: Rec }, b: { original: Rec }) => String(a.original
 
 export function Network() {
   const qc = useQueryClient()
-  const locationsQ = useQuery(listQuery('/locations'))
-  const stationsQ = useQuery(listQuery('/stations'))
-  const routesQ = useQuery(listQuery('/routes'))
+  const locationsQ = useQuery({ ...getLocationsOptions(), select: asRows })
+  const stationsQ = useQuery({ ...getStationsOptions(), select: asRows })
+  const routesQ = useQuery({ ...getRoutesOptions(), select: asRows })
   const locations = locationsQ.data ?? []
   const name = (id: string) => locations.find((l) => l.id === id)?.name_en ?? '—'
   const options: Option[] = locations.map((l) => ({ value: l.id, label: l.name_en, hint: l.name_km, keywords: [l.name_km ?? ''] }))
-  const refresh = (...keys: string[]) => Promise.all(keys.map((k) => qc.invalidateQueries({ queryKey: apiKey(k) })))
+  const refresh = (...keys: string[]) => Promise.all(keys.map((k) => qc.invalidateQueries(resource(k))))
 
   const locForm = useForm({ resolver: zodResolver(locationSchema), defaultValues: { name_en: '', name_km: '' } })
   const stForm = useForm({ resolver: zodResolver(stationSchema), defaultValues: { location_id: '', name_en: '', name_km: '', external_id: '' } })

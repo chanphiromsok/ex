@@ -6,7 +6,9 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { MoreHorizontal, Plus } from 'lucide-react'
 import { create, money, update, when, type Rec } from '#/lib/api'
-import { apiKey, listQuery } from '#/lib/queries'
+import { getPriceChangesInfiniteOptions, getPricingCurrentOptions, getSaleItemsOptions, getSizeClassesOptions } from '#/api/@tanstack/react-query.gen'
+import { usePaged } from '#/lib/paged'
+import { asRows, resource } from '#/lib/queries'
 import { Bilingual, Button, Card, Err, Num, Page, Pill, Tray } from '#/components/kit'
 import { FormField } from '#/components/form'
 import { DataTable, type ColumnDef } from '#/components/data-table'
@@ -20,9 +22,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-type Cat = { path: string; key: string; type: string; title: string; one: string; description: string; priceKey: 'price' | 'unit_price' }
+type Cat = { options: typeof getSizeClassesOptions | typeof getSaleItemsOptions; path: string; key: string; type: string; title: string; one: string; description: string; priceKey: 'price' | 'unit_price' }
 const CATS: Cat[] = [
   {
+    options: getSizeClassesOptions,
     path: '/size-classes',
     key: 'size-classes',
     type: 'size-class',
@@ -32,6 +35,7 @@ const CATS: Cat[] = [
     priceKey: 'price',
   },
   {
+    options: getSaleItemsOptions,
     path: '/sale-items',
     key: 'sale-items',
     type: 'sale-item',
@@ -108,10 +112,10 @@ const itemSchema = z.object({
 
 function Catalogue({ cat }: { cat: Cat }) {
   const qc = useQueryClient()
-  const rowsQ = useQuery(listQuery(cat.path))
+  const rowsQ = useQuery<any, Error, Rec[]>({ ...(cat.options() as any), select: asRows })
   const [editing, setEditing] = useState<Rec | null>(null)
   const refresh = () =>
-    Promise.all([qc.invalidateQueries({ queryKey: apiKey(cat.key) }), qc.invalidateQueries({ queryKey: apiKey('price-changes') })])
+    Promise.all([qc.invalidateQueries(resource(cat.key)), qc.invalidateQueries(resource('price-changes'))])
 
   const form = useForm({ resolver: zodResolver(itemSchema), defaultValues: { name_en: '', name_km: '', price: '' } })
   const add = useMutation({
@@ -284,11 +288,11 @@ const changeColumns: ColumnDef<Rec>[] = [
 
 export function Pricing() {
   const qc = useQueryClient()
-  const current = useQuery(listQuery('/pricing/current'))
-  const changes = useQuery(listQuery('/price-changes'))
+  const current = useQuery({ ...getPricingCurrentOptions(), select: asRows })
+  const changes = usePaged(getPriceChangesInfiniteOptions())
   const cur = current.data?.[0]
   const refresh = () =>
-    Promise.all([qc.invalidateQueries({ queryKey: apiKey('pricing') }), qc.invalidateQueries({ queryKey: apiKey('price-changes') })])
+    Promise.all([qc.invalidateQueries(resource('pricing')), qc.invalidateQueries(resource('price-changes'))])
 
   const perKgForm = useForm({ resolver: zodResolver(perKgSchema), defaultValues: { price: '' } })
   const feeForm = useForm({ resolver: zodResolver(feeSchema), defaultValues: { percent: '', cap: '' } })
@@ -367,8 +371,9 @@ export function Pricing() {
         <DataTable
           id="price-changes-table"
           columns={changeColumns}
-          data={changes.data}
+          data={changes.rows}
           loading={changes.isPending}
+          more={changes.more}
           empty="No price changes yet."
           search={{ placeholder: 'Search by kind' }}
           initialSort={[{ id: 'when', desc: true }]}

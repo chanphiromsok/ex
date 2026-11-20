@@ -22,7 +22,15 @@ defmodule Ex.Accounts.PermissionDefinition do
   end
 
   actions do
-    defaults [:read]
+    read :read do
+      primary? true
+
+      pagination keyset?: true,
+                 required?: false,
+                 default_limit: 50,
+                 max_page_size: 200,
+                 countable: true
+    end
   end
 
   policies do

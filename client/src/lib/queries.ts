@@ -1,22 +1,37 @@
-import { queryOptions } from '@tanstack/react-query'
-import { get, list, rawGet } from './api'
+import type { Query } from '@tanstack/react-query'
+import { flatten, type Rec } from './api'
 
 /**
- * Query keys follow the API path: '/shipments/42?include=parcels' becomes
- * ['api', 'shipments', '42', 'include=parcels', <kind>]. Invalidating a prefix
- * such as `apiKey('shipments')` therefore refreshes the list and every detail.
+ * Queries come from the generated options in `#/api/@tanstack/react-query.gen`
+ * (`getStationsOptions()`, `getShipmentsByIdOptions({ path: { id } })`, ...). The API
+ * speaks JSON:API; `asRows` / `asRow` are their `select` to get flat records the pages use:
+ *
+ *   useQuery({ ...getStationsOptions(), select: asRows })
  */
-export const apiKey = (...parts: string[]) => ['api', ...parts]
-
-function keyFor(path: string, kind: 'list' | 'one' | 'raw') {
-  const [p, q] = path.split('?')
-  const parts = p.split('/').filter(Boolean)
-  return [...apiKey(...parts), ...(q ? [q] : []), kind]
+export const asRows = (r: any): Rec[] => {
+  const data = Array.isArray(r) ? r : Array.isArray(r?.data) ? r.data : r?.data ? [r.data] : []
+  return data.map((d: any) => flatten(d, r?.included ?? []))
 }
+export const asRow = (r: any): Rec => flatten(r.data, r.included ?? [])
 
-export const listQuery = (path: string) => queryOptions({ queryKey: keyFor(path, 'list'), queryFn: () => list(path) })
+/**
+ * Invalidates every generated query for a resource. Generated keys are
+ * `[{ _id: 'getShipmentsById', ... }]`, so 'shipments' matches getShipments,
+ * getShipmentsById, getShipmentsOverdue (list and infinite) but not getShipmentNotes.
+ *
+ *   qc.invalidateQueries(resource('shipments'))
+ */
+const norm = (s: string) => s.replace(/[^a-z]/gi, '').toLowerCase()
+export const resource = (name: string) => ({
+  predicate: (q: Query) => {
+    const id = (q.queryKey[0] as { _id?: string } | undefined)?._id
+    return !!id && norm(id.replace(/^(get|post|patch|delete)/, '')).startsWith(norm(name))
+  },
+})
 
-export const recordQuery = (path: string) => queryOptions({ queryKey: keyFor(path, 'one'), queryFn: () => get(path) })
-
-export const rawQuery = <T = any>(path: string) =>
-  queryOptions({ queryKey: keyFor(path, 'raw'), queryFn: () => rawGet(path) as Promise<T> })
+/** The server's next cursor, from the last page's `links.next` (`page[after]=...`). */
+export const nextCursor = (last: any) => {
+  const next = last?.links?.next
+  const after = next ? new URL(next, location.origin).searchParams.get('page[after]') : null
+  return after ? { query: { page: { after } } } : undefined
+}

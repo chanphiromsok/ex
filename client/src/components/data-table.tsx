@@ -58,6 +58,8 @@ export function DataTable<T>({
   footer,
   rowClassName,
   scrollHeight,
+  serverSearch,
+  more,
 }: {
   id?: string
   columns: ColumnDef<T, any>[]
@@ -76,10 +78,17 @@ export function DataTable<T>({
   initialSort?: SortingState
   footer?: ReactNode
   rowClassName?: (row: T) => string | undefined
+  /** The parent owns the search text and filters on the server; rows are shown as given. */
+  serverSearch?: { value: string; onChange: (v: string) => void }
+  /** Server pages: Previous / Next centered under the rows; `rows` is the current page only. */
+  more?: { page: number; hasNext: boolean; loading: boolean; onPrev: () => void; onNext: () => void }
 }) {
   const [sorting, setSorting] = useState<SortingState>(initialSort ?? [])
-  const [globalFilter, setGlobalFilter] = useState('')
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize })
+  const [localFilter, setLocalFilter] = useState('')
+  const globalFilter = serverSearch ? '' : localFilter
+  const searchText = serverSearch ? serverSearch.value : localFilter
+  // With server pages every loaded row is shown; Next fetches the next page.
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: more ? Number.MAX_SAFE_INTEGER : pageSize })
 
   const table = useReactTable({
     data: data ?? [],
@@ -87,7 +96,7 @@ export function DataTable<T>({
     state: { sorting, globalFilter, pagination },
     onSortingChange: setSorting,
     onGlobalFilterChange: (v) => {
-      setGlobalFilter(v)
+      setLocalFilter(v)
       setPagination((p) => ({ ...p, pageIndex: 0 }))
     },
     onPaginationChange: setPagination,
@@ -121,8 +130,8 @@ export function DataTable<T>({
                 id={search.id}
                 type="search"
                 autoFocus={search.autoFocus}
-                value={globalFilter}
-                onChange={(e) => table.setGlobalFilter(e.target.value)}
+                value={searchText}
+                onChange={(e) => (serverSearch ? serverSearch.onChange(e.target.value) : table.setGlobalFilter(e.target.value))}
                 placeholder={search.placeholder ?? 'Search…'}
                 aria-label={search.label ?? search.placeholder ?? 'Search'}
                 className="pl-9 shadow-none"
@@ -192,7 +201,7 @@ export function DataTable<T>({
               <TableCell colSpan={colCount} className="px-5 py-12 text-center whitespace-normal">
                 <Inbox aria-hidden className="mx-auto mb-2 size-5 text-ink-faint" />
                 <p className="text-sm text-ink-soft">
-                  {globalFilter ? <>Nothing matches “{globalFilter}”.</> : empty}
+                  {searchText.trim() ? <>Nothing matches “{searchText.trim()}”.</> : empty}
                 </p>
               </TableCell>
             </TableRow>
@@ -238,7 +247,19 @@ export function DataTable<T>({
         {footer && !loading && rows.length > 0 && <TableFooter className="border-thread bg-sunk/50">{footer}</TableFooter>}
       </Table>
 
-      {!loading && total > pagination.pageSize && (
+      {more && !loading && rows.length > 0 && (
+        <div className="flex items-center justify-center gap-3 border-t border-thread px-5 py-2.5 text-[13px] text-ink-soft">
+          <Button variant="ghost" size="icon-sm" aria-label="Previous page" disabled={more.page === 0 || more.loading} onClick={more.onPrev}>
+            <ChevronLeft className="size-4" />
+          </Button>
+          <span className="tabular px-1">Page {more.page + 1}</span>
+          <Button id="next-page" variant="ghost" size="icon-sm" aria-label="Next page" disabled={!more.hasNext || more.loading} onClick={more.onNext}>
+            <ChevronRight className="size-4" />
+          </Button>
+        </div>
+      )}
+
+      {!more && !loading && total > pagination.pageSize && (
         <div className="flex items-center justify-between gap-3 border-t border-thread px-5 py-2.5 text-[13px] text-ink-soft">
           <span className="tabular">
             {first}–{last} of {total}

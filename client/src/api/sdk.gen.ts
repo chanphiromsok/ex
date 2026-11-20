@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { DeleteApiV1LocationsByIdData, DeleteApiV1LocationsByIdErrors, DeleteApiV1LocationsByIdResponses, DeleteApiV1RoutesByIdData, DeleteApiV1RoutesByIdErrors, DeleteApiV1RoutesByIdResponses, DeleteApiV1StationsByIdData, DeleteApiV1StationsByIdErrors, DeleteApiV1StationsByIdResponses, GetApiV1CancellationRequestsData, GetApiV1CancellationRequestsErrors, GetApiV1CancellationRequestsResponses, GetApiV1IncidentsData, GetApiV1IncidentsErrors, GetApiV1IncidentsResponses, GetApiV1LocationsByIdData, GetApiV1LocationsByIdErrors, GetApiV1LocationsByIdResponses, GetApiV1LocationsData, GetApiV1LocationsErrors, GetApiV1LocationsResponses, GetApiV1ManifestsByIdData, GetApiV1ManifestsByIdErrors, GetApiV1ManifestsByIdResponses, GetApiV1ManifestsData, GetApiV1ManifestsDeparturesData, GetApiV1ManifestsDeparturesErrors, GetApiV1ManifestsDeparturesResponses, GetApiV1ManifestsErrors, GetApiV1ManifestsResponses, GetApiV1PermissionsData, GetApiV1PermissionsErrors, GetApiV1PermissionsResponses, GetApiV1PriceChangesData, GetApiV1PriceChangesErrors, GetApiV1PriceChangesResponses, GetApiV1PricingCancellationFeeData, GetApiV1PricingCancellationFeeErrors, GetApiV1PricingCancellationFeeResponses, GetApiV1PricingCurrentData, GetApiV1PricingCurrentErrors, GetApiV1PricingCurrentResponses, GetApiV1ReceiverCorrectionsData, GetApiV1ReceiverCorrectionsErrors, GetApiV1ReceiverCorrectionsResponses, GetApiV1ReportsCancellationsData, GetApiV1ReportsCancellationsErrors, GetApiV1ReportsCancellationsResponses, GetApiV1ReportsCashData, GetApiV1ReportsCashErrors, GetApiV1ReportsCashResponses, GetApiV1RolePermissionsData, GetApiV1RolePermissionsErrors, GetApiV1RolePermissionsResponses, GetApiV1RoutesByIdData, GetApiV1RoutesByIdErrors, GetApiV1RoutesByIdResponses, GetApiV1RoutesData, GetApiV1RoutesErrors, GetApiV1RoutesResponses, GetApiV1SaleItemsByIdData, GetApiV1SaleItemsByIdErrors, GetApiV1SaleItemsByIdResponses, GetApiV1SaleItemsData, GetApiV1SaleItemsErrors, GetApiV1SaleItemsResponses, GetApiV1SettingChangesData, GetApiV1SettingChangesErrors, GetApiV1SettingChangesResponses, GetApiV1ShipmentNotesData, GetApiV1ShipmentNotesErrors, GetApiV1ShipmentNotesResponses, GetApiV1ShipmentsByIdData, GetApiV1ShipmentsByIdErrors, GetApiV1ShipmentsByIdResponses, GetApiV1ShipmentsData, GetApiV1ShipmentsErrors, GetApiV1ShipmentsOverdueData, GetApiV1ShipmentsOverdueErrors, GetApiV1ShipmentsOverdueResponses, GetApiV1ShipmentsResponses, GetApiV1SizeClassesByIdData, GetApiV1SizeClassesByIdErrors, GetApiV1SizeClassesByIdResponses, GetApiV1SizeClassesData, GetApiV1SizeClassesErrors, GetApiV1SizeClassesResponses, GetApiV1StationsByIdData, GetApiV1StationsByIdErrors, GetApiV1StationsByIdResponses, GetApiV1StationsData, GetApiV1StationsErrors, GetApiV1StationsResponses, GetApiV1UsersByIdData, GetApiV1UsersByIdErrors, GetApiV1UsersByIdResponses, GetApiV1UsersData, GetApiV1UsersErrors, GetApiV1UsersResponses, PatchApiV1CancellationRequestsByIdApproveData, PatchApiV1CancellationRequestsByIdApproveErrors, PatchApiV1CancellationRequestsByIdApproveResponses, PatchApiV1CancellationRequestsByIdRejectData, PatchApiV1CancellationRequestsByIdRejectErrors, PatchApiV1CancellationRequestsByIdRejectResponses, PatchApiV1IncidentsByIdResolveData, PatchApiV1IncidentsByIdResolveErrors, PatchApiV1IncidentsByIdResolveResponses, PatchApiV1LocationsByIdData, PatchApiV1LocationsByIdErrors, PatchApiV1LocationsByIdResponses, PatchApiV1ManifestsByIdArriveData, PatchApiV1ManifestsByIdArriveErrors, PatchApiV1ManifestsByIdArriveResponses, PatchApiV1ManifestsByIdDepartData, PatchApiV1ManifestsByIdDepartErrors, PatchApiV1ManifestsByIdDepartResponses, PatchApiV1ManifestsByIdScanData, PatchApiV1ManifestsByIdScanErrors, PatchApiV1ManifestsByIdScanResponses, PatchApiV1SaleItemsByIdData, PatchApiV1SaleItemsByIdErrors, PatchApiV1SaleItemsByIdPriceData, PatchApiV1SaleItemsByIdPriceErrors, PatchApiV1SaleItemsByIdPriceResponses, PatchApiV1SaleItemsByIdResponses, PatchApiV1ShipmentsByIdArrivedData, PatchApiV1ShipmentsByIdArrivedErrors, PatchApiV1ShipmentsByIdArrivedResponses, PatchApiV1ShipmentsByIdCollectData, PatchApiV1ShipmentsByIdCollectErrors, PatchApiV1ShipmentsByIdCollectResponses, PatchApiV1ShipmentsByIdInTransitData, PatchApiV1ShipmentsByIdInTransitErrors, PatchApiV1ShipmentsByIdInTransitResponses, PatchApiV1SizeClassesByIdData, PatchApiV1SizeClassesByIdErrors, PatchApiV1SizeClassesByIdPriceData, PatchApiV1SizeClassesByIdPriceErrors, PatchApiV1SizeClassesByIdPriceResponses, PatchApiV1SizeClassesByIdResponses, PatchApiV1StationsByIdCancellationApprovalData, PatchApiV1StationsByIdCancellationApprovalErrors, PatchApiV1StationsByIdCancellationApprovalResponses, PatchApiV1StationsByIdData, PatchApiV1StationsByIdErrors, PatchApiV1StationsByIdOverdueThresholdData, PatchApiV1StationsByIdOverdueThresholdErrors, PatchApiV1StationsByIdOverdueThresholdResponses, PatchApiV1StationsByIdResponses, PatchApiV1UsersByIdData, PatchApiV1UsersByIdErrors, PatchApiV1UsersByIdResponses, PostApiV1CancellationRequestsData, PostApiV1CancellationRequestsErrors, PostApiV1CancellationRequestsResponses, PostApiV1IncidentsData, PostApiV1IncidentsErrors, PostApiV1IncidentsResponses, PostApiV1LocationsData, PostApiV1LocationsErrors, PostApiV1LocationsResponses, PostApiV1ManifestsData, PostApiV1ManifestsErrors, PostApiV1ManifestsResponses, PostApiV1PricingCancellationFeeData, PostApiV1PricingCancellationFeeErrors, PostApiV1PricingCancellationFeeResponses, PostApiV1PricingPricePerKgData, PostApiV1PricingPricePerKgErrors, PostApiV1PricingPricePerKgResponses, PostApiV1ReceiverCorrectionsData, PostApiV1ReceiverCorrectionsErrors, PostApiV1ReceiverCorrectionsResponses, PostApiV1RoutesData, PostApiV1RoutesErrors, PostApiV1RoutesResponses, PostApiV1SaleItemsData, PostApiV1SaleItemsErrors, PostApiV1SaleItemsResponses, PostApiV1ShipmentNotesData, PostApiV1ShipmentNotesErrors, PostApiV1ShipmentNotesResponses, PostApiV1ShipmentsData, PostApiV1ShipmentsErrors, PostApiV1ShipmentsResponses, PostApiV1SizeClassesData, PostApiV1SizeClassesErrors, PostApiV1SizeClassesResponses, PostApiV1StationsData, PostApiV1StationsErrors, PostApiV1StationsResponses, PostApiV1UsersData, PostApiV1UsersErrors, PostApiV1UsersRefreshData, PostApiV1UsersRefreshErrors, PostApiV1UsersRefreshResponses, PostApiV1UsersResponses, PostApiV1UsersSignInData, PostApiV1UsersSignInErrors, PostApiV1UsersSignInResponses } from './types.gen';
+import type { DeleteLocationsByIdData, DeleteLocationsByIdErrors, DeleteLocationsByIdResponses, DeleteRoutesByIdData, DeleteRoutesByIdErrors, DeleteRoutesByIdResponses, DeleteStationsByIdData, DeleteStationsByIdErrors, DeleteStationsByIdResponses, GetCancellationRequestsData, GetCancellationRequestsErrors, GetCancellationRequestsResponses, GetIncidentsData, GetIncidentsErrors, GetIncidentsResponses, GetLocationsByIdData, GetLocationsByIdErrors, GetLocationsByIdResponses, GetLocationsData, GetLocationsErrors, GetLocationsResponses, GetManifestsByIdData, GetManifestsByIdErrors, GetManifestsByIdResponses, GetManifestsData, GetManifestsDeparturesData, GetManifestsDeparturesErrors, GetManifestsDeparturesResponses, GetManifestsErrors, GetManifestsResponses, GetPermissionsData, GetPermissionsErrors, GetPermissionsResponses, GetPriceChangesData, GetPriceChangesErrors, GetPriceChangesResponses, GetPricingCancellationFeeData, GetPricingCancellationFeeErrors, GetPricingCancellationFeeResponses, GetPricingCurrentData, GetPricingCurrentErrors, GetPricingCurrentResponses, GetReceiverCorrectionsData, GetReceiverCorrectionsErrors, GetReceiverCorrectionsResponses, GetReportsCancellationsData, GetReportsCancellationsErrors, GetReportsCancellationsResponses, GetReportsCashData, GetReportsCashErrors, GetReportsCashResponses, GetRolePermissionsData, GetRolePermissionsErrors, GetRolePermissionsResponses, GetRoutesByIdData, GetRoutesByIdErrors, GetRoutesByIdResponses, GetRoutesData, GetRoutesErrors, GetRoutesResponses, GetSaleItemsByIdData, GetSaleItemsByIdErrors, GetSaleItemsByIdResponses, GetSaleItemsData, GetSaleItemsErrors, GetSaleItemsResponses, GetSettingChangesData, GetSettingChangesErrors, GetSettingChangesResponses, GetShipmentNotesData, GetShipmentNotesErrors, GetShipmentNotesResponses, GetShipmentsByIdData, GetShipmentsByIdErrors, GetShipmentsByIdResponses, GetShipmentsData, GetShipmentsErrors, GetShipmentsOverdueData, GetShipmentsOverdueErrors, GetShipmentsOverdueResponses, GetShipmentsResponses, GetSizeClassesByIdData, GetSizeClassesByIdErrors, GetSizeClassesByIdResponses, GetSizeClassesData, GetSizeClassesErrors, GetSizeClassesResponses, GetStationsByIdData, GetStationsByIdErrors, GetStationsByIdResponses, GetStationsData, GetStationsErrors, GetStationsResponses, GetUsersByIdData, GetUsersByIdErrors, GetUsersByIdResponses, GetUsersData, GetUsersErrors, GetUsersResponses, PatchCancellationRequestsByIdApproveData, PatchCancellationRequestsByIdApproveErrors, PatchCancellationRequestsByIdApproveResponses, PatchCancellationRequestsByIdRejectData, PatchCancellationRequestsByIdRejectErrors, PatchCancellationRequestsByIdRejectResponses, PatchIncidentsByIdResolveData, PatchIncidentsByIdResolveErrors, PatchIncidentsByIdResolveResponses, PatchLocationsByIdData, PatchLocationsByIdErrors, PatchLocationsByIdResponses, PatchManifestsByIdArriveData, PatchManifestsByIdArriveErrors, PatchManifestsByIdArriveResponses, PatchManifestsByIdDepartData, PatchManifestsByIdDepartErrors, PatchManifestsByIdDepartResponses, PatchManifestsByIdScanData, PatchManifestsByIdScanErrors, PatchManifestsByIdScanResponses, PatchSaleItemsByIdData, PatchSaleItemsByIdErrors, PatchSaleItemsByIdPriceData, PatchSaleItemsByIdPriceErrors, PatchSaleItemsByIdPriceResponses, PatchSaleItemsByIdResponses, PatchShipmentsByIdArrivedData, PatchShipmentsByIdArrivedErrors, PatchShipmentsByIdArrivedResponses, PatchShipmentsByIdCollectData, PatchShipmentsByIdCollectErrors, PatchShipmentsByIdCollectResponses, PatchShipmentsByIdInTransitData, PatchShipmentsByIdInTransitErrors, PatchShipmentsByIdInTransitResponses, PatchSizeClassesByIdData, PatchSizeClassesByIdErrors, PatchSizeClassesByIdPriceData, PatchSizeClassesByIdPriceErrors, PatchSizeClassesByIdPriceResponses, PatchSizeClassesByIdResponses, PatchStationsByIdCancellationApprovalData, PatchStationsByIdCancellationApprovalErrors, PatchStationsByIdCancellationApprovalResponses, PatchStationsByIdData, PatchStationsByIdErrors, PatchStationsByIdOverdueThresholdData, PatchStationsByIdOverdueThresholdErrors, PatchStationsByIdOverdueThresholdResponses, PatchStationsByIdResponses, PatchUsersByIdData, PatchUsersByIdErrors, PatchUsersByIdResponses, PostCancellationRequestsData, PostCancellationRequestsErrors, PostCancellationRequestsResponses, PostIncidentsData, PostIncidentsErrors, PostIncidentsResponses, PostLocationsData, PostLocationsErrors, PostLocationsResponses, PostManifestsData, PostManifestsErrors, PostManifestsResponses, PostPricingCancellationFeeData, PostPricingCancellationFeeErrors, PostPricingCancellationFeeResponses, PostPricingPricePerKgData, PostPricingPricePerKgErrors, PostPricingPricePerKgResponses, PostReceiverCorrectionsData, PostReceiverCorrectionsErrors, PostReceiverCorrectionsResponses, PostRoutesData, PostRoutesErrors, PostRoutesResponses, PostSaleItemsData, PostSaleItemsErrors, PostSaleItemsResponses, PostShipmentNotesData, PostShipmentNotesErrors, PostShipmentNotesResponses, PostShipmentsData, PostShipmentsErrors, PostShipmentsResponses, PostSizeClassesData, PostSizeClassesErrors, PostSizeClassesResponses, PostStationsData, PostStationsErrors, PostStationsResponses, PostUsersData, PostUsersErrors, PostUsersRefreshData, PostUsersRefreshErrors, PostUsersRefreshResponses, PostUsersResponses, PostUsersSignInData, PostUsersSignInErrors, PostUsersSignInResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -19,11 +19,25 @@ export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends 
 };
 
 /**
- * Lists Shipments, newest first by default. Needs the `shipment.read` permission.
+ * The current global pricing (price per kg). Any signed-in user.
  */
-export const getApiV1Shipments = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1ShipmentsData, ThrowOnError>): RequestResult<GetApiV1ShipmentsResponses, GetApiV1ShipmentsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1ShipmentsResponses, GetApiV1ShipmentsErrors, ThrowOnError>({
+export const getPricingCurrent = <ThrowOnError extends boolean = false>(options?: Options<GetPricingCurrentData, ThrowOnError>): RequestResult<GetPricingCurrentResponses, GetPricingCurrentErrors, ThrowOnError> => (options?.client ?? client).get<GetPricingCurrentResponses, GetPricingCurrentErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/shipments',
+    url: '/pricing/current',
+    ...options
+});
+
+/**
+ * Lists Shipments, newest first, 50 per page (`page[limit]` up to 200). Follow `links.next`
+ * (or pass its `page[after]` cursor) for the next page. Filter with `filter[...]` and narrow with
+ * `search` (Invoice Number, name or phone). Needs the `shipment.read` permission.
+ *
+ */
+export const getShipments = <ThrowOnError extends boolean = false>(options?: Options<GetShipmentsData, ThrowOnError>): RequestResult<GetShipmentsResponses, GetShipmentsErrors, ThrowOnError> => (options?.client ?? client).get<GetShipmentsResponses, GetShipmentsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/shipments',
     ...options
 });
 
@@ -35,9 +49,10 @@ export const getApiV1Shipments = <ThrowOnError extends boolean = false>(options?
  * Add `?include=parcels,sale_items,payments,status_events` to get the full invoice back.
  *
  */
-export const postApiV1Shipments = <ThrowOnError extends boolean = false>(options: Options<PostApiV1ShipmentsData, ThrowOnError>): RequestResult<PostApiV1ShipmentsResponses, PostApiV1ShipmentsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1ShipmentsResponses, PostApiV1ShipmentsErrors, ThrowOnError>({
+export const postShipments = <ThrowOnError extends boolean = false>(options: Options<PostShipmentsData, ThrowOnError>): RequestResult<PostShipmentsResponses, PostShipmentsErrors, ThrowOnError> => (options.client ?? client).post<PostShipmentsResponses, PostShipmentsErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/shipments',
+    url: '/shipments',
     ...options,
     headers: {
         'Content-Type': 'application/vnd.api+json',
@@ -46,217 +61,23 @@ export const postApiV1Shipments = <ThrowOnError extends boolean = false>(options
 });
 
 /**
- * Lists Sale Items. Staff see only active ones; an Admin sees all.
+ * /permissions operation on permission resource
  */
-export const getApiV1SaleItems = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1SaleItemsData, ThrowOnError>): RequestResult<GetApiV1SaleItemsResponses, GetApiV1SaleItemsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1SaleItemsResponses, GetApiV1SaleItemsErrors, ThrowOnError>({
+export const getPermissions = <ThrowOnError extends boolean = false>(options?: Options<GetPermissionsData, ThrowOnError>): RequestResult<GetPermissionsResponses, GetPermissionsErrors, ThrowOnError> => (options?.client ?? client).get<GetPermissionsResponses, GetPermissionsErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/sale-items',
+    url: '/permissions',
     ...options
 });
 
 /**
- * Creates a Sale Item with a KHR unit price. Needs `price.manage`.
+ * The log of Cancellation Fee and Station approval settings, newest first. Needs `price.manage`.
  */
-export const postApiV1SaleItems = <ThrowOnError extends boolean = false>(options: Options<PostApiV1SaleItemsData, ThrowOnError>): RequestResult<PostApiV1SaleItemsResponses, PostApiV1SaleItemsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1SaleItemsResponses, PostApiV1SaleItemsErrors, ThrowOnError>({
+export const getSettingChanges = <ThrowOnError extends boolean = false>(options?: Options<GetSettingChangesData, ThrowOnError>): RequestResult<GetSettingChangesResponses, GetSettingChangesErrors, ThrowOnError> => (options?.client ?? client).get<GetSettingChangesResponses, GetSettingChangesErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/sale-items',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Shows one Sale Item.
- */
-export const getApiV1SaleItemsById = <ThrowOnError extends boolean = false>(options: Options<GetApiV1SaleItemsByIdData, ThrowOnError>): RequestResult<GetApiV1SaleItemsByIdResponses, GetApiV1SaleItemsByIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1SaleItemsByIdResponses, GetApiV1SaleItemsByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/sale-items/{id}',
+    url: '/setting-changes',
     ...options
-});
-
-/**
- * Renames or (de)activates a Sale Item. Needs `price.manage`.
- */
-export const patchApiV1SaleItemsById = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1SaleItemsByIdData, ThrowOnError>): RequestResult<PatchApiV1SaleItemsByIdResponses, PatchApiV1SaleItemsByIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1SaleItemsByIdResponses, PatchApiV1SaleItemsByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/sale-items/{id}',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Departures from the external schedule for one `date` (YYYY-MM-DD) from the signed-in user's Station
- * to `destination_station_id`. Needs `shipment.mark_in_transit`.
- *
- */
-export const getApiV1ManifestsDepartures = <ThrowOnError extends boolean = false>(options: Options<GetApiV1ManifestsDeparturesData, ThrowOnError>): RequestResult<GetApiV1ManifestsDeparturesResponses, GetApiV1ManifestsDeparturesErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1ManifestsDeparturesResponses, GetApiV1ManifestsDeparturesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/manifests/departures',
-    ...options
-});
-
-/**
- * Shows one Size Class.
- */
-export const getApiV1SizeClassesById = <ThrowOnError extends boolean = false>(options: Options<GetApiV1SizeClassesByIdData, ThrowOnError>): RequestResult<GetApiV1SizeClassesByIdResponses, GetApiV1SizeClassesByIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1SizeClassesByIdResponses, GetApiV1SizeClassesByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/size-classes/{id}',
-    ...options
-});
-
-/**
- * Renames or (de)activates a Size Class. Needs `price.manage`.
- */
-export const patchApiV1SizeClassesById = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1SizeClassesByIdData, ThrowOnError>): RequestResult<PatchApiV1SizeClassesByIdResponses, PatchApiV1SizeClassesByIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1SizeClassesByIdResponses, PatchApiV1SizeClassesByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/size-classes/{id}',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * /incidents/:id/resolve operation on incident resource
- */
-export const patchApiV1IncidentsByIdResolve = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1IncidentsByIdResolveData, ThrowOnError>): RequestResult<PatchApiV1IncidentsByIdResolveResponses, PatchApiV1IncidentsByIdResolveErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1IncidentsByIdResolveResponses, PatchApiV1IncidentsByIdResolveErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/incidents/{id}/resolve',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Which role holds which Permission by default. Pair with `/permissions` for what each one means.
- */
-export const getApiV1RolePermissions = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1RolePermissionsData, ThrowOnError>): RequestResult<GetApiV1RolePermissionsResponses, GetApiV1RolePermissionsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1RolePermissionsResponses, GetApiV1RolePermissionsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/role-permissions',
-    ...options
-});
-
-/**
- * Deletes a Location with no Stations. Needs the `reference_data.manage` permission.
- */
-export const deleteApiV1LocationsById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1LocationsByIdData, ThrowOnError>): RequestResult<DeleteApiV1LocationsByIdResponses, DeleteApiV1LocationsByIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1LocationsByIdResponses, DeleteApiV1LocationsByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/locations/{id}',
-    ...options
-});
-
-/**
- * Shows one Location. Any signed-in user.
- */
-export const getApiV1LocationsById = <ThrowOnError extends boolean = false>(options: Options<GetApiV1LocationsByIdData, ThrowOnError>): RequestResult<GetApiV1LocationsByIdResponses, GetApiV1LocationsByIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1LocationsByIdResponses, GetApiV1LocationsByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/locations/{id}',
-    ...options
-});
-
-/**
- * Renames a Location. Needs the `reference_data.manage` permission.
- */
-export const patchApiV1LocationsById = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1LocationsByIdData, ThrowOnError>): RequestResult<PatchApiV1LocationsByIdResponses, PatchApiV1LocationsByIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1LocationsByIdResponses, PatchApiV1LocationsByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/locations/{id}',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Lists Routes (origin Location to destination Location). Any signed-in user.
- */
-export const getApiV1Routes = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1RoutesData, ThrowOnError>): RequestResult<GetApiV1RoutesResponses, GetApiV1RoutesErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1RoutesResponses, GetApiV1RoutesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/routes',
-    ...options
-});
-
-/**
- * Creates a Route between two different Locations. Needs the `reference_data.manage` permission.
- */
-export const postApiV1Routes = <ThrowOnError extends boolean = false>(options: Options<PostApiV1RoutesData, ThrowOnError>): RequestResult<PostApiV1RoutesResponses, PostApiV1RoutesErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1RoutesResponses, PostApiV1RoutesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/routes',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Approves a pending request: cancels the Shipment and refunds paid minus the Cancellation Fee. Needs
- * `cancellation.approve` at the origin Station, and must not be the person who asked.
- *
- */
-export const patchApiV1CancellationRequestsByIdApprove = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1CancellationRequestsByIdApproveData, ThrowOnError>): RequestResult<PatchApiV1CancellationRequestsByIdApproveResponses, PatchApiV1CancellationRequestsByIdApproveErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1CancellationRequestsByIdApproveResponses, PatchApiV1CancellationRequestsByIdApproveErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/cancellation-requests/{id}/approve',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Lists Stations with the Location each is in. Any signed-in user.
- */
-export const getApiV1Stations = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1StationsData, ThrowOnError>): RequestResult<GetApiV1StationsResponses, GetApiV1StationsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1StationsResponses, GetApiV1StationsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/stations',
-    ...options
-});
-
-/**
- * Creates a Station in a Location. Needs the `reference_data.manage` permission.
- */
-export const postApiV1Stations = <ThrowOnError extends boolean = false>(options: Options<PostApiV1StationsData, ThrowOnError>): RequestResult<PostApiV1StationsResponses, PostApiV1StationsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1StationsResponses, PostApiV1StationsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/stations',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * /receiver-corrections operation on receiver-correction resource
- */
-export const getApiV1ReceiverCorrections = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1ReceiverCorrectionsData, ThrowOnError>): RequestResult<GetApiV1ReceiverCorrectionsResponses, GetApiV1ReceiverCorrectionsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1ReceiverCorrectionsResponses, GetApiV1ReceiverCorrectionsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/receiver-corrections',
-    ...options
-});
-
-/**
- * Changes the Receiver name and phone after departure, with a reason. Needs `receiver.correct`
- * (Supervisor), at the Shipment's origin Station. Only while the Shipment is In transit or Arrived.
- * The latest correction is the Receiver; earlier ones stay as history.
- *
- */
-export const postApiV1ReceiverCorrections = <ThrowOnError extends boolean = false>(options: Options<PostApiV1ReceiverCorrectionsData, ThrowOnError>): RequestResult<PostApiV1ReceiverCorrectionsResponses, PostApiV1ReceiverCorrectionsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1ReceiverCorrectionsResponses, PostApiV1ReceiverCorrectionsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/receiver-corrections',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
 });
 
 /**
@@ -264,68 +85,10 @@ export const postApiV1ReceiverCorrections = <ThrowOnError extends boolean = fals
  * `shipment.mark_arrived`, at the Shipment's destination Station.
  *
  */
-export const patchApiV1ShipmentsByIdArrived = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1ShipmentsByIdArrivedData, ThrowOnError>): RequestResult<PatchApiV1ShipmentsByIdArrivedResponses, PatchApiV1ShipmentsByIdArrivedErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1ShipmentsByIdArrivedResponses, PatchApiV1ShipmentsByIdArrivedErrors, ThrowOnError>({
+export const patchShipmentsByIdArrived = <ThrowOnError extends boolean = false>(options: Options<PatchShipmentsByIdArrivedData, ThrowOnError>): RequestResult<PatchShipmentsByIdArrivedResponses, PatchShipmentsByIdArrivedErrors, ThrowOnError> => (options.client ?? client).patch<PatchShipmentsByIdArrivedResponses, PatchShipmentsByIdArrivedErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/shipments/{id}/arrived',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Sets the KHR price of a Sale Item and logs it. Needs `price.manage`.
- */
-export const patchApiV1SaleItemsByIdPrice = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1SaleItemsByIdPriceData, ThrowOnError>): RequestResult<PatchApiV1SaleItemsByIdPriceResponses, PatchApiV1SaleItemsByIdPriceErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1SaleItemsByIdPriceResponses, PatchApiV1SaleItemsByIdPriceErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/sale-items/{id}/price',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Lists Cancellation Requests; use `filter[status]=pending` for the Supervisor's queue. Needs `shipment.read`.
- */
-export const getApiV1CancellationRequests = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1CancellationRequestsData, ThrowOnError>): RequestResult<GetApiV1CancellationRequestsResponses, GetApiV1CancellationRequestsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1CancellationRequestsResponses, GetApiV1CancellationRequestsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/cancellation-requests',
-    ...options
-});
-
-/**
- * Asks to cancel a Received Shipment, with a reason. Needs `cancellation.request`, at the origin Station.
- * Where that Station does not require approval, the Shipment is cancelled and refunded straight away.
- *
- */
-export const postApiV1CancellationRequests = <ThrowOnError extends boolean = false>(options: Options<PostApiV1CancellationRequestsData, ThrowOnError>): RequestResult<PostApiV1CancellationRequestsResponses, PostApiV1CancellationRequestsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1CancellationRequestsResponses, PostApiV1CancellationRequestsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/cancellation-requests',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Lists users. Needs the `user.manage` permission.
- */
-export const getApiV1Users = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1UsersData, ThrowOnError>): RequestResult<GetApiV1UsersResponses, GetApiV1UsersErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1UsersResponses, GetApiV1UsersErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/users',
-    ...options
-});
-
-/**
- * Creates a user with a role (and a Station for staff and supervisors). Needs `user.manage`.
- */
-export const postApiV1Users = <ThrowOnError extends boolean = false>(options: Options<PostApiV1UsersData, ThrowOnError>): RequestResult<PostApiV1UsersResponses, PostApiV1UsersErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1UsersResponses, PostApiV1UsersErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/users',
+    url: '/shipments/{id}/arrived',
     ...options,
     headers: {
         'Content-Type': 'application/vnd.api+json',
@@ -336,18 +99,20 @@ export const postApiV1Users = <ThrowOnError extends boolean = false>(options: Op
 /**
  * Lists Locations (cities and provinces). Any signed-in user.
  */
-export const getApiV1Locations = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1LocationsData, ThrowOnError>): RequestResult<GetApiV1LocationsResponses, GetApiV1LocationsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1LocationsResponses, GetApiV1LocationsErrors, ThrowOnError>({
+export const getLocations = <ThrowOnError extends boolean = false>(options?: Options<GetLocationsData, ThrowOnError>): RequestResult<GetLocationsResponses, GetLocationsErrors, ThrowOnError> => (options?.client ?? client).get<GetLocationsResponses, GetLocationsErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/locations',
+    url: '/locations',
     ...options
 });
 
 /**
  * Creates a Location. Needs the `reference_data.manage` permission.
  */
-export const postApiV1Locations = <ThrowOnError extends boolean = false>(options: Options<PostApiV1LocationsData, ThrowOnError>): RequestResult<PostApiV1LocationsResponses, PostApiV1LocationsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1LocationsResponses, PostApiV1LocationsErrors, ThrowOnError>({
+export const postLocations = <ThrowOnError extends boolean = false>(options: Options<PostLocationsData, ThrowOnError>): RequestResult<PostLocationsResponses, PostLocationsErrors, ThrowOnError> => (options.client ?? client).post<PostLocationsResponses, PostLocationsErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/locations',
+    url: '/locations',
     ...options,
     headers: {
         'Content-Type': 'application/vnd.api+json',
@@ -356,77 +121,22 @@ export const postApiV1Locations = <ThrowOnError extends boolean = false>(options
 });
 
 /**
- * The current Cancellation Fee rule. Any signed-in user.
+ * /incidents operation on incident resource
  */
-export const getApiV1PricingCancellationFee = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1PricingCancellationFeeData, ThrowOnError>): RequestResult<GetApiV1PricingCancellationFeeResponses, GetApiV1PricingCancellationFeeErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1PricingCancellationFeeResponses, GetApiV1PricingCancellationFeeErrors, ThrowOnError>({
+export const getIncidents = <ThrowOnError extends boolean = false>(options?: Options<GetIncidentsData, ThrowOnError>): RequestResult<GetIncidentsResponses, GetIncidentsErrors, ThrowOnError> => (options?.client ?? client).get<GetIncidentsResponses, GetIncidentsErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/pricing/cancellation-fee',
+    url: '/incidents',
     ...options
 });
 
 /**
- * Sets the Cancellation Fee percent and optional cap, and logs it. Needs `price.manage`.
+ * /incidents operation on incident resource
  */
-export const postApiV1PricingCancellationFee = <ThrowOnError extends boolean = false>(options: Options<PostApiV1PricingCancellationFeeData, ThrowOnError>): RequestResult<PostApiV1PricingCancellationFeeResponses, PostApiV1PricingCancellationFeeErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1PricingCancellationFeeResponses, PostApiV1PricingCancellationFeeErrors, ThrowOnError>({
+export const postIncidents = <ThrowOnError extends boolean = false>(options: Options<PostIncidentsData, ThrowOnError>): RequestResult<PostIncidentsResponses, PostIncidentsErrors, ThrowOnError> => (options.client ?? client).post<PostIncidentsResponses, PostIncidentsErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/pricing/cancellation-fee',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Deletes a Station nothing refers to. Needs the `reference_data.manage` permission.
- */
-export const deleteApiV1StationsById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1StationsByIdData, ThrowOnError>): RequestResult<DeleteApiV1StationsByIdResponses, DeleteApiV1StationsByIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1StationsByIdResponses, DeleteApiV1StationsByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/stations/{id}',
-    ...options
-});
-
-/**
- * Shows one Station. Any signed-in user.
- */
-export const getApiV1StationsById = <ThrowOnError extends boolean = false>(options: Options<GetApiV1StationsByIdData, ThrowOnError>): RequestResult<GetApiV1StationsByIdResponses, GetApiV1StationsByIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1StationsByIdResponses, GetApiV1StationsByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/stations/{id}',
-    ...options
-});
-
-/**
- * Renames or (de)activates a Station (it cannot move to another Location). Needs the `reference_data.manage` permission.
- */
-export const patchApiV1StationsById = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1StationsByIdData, ThrowOnError>): RequestResult<PatchApiV1StationsByIdResponses, PatchApiV1StationsByIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1StationsByIdResponses, PatchApiV1StationsByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/stations/{id}',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Departs the Manifest at its origin Station: every loaded Shipment becomes In transit. Shipments cancelled, or with a pending Cancellation Request, since loading are taken off instead.
- */
-export const patchApiV1ManifestsByIdDepart = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1ManifestsByIdDepartData, ThrowOnError>): RequestResult<PatchApiV1ManifestsByIdDepartResponses, PatchApiV1ManifestsByIdDepartErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1ManifestsByIdDepartResponses, PatchApiV1ManifestsByIdDepartErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/manifests/{id}/depart',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Sets the KHR price of a Size Class and logs it. Needs `price.manage`.
- */
-export const patchApiV1SizeClassesByIdPrice = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1SizeClassesByIdPriceData, ThrowOnError>): RequestResult<PatchApiV1SizeClassesByIdPriceResponses, PatchApiV1SizeClassesByIdPriceErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1SizeClassesByIdPriceResponses, PatchApiV1SizeClassesByIdPriceErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/size-classes/{id}/price',
+    url: '/incidents',
     ...options,
     headers: {
         'Content-Type': 'application/vnd.api+json',
@@ -440,8 +150,109 @@ export const patchApiV1SizeClassesByIdPrice = <ThrowOnError extends boolean = fa
  * Each refresh token works once. Presenting one a second time revokes the whole session.
  *
  */
-export const postApiV1UsersRefresh = <ThrowOnError extends boolean = false>(options: Options<PostApiV1UsersRefreshData, ThrowOnError>): RequestResult<PostApiV1UsersRefreshResponses, PostApiV1UsersRefreshErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1UsersRefreshResponses, PostApiV1UsersRefreshErrors, ThrowOnError>({
-    url: '/api/v1/users/refresh',
+export const postUsersRefresh = <ThrowOnError extends boolean = false>(options: Options<PostUsersRefreshData, ThrowOnError>): RequestResult<PostUsersRefreshResponses, PostUsersRefreshErrors, ThrowOnError> => (options.client ?? client).post<PostUsersRefreshResponses, PostUsersRefreshErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/users/refresh',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Lists Size Classes. Staff see only active ones; an Admin sees all.
+ */
+export const getSizeClasses = <ThrowOnError extends boolean = false>(options?: Options<GetSizeClassesData, ThrowOnError>): RequestResult<GetSizeClassesResponses, GetSizeClassesErrors, ThrowOnError> => (options?.client ?? client).get<GetSizeClassesResponses, GetSizeClassesErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/size-classes',
+    ...options
+});
+
+/**
+ * Creates a Size Class with a KHR price. Needs `price.manage`.
+ */
+export const postSizeClasses = <ThrowOnError extends boolean = false>(options: Options<PostSizeClassesData, ThrowOnError>): RequestResult<PostSizeClassesResponses, PostSizeClassesErrors, ThrowOnError> => (options.client ?? client).post<PostSizeClassesResponses, PostSizeClassesErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/size-classes',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * /receiver-corrections operation on receiver-correction resource
+ */
+export const getReceiverCorrections = <ThrowOnError extends boolean = false>(options?: Options<GetReceiverCorrectionsData, ThrowOnError>): RequestResult<GetReceiverCorrectionsResponses, GetReceiverCorrectionsErrors, ThrowOnError> => (options?.client ?? client).get<GetReceiverCorrectionsResponses, GetReceiverCorrectionsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/receiver-corrections',
+    ...options
+});
+
+/**
+ * Changes the Receiver name and phone after departure, with a reason. Needs `receiver.correct`
+ * (Supervisor), at the Shipment's origin Station. Only while the Shipment is In transit or Arrived.
+ * The latest correction is the Receiver; earlier ones stay as history.
+ *
+ */
+export const postReceiverCorrections = <ThrowOnError extends boolean = false>(options: Options<PostReceiverCorrectionsData, ThrowOnError>): RequestResult<PostReceiverCorrectionsResponses, PostReceiverCorrectionsErrors, ThrowOnError> => (options.client ?? client).post<PostReceiverCorrectionsResponses, PostReceiverCorrectionsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/receiver-corrections',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Deletes a Route no Shipment has used. Needs the `reference_data.manage` permission.
+ */
+export const deleteRoutesById = <ThrowOnError extends boolean = false>(options: Options<DeleteRoutesByIdData, ThrowOnError>): RequestResult<DeleteRoutesByIdResponses, DeleteRoutesByIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteRoutesByIdResponses, DeleteRoutesByIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/routes/{id}',
+    ...options
+});
+
+/**
+ * Shows one Route. Any signed-in user.
+ */
+export const getRoutesById = <ThrowOnError extends boolean = false>(options: Options<GetRoutesByIdData, ThrowOnError>): RequestResult<GetRoutesByIdResponses, GetRoutesByIdErrors, ThrowOnError> => (options.client ?? client).get<GetRoutesByIdResponses, GetRoutesByIdErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/routes/{id}',
+    ...options
+});
+
+/**
+ * The origin Station hands the Shipment to the bus. Only from Received. Needs `shipment.mark_in_transit`,
+ * at the Shipment's origin Station.
+ *
+ */
+export const patchShipmentsByIdInTransit = <ThrowOnError extends boolean = false>(options: Options<PatchShipmentsByIdInTransitData, ThrowOnError>): RequestResult<PatchShipmentsByIdInTransitResponses, PatchShipmentsByIdInTransitErrors, ThrowOnError> => (options.client ?? client).patch<PatchShipmentsByIdInTransitResponses, PatchShipmentsByIdInTransitErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/shipments/{id}/in-transit',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Rejects a pending request; `decision_reason` is required. Same rights as approving.
+ */
+export const patchCancellationRequestsByIdReject = <ThrowOnError extends boolean = false>(options: Options<PatchCancellationRequestsByIdRejectData, ThrowOnError>): RequestResult<PatchCancellationRequestsByIdRejectResponses, PatchCancellationRequestsByIdRejectErrors, ThrowOnError> => (options.client ?? client).patch<PatchCancellationRequestsByIdRejectResponses, PatchCancellationRequestsByIdRejectErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/cancellation-requests/{id}/reject',
     ...options,
     headers: {
         'Content-Type': 'application/vnd.api+json',
@@ -452,9 +263,10 @@ export const postApiV1UsersRefresh = <ThrowOnError extends boolean = false>(opti
 /**
  * /shipment-notes operation on shipment-note resource
  */
-export const getApiV1ShipmentNotes = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1ShipmentNotesData, ThrowOnError>): RequestResult<GetApiV1ShipmentNotesResponses, GetApiV1ShipmentNotesErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1ShipmentNotesResponses, GetApiV1ShipmentNotesErrors, ThrowOnError>({
+export const getShipmentNotes = <ThrowOnError extends boolean = false>(options?: Options<GetShipmentNotesData, ThrowOnError>): RequestResult<GetShipmentNotesResponses, GetShipmentNotesErrors, ThrowOnError> => (options?.client ?? client).get<GetShipmentNotesResponses, GetShipmentNotesErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/shipment-notes',
+    url: '/shipment-notes',
     ...options
 });
 
@@ -463,9 +275,555 @@ export const getApiV1ShipmentNotes = <ThrowOnError extends boolean = false>(opti
  * destination Station. Notes are never edited or deleted.
  *
  */
-export const postApiV1ShipmentNotes = <ThrowOnError extends boolean = false>(options: Options<PostApiV1ShipmentNotesData, ThrowOnError>): RequestResult<PostApiV1ShipmentNotesResponses, PostApiV1ShipmentNotesErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1ShipmentNotesResponses, PostApiV1ShipmentNotesErrors, ThrowOnError>({
+export const postShipmentNotes = <ThrowOnError extends boolean = false>(options: Options<PostShipmentNotesData, ThrowOnError>): RequestResult<PostShipmentNotesResponses, PostShipmentNotesErrors, ThrowOnError> => (options.client ?? client).post<PostShipmentNotesResponses, PostShipmentNotesErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/shipment-notes',
+    url: '/shipment-notes',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Closes the Manifest at its destination Station. Unscanned Shipments stay In transit.
+ */
+export const patchManifestsByIdArrive = <ThrowOnError extends boolean = false>(options: Options<PatchManifestsByIdArriveData, ThrowOnError>): RequestResult<PatchManifestsByIdArriveResponses, PatchManifestsByIdArriveErrors, ThrowOnError> => (options.client ?? client).patch<PatchManifestsByIdArriveResponses, PatchManifestsByIdArriveErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/manifests/{id}/arrive',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Approves a pending request: cancels the Shipment and refunds paid minus the Cancellation Fee. Needs
+ * `cancellation.approve` at the origin Station, and must not be the person who asked.
+ *
+ */
+export const patchCancellationRequestsByIdApprove = <ThrowOnError extends boolean = false>(options: Options<PatchCancellationRequestsByIdApproveData, ThrowOnError>): RequestResult<PatchCancellationRequestsByIdApproveResponses, PatchCancellationRequestsByIdApproveErrors, ThrowOnError> => (options.client ?? client).patch<PatchCancellationRequestsByIdApproveResponses, PatchCancellationRequestsByIdApproveErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/cancellation-requests/{id}/approve',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Lists Routes (origin Location to destination Location). Any signed-in user.
+ */
+export const getRoutes = <ThrowOnError extends boolean = false>(options?: Options<GetRoutesData, ThrowOnError>): RequestResult<GetRoutesResponses, GetRoutesErrors, ThrowOnError> => (options?.client ?? client).get<GetRoutesResponses, GetRoutesErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/routes',
+    ...options
+});
+
+/**
+ * Creates a Route between two different Locations. Needs the `reference_data.manage` permission.
+ */
+export const postRoutes = <ThrowOnError extends boolean = false>(options: Options<PostRoutesData, ThrowOnError>): RequestResult<PostRoutesResponses, PostRoutesErrors, ThrowOnError> => (options.client ?? client).post<PostRoutesResponses, PostRoutesErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/routes',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Shows one Size Class.
+ */
+export const getSizeClassesById = <ThrowOnError extends boolean = false>(options: Options<GetSizeClassesByIdData, ThrowOnError>): RequestResult<GetSizeClassesByIdResponses, GetSizeClassesByIdErrors, ThrowOnError> => (options.client ?? client).get<GetSizeClassesByIdResponses, GetSizeClassesByIdErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/size-classes/{id}',
+    ...options
+});
+
+/**
+ * Renames or (de)activates a Size Class. Needs `price.manage`.
+ */
+export const patchSizeClassesById = <ThrowOnError extends boolean = false>(options: Options<PatchSizeClassesByIdData, ThrowOnError>): RequestResult<PatchSizeClassesByIdResponses, PatchSizeClassesByIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchSizeClassesByIdResponses, PatchSizeClassesByIdErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/size-classes/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Shows one Shipment (the invoice). Needs the `shipment.read` permission.
+ */
+export const getShipmentsById = <ThrowOnError extends boolean = false>(options: Options<GetShipmentsByIdData, ThrowOnError>): RequestResult<GetShipmentsByIdResponses, GetShipmentsByIdErrors, ThrowOnError> => (options.client ?? client).get<GetShipmentsByIdResponses, GetShipmentsByIdErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/shipments/{id}',
+    ...options
+});
+
+/**
+ * Lists Sale Items. Staff see only active ones; an Admin sees all.
+ */
+export const getSaleItems = <ThrowOnError extends boolean = false>(options?: Options<GetSaleItemsData, ThrowOnError>): RequestResult<GetSaleItemsResponses, GetSaleItemsErrors, ThrowOnError> => (options?.client ?? client).get<GetSaleItemsResponses, GetSaleItemsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/sale-items',
+    ...options
+});
+
+/**
+ * Creates a Sale Item with a KHR unit price. Needs `price.manage`.
+ */
+export const postSaleItems = <ThrowOnError extends boolean = false>(options: Options<PostSaleItemsData, ThrowOnError>): RequestResult<PostSaleItemsResponses, PostSaleItemsErrors, ThrowOnError> => (options.client ?? client).post<PostSaleItemsResponses, PostSaleItemsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/sale-items',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Arrived Shipments waiting longer than their destination Station's Overdue Threshold (days since arrival). Staff and Supervisors see their own Station; an Admin sees all and may pass `destination_station_id`.
+ */
+export const getShipmentsOverdue = <ThrowOnError extends boolean = false>(options?: Options<GetShipmentsOverdueData, ThrowOnError>): RequestResult<GetShipmentsOverdueResponses, GetShipmentsOverdueErrors, ThrowOnError> => (options?.client ?? client).get<GetShipmentsOverdueResponses, GetShipmentsOverdueErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/shipments/overdue',
+    ...options
+});
+
+/**
+ * Sets whether cancelling a Shipment sent from this Station needs a Supervisor's approval, and logs it.
+ * Needs the `station_setting.manage` permission (Admin).
+ *
+ */
+export const patchStationsByIdCancellationApproval = <ThrowOnError extends boolean = false>(options: Options<PatchStationsByIdCancellationApprovalData, ThrowOnError>): RequestResult<PatchStationsByIdCancellationApprovalResponses, PatchStationsByIdCancellationApprovalErrors, ThrowOnError> => (options.client ?? client).patch<PatchStationsByIdCancellationApprovalResponses, PatchStationsByIdCancellationApprovalErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/stations/{id}/cancellation-approval',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Sets how many hours after departure a Shipment is Overdue at this destination Station, and logs it. Needs `station_setting.manage`.
+ */
+export const patchStationsByIdOverdueThreshold = <ThrowOnError extends boolean = false>(options: Options<PatchStationsByIdOverdueThresholdData, ThrowOnError>): RequestResult<PatchStationsByIdOverdueThresholdResponses, PatchStationsByIdOverdueThresholdErrors, ThrowOnError> => (options.client ?? client).patch<PatchStationsByIdOverdueThresholdResponses, PatchStationsByIdOverdueThresholdErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/stations/{id}/overdue-threshold',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Cash per staff member between `from` and `to`. Needs `report.cash`.
+ */
+export const getReportsCash = <ThrowOnError extends boolean = false>(options: Options<GetReportsCashData, ThrowOnError>): RequestResult<GetReportsCashResponses, GetReportsCashErrors, ThrowOnError> => (options.client ?? client).get<GetReportsCashResponses, GetReportsCashErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/reports/cash',
+    ...options
+});
+
+/**
+ * Deletes a Station nothing refers to. Needs the `reference_data.manage` permission.
+ */
+export const deleteStationsById = <ThrowOnError extends boolean = false>(options: Options<DeleteStationsByIdData, ThrowOnError>): RequestResult<DeleteStationsByIdResponses, DeleteStationsByIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteStationsByIdResponses, DeleteStationsByIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/stations/{id}',
+    ...options
+});
+
+/**
+ * Shows one Station. Any signed-in user.
+ */
+export const getStationsById = <ThrowOnError extends boolean = false>(options: Options<GetStationsByIdData, ThrowOnError>): RequestResult<GetStationsByIdResponses, GetStationsByIdErrors, ThrowOnError> => (options.client ?? client).get<GetStationsByIdResponses, GetStationsByIdErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/stations/{id}',
+    ...options
+});
+
+/**
+ * Renames or (de)activates a Station (it cannot move to another Location). Needs the `reference_data.manage` permission.
+ */
+export const patchStationsById = <ThrowOnError extends boolean = false>(options: Options<PatchStationsByIdData, ThrowOnError>): RequestResult<PatchStationsByIdResponses, PatchStationsByIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchStationsByIdResponses, PatchStationsByIdErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/stations/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * The destination Station hands the Shipment to the Receiver. Only from Arrived, once, and only when the
+ * `receiver_phone` given matches the Receiver phone. Needs `shipment.collect`, at the destination Station.
+ *
+ */
+export const patchShipmentsByIdCollect = <ThrowOnError extends boolean = false>(options: Options<PatchShipmentsByIdCollectData, ThrowOnError>): RequestResult<PatchShipmentsByIdCollectResponses, PatchShipmentsByIdCollectErrors, ThrowOnError> => (options.client ?? client).patch<PatchShipmentsByIdCollectResponses, PatchShipmentsByIdCollectErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/shipments/{id}/collect',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Cancellation requests per staff member between `from` and `to`. Needs `report.cancellation`.
+ */
+export const getReportsCancellations = <ThrowOnError extends boolean = false>(options: Options<GetReportsCancellationsData, ThrowOnError>): RequestResult<GetReportsCancellationsResponses, GetReportsCancellationsErrors, ThrowOnError> => (options.client ?? client).get<GetReportsCancellationsResponses, GetReportsCancellationsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/reports/cancellations',
+    ...options
+});
+
+/**
+ * Departs the Manifest at its origin Station: every loaded Shipment becomes In transit. Shipments cancelled, or with a pending Cancellation Request, since loading are taken off instead.
+ */
+export const patchManifestsByIdDepart = <ThrowOnError extends boolean = false>(options: Options<PatchManifestsByIdDepartData, ThrowOnError>): RequestResult<PatchManifestsByIdDepartResponses, PatchManifestsByIdDepartErrors, ThrowOnError> => (options.client ?? client).patch<PatchManifestsByIdDepartResponses, PatchManifestsByIdDepartErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/manifests/{id}/depart',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Departures from the external schedule for one `date` (YYYY-MM-DD) from the signed-in user's Station
+ * to `destination_station_id`. Needs `shipment.mark_in_transit`.
+ *
+ */
+export const getManifestsDepartures = <ThrowOnError extends boolean = false>(options: Options<GetManifestsDeparturesData, ThrowOnError>): RequestResult<GetManifestsDeparturesResponses, GetManifestsDeparturesErrors, ThrowOnError> => (options.client ?? client).get<GetManifestsDeparturesResponses, GetManifestsDeparturesErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/manifests/departures',
+    ...options
+});
+
+/**
+ * Sets the KHR price of a Sale Item and logs it. Needs `price.manage`.
+ */
+export const patchSaleItemsByIdPrice = <ThrowOnError extends boolean = false>(options: Options<PatchSaleItemsByIdPriceData, ThrowOnError>): RequestResult<PatchSaleItemsByIdPriceResponses, PatchSaleItemsByIdPriceErrors, ThrowOnError> => (options.client ?? client).patch<PatchSaleItemsByIdPriceResponses, PatchSaleItemsByIdPriceErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/sale-items/{id}/price',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Lists Stations with the Location each is in. Any signed-in user.
+ */
+export const getStations = <ThrowOnError extends boolean = false>(options?: Options<GetStationsData, ThrowOnError>): RequestResult<GetStationsResponses, GetStationsErrors, ThrowOnError> => (options?.client ?? client).get<GetStationsResponses, GetStationsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/stations',
+    ...options
+});
+
+/**
+ * Creates a Station in a Location. Needs the `reference_data.manage` permission.
+ */
+export const postStations = <ThrowOnError extends boolean = false>(options: Options<PostStationsData, ThrowOnError>): RequestResult<PostStationsResponses, PostStationsErrors, ThrowOnError> => (options.client ?? client).post<PostStationsResponses, PostStationsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/stations',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Lists users. Needs the `user.manage` permission.
+ */
+export const getUsers = <ThrowOnError extends boolean = false>(options?: Options<GetUsersData, ThrowOnError>): RequestResult<GetUsersResponses, GetUsersErrors, ThrowOnError> => (options?.client ?? client).get<GetUsersResponses, GetUsersErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/users',
+    ...options
+});
+
+/**
+ * Creates a user with a role (and a Station for staff and supervisors). Needs `user.manage`.
+ */
+export const postUsers = <ThrowOnError extends boolean = false>(options: Options<PostUsersData, ThrowOnError>): RequestResult<PostUsersResponses, PostUsersErrors, ThrowOnError> => (options.client ?? client).post<PostUsersResponses, PostUsersErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/users',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Deletes a Location with no Stations. Needs the `reference_data.manage` permission.
+ */
+export const deleteLocationsById = <ThrowOnError extends boolean = false>(options: Options<DeleteLocationsByIdData, ThrowOnError>): RequestResult<DeleteLocationsByIdResponses, DeleteLocationsByIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteLocationsByIdResponses, DeleteLocationsByIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/locations/{id}',
+    ...options
+});
+
+/**
+ * Shows one Location. Any signed-in user.
+ */
+export const getLocationsById = <ThrowOnError extends boolean = false>(options: Options<GetLocationsByIdData, ThrowOnError>): RequestResult<GetLocationsByIdResponses, GetLocationsByIdErrors, ThrowOnError> => (options.client ?? client).get<GetLocationsByIdResponses, GetLocationsByIdErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/locations/{id}',
+    ...options
+});
+
+/**
+ * Renames a Location. Needs the `reference_data.manage` permission.
+ */
+export const patchLocationsById = <ThrowOnError extends boolean = false>(options: Options<PatchLocationsByIdData, ThrowOnError>): RequestResult<PatchLocationsByIdResponses, PatchLocationsByIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchLocationsByIdResponses, PatchLocationsByIdErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/locations/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Sets the global price per kg in KHR and logs it. Needs the `price.manage` permission.
+ */
+export const postPricingPricePerKg = <ThrowOnError extends boolean = false>(options: Options<PostPricingPricePerKgData, ThrowOnError>): RequestResult<PostPricingPricePerKgResponses, PostPricingPricePerKgErrors, ThrowOnError> => (options.client ?? client).post<PostPricingPricePerKgResponses, PostPricingPricePerKgErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/pricing/price-per-kg',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * /manifests/:id operation on manifest resource
+ */
+export const getManifestsById = <ThrowOnError extends boolean = false>(options: Options<GetManifestsByIdData, ThrowOnError>): RequestResult<GetManifestsByIdResponses, GetManifestsByIdErrors, ThrowOnError> => (options.client ?? client).get<GetManifestsByIdResponses, GetManifestsByIdErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/manifests/{id}',
+    ...options
+});
+
+/**
+ * Signs in with a phone number or an email (send it as `login`) and a password. Public.
+ *
+ * Returns `meta.token` (access token, valid 1 hour) and `meta.refresh_token` (single use, 30 days).
+ * Send the access token as `Authorization: Bearer <token>`.
+ *
+ */
+export const postUsersSignIn = <ThrowOnError extends boolean = false>(options: Options<PostUsersSignInData, ThrowOnError>): RequestResult<PostUsersSignInResponses, PostUsersSignInErrors, ThrowOnError> => (options.client ?? client).post<PostUsersSignInResponses, PostUsersSignInErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/users/sign-in',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * The current Cancellation Fee rule. Any signed-in user.
+ */
+export const getPricingCancellationFee = <ThrowOnError extends boolean = false>(options?: Options<GetPricingCancellationFeeData, ThrowOnError>): RequestResult<GetPricingCancellationFeeResponses, GetPricingCancellationFeeErrors, ThrowOnError> => (options?.client ?? client).get<GetPricingCancellationFeeResponses, GetPricingCancellationFeeErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/pricing/cancellation-fee',
+    ...options
+});
+
+/**
+ * Sets the Cancellation Fee percent and optional cap, and logs it. Needs `price.manage`.
+ */
+export const postPricingCancellationFee = <ThrowOnError extends boolean = false>(options: Options<PostPricingCancellationFeeData, ThrowOnError>): RequestResult<PostPricingCancellationFeeResponses, PostPricingCancellationFeeErrors, ThrowOnError> => (options.client ?? client).post<PostPricingCancellationFeeResponses, PostPricingCancellationFeeErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/pricing/cancellation-fee',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Sets the KHR price of a Size Class and logs it. Needs `price.manage`.
+ */
+export const patchSizeClassesByIdPrice = <ThrowOnError extends boolean = false>(options: Options<PatchSizeClassesByIdPriceData, ThrowOnError>): RequestResult<PatchSizeClassesByIdPriceResponses, PatchSizeClassesByIdPriceErrors, ThrowOnError> => (options.client ?? client).patch<PatchSizeClassesByIdPriceResponses, PatchSizeClassesByIdPriceErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/size-classes/{id}/price',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Shows one Sale Item.
+ */
+export const getSaleItemsById = <ThrowOnError extends boolean = false>(options: Options<GetSaleItemsByIdData, ThrowOnError>): RequestResult<GetSaleItemsByIdResponses, GetSaleItemsByIdErrors, ThrowOnError> => (options.client ?? client).get<GetSaleItemsByIdResponses, GetSaleItemsByIdErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/sale-items/{id}',
+    ...options
+});
+
+/**
+ * Renames or (de)activates a Sale Item. Needs `price.manage`.
+ */
+export const patchSaleItemsById = <ThrowOnError extends boolean = false>(options: Options<PatchSaleItemsByIdData, ThrowOnError>): RequestResult<PatchSaleItemsByIdResponses, PatchSaleItemsByIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchSaleItemsByIdResponses, PatchSaleItemsByIdErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/sale-items/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Lists Manifests at the caller's Station (as origin or destination). Needs `shipment.read`.
+ */
+export const getManifests = <ThrowOnError extends boolean = false>(options?: Options<GetManifestsData, ThrowOnError>): RequestResult<GetManifestsResponses, GetManifestsErrors, ThrowOnError> => (options?.client ?? client).get<GetManifestsResponses, GetManifestsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/manifests',
+    ...options
+});
+
+/**
+ * Opens the Manifest for a Trip from the schedule (`external_trip_id`) going to `destination_station_id`.
+ * Opening the same Trip again returns the existing Manifest. Needs `shipment.mark_in_transit`.
+ *
+ */
+export const postManifests = <ThrowOnError extends boolean = false>(options: Options<PostManifestsData, ThrowOnError>): RequestResult<PostManifestsResponses, PostManifestsErrors, ThrowOnError> => (options.client ?? client).post<PostManifestsResponses, PostManifestsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/manifests',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * Gets one user by id.
+ */
+export const getUsersById = <ThrowOnError extends boolean = false>(options: Options<GetUsersByIdData, ThrowOnError>): RequestResult<GetUsersByIdResponses, GetUsersByIdErrors, ThrowOnError> => (options.client ?? client).get<GetUsersByIdResponses, GetUsersByIdErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/users/{id}',
+    ...options
+});
+
+/**
+ * Changes a user's role and Station. The change is recorded in the assignment log.
+ */
+export const patchUsersById = <ThrowOnError extends boolean = false>(options: Options<PatchUsersByIdData, ThrowOnError>): RequestResult<PatchUsersByIdResponses, PatchUsersByIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchUsersByIdResponses, PatchUsersByIdErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/users/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * /incidents/:id/resolve operation on incident resource
+ */
+export const patchIncidentsByIdResolve = <ThrowOnError extends boolean = false>(options: Options<PatchIncidentsByIdResolveData, ThrowOnError>): RequestResult<PatchIncidentsByIdResolveResponses, PatchIncidentsByIdResolveErrors, ThrowOnError> => (options.client ?? client).patch<PatchIncidentsByIdResolveResponses, PatchIncidentsByIdResolveErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/incidents/{id}/resolve',
+    ...options,
+    headers: {
+        'Content-Type': 'application/vnd.api+json',
+        ...options.headers
+    }
+});
+
+/**
+ * The price history, every price ever set. Needs the `price.manage` permission.
+ */
+export const getPriceChanges = <ThrowOnError extends boolean = false>(options?: Options<GetPriceChangesData, ThrowOnError>): RequestResult<GetPriceChangesResponses, GetPriceChangesErrors, ThrowOnError> => (options?.client ?? client).get<GetPriceChangesResponses, GetPriceChangesErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/price-changes',
+    ...options
+});
+
+/**
+ * Lists Cancellation Requests; use `filter[status]=pending` for the Supervisor's queue. Needs `shipment.read`.
+ */
+export const getCancellationRequests = <ThrowOnError extends boolean = false>(options?: Options<GetCancellationRequestsData, ThrowOnError>): RequestResult<GetCancellationRequestsResponses, GetCancellationRequestsErrors, ThrowOnError> => (options?.client ?? client).get<GetCancellationRequestsResponses, GetCancellationRequestsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/cancellation-requests',
+    ...options
+});
+
+/**
+ * Asks to cancel a Received Shipment, with a reason. Needs `cancellation.request`, at the origin Station.
+ * Where that Station does not require approval, the Shipment is cancelled and refunded straight away.
+ *
+ */
+export const postCancellationRequests = <ThrowOnError extends boolean = false>(options: Options<PostCancellationRequestsData, ThrowOnError>): RequestResult<PostCancellationRequestsResponses, PostCancellationRequestsErrors, ThrowOnError> => (options.client ?? client).post<PostCancellationRequestsResponses, PostCancellationRequestsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/cancellation-requests',
     ...options,
     headers: {
         'Content-Type': 'application/vnd.api+json',
@@ -480,9 +838,10 @@ export const postApiV1ShipmentNotes = <ThrowOnError extends boolean = false>(opt
  * approved or rejected).
  *
  */
-export const patchApiV1ManifestsByIdScan = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1ManifestsByIdScanData, ThrowOnError>): RequestResult<PatchApiV1ManifestsByIdScanResponses, PatchApiV1ManifestsByIdScanErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1ManifestsByIdScanResponses, PatchApiV1ManifestsByIdScanErrors, ThrowOnError>({
+export const patchManifestsByIdScan = <ThrowOnError extends boolean = false>(options: Options<PatchManifestsByIdScanData, ThrowOnError>): RequestResult<PatchManifestsByIdScanResponses, PatchManifestsByIdScanErrors, ThrowOnError> => (options.client ?? client).patch<PatchManifestsByIdScanResponses, PatchManifestsByIdScanErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/manifests/{id}/scan',
+    url: '/manifests/{id}/scan',
     ...options,
     headers: {
         'Content-Type': 'application/vnd.api+json',
@@ -491,303 +850,11 @@ export const patchApiV1ManifestsByIdScan = <ThrowOnError extends boolean = false
 });
 
 /**
- * Closes the Manifest at its destination Station. Unscanned Shipments stay In transit.
+ * Which role holds which Permission by default. Pair with `/permissions` for what each one means.
  */
-export const patchApiV1ManifestsByIdArrive = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1ManifestsByIdArriveData, ThrowOnError>): RequestResult<PatchApiV1ManifestsByIdArriveResponses, PatchApiV1ManifestsByIdArriveErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1ManifestsByIdArriveResponses, PatchApiV1ManifestsByIdArriveErrors, ThrowOnError>({
+export const getRolePermissions = <ThrowOnError extends boolean = false>(options?: Options<GetRolePermissionsData, ThrowOnError>): RequestResult<GetRolePermissionsResponses, GetRolePermissionsErrors, ThrowOnError> => (options?.client ?? client).get<GetRolePermissionsResponses, GetRolePermissionsErrors, ThrowOnError>({
+    responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/manifests/{id}/arrive',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * The origin Station hands the Shipment to the bus. Only from Received. Needs `shipment.mark_in_transit`,
- * at the Shipment's origin Station.
- *
- */
-export const patchApiV1ShipmentsByIdInTransit = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1ShipmentsByIdInTransitData, ThrowOnError>): RequestResult<PatchApiV1ShipmentsByIdInTransitResponses, PatchApiV1ShipmentsByIdInTransitErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1ShipmentsByIdInTransitResponses, PatchApiV1ShipmentsByIdInTransitErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/shipments/{id}/in-transit',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * /manifests/:id operation on manifest resource
- */
-export const getApiV1ManifestsById = <ThrowOnError extends boolean = false>(options: Options<GetApiV1ManifestsByIdData, ThrowOnError>): RequestResult<GetApiV1ManifestsByIdResponses, GetApiV1ManifestsByIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1ManifestsByIdResponses, GetApiV1ManifestsByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/manifests/{id}',
+    url: '/role-permissions',
     ...options
-});
-
-/**
- * /permissions operation on permission resource
- */
-export const getApiV1Permissions = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1PermissionsData, ThrowOnError>): RequestResult<GetApiV1PermissionsResponses, GetApiV1PermissionsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1PermissionsResponses, GetApiV1PermissionsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/permissions',
-    ...options
-});
-
-/**
- * Sets whether cancelling a Shipment sent from this Station needs a Supervisor's approval, and logs it.
- * Needs the `station_setting.manage` permission (Admin).
- *
- */
-export const patchApiV1StationsByIdCancellationApproval = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1StationsByIdCancellationApprovalData, ThrowOnError>): RequestResult<PatchApiV1StationsByIdCancellationApprovalResponses, PatchApiV1StationsByIdCancellationApprovalErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1StationsByIdCancellationApprovalResponses, PatchApiV1StationsByIdCancellationApprovalErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/stations/{id}/cancellation-approval',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Shows one Shipment (the invoice). Needs the `shipment.read` permission.
- */
-export const getApiV1ShipmentsById = <ThrowOnError extends boolean = false>(options: Options<GetApiV1ShipmentsByIdData, ThrowOnError>): RequestResult<GetApiV1ShipmentsByIdResponses, GetApiV1ShipmentsByIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1ShipmentsByIdResponses, GetApiV1ShipmentsByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/shipments/{id}',
-    ...options
-});
-
-/**
- * Gets one user by id.
- */
-export const getApiV1UsersById = <ThrowOnError extends boolean = false>(options: Options<GetApiV1UsersByIdData, ThrowOnError>): RequestResult<GetApiV1UsersByIdResponses, GetApiV1UsersByIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1UsersByIdResponses, GetApiV1UsersByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/users/{id}',
-    ...options
-});
-
-/**
- * Changes a user's role and Station. The change is recorded in the assignment log.
- */
-export const patchApiV1UsersById = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1UsersByIdData, ThrowOnError>): RequestResult<PatchApiV1UsersByIdResponses, PatchApiV1UsersByIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1UsersByIdResponses, PatchApiV1UsersByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/users/{id}',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Arrived Shipments waiting longer than their destination Station's Overdue Threshold (days since arrival). Staff and Supervisors see their own Station; an Admin sees all and may pass `destination_station_id`.
- */
-export const getApiV1ShipmentsOverdue = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1ShipmentsOverdueData, ThrowOnError>): RequestResult<GetApiV1ShipmentsOverdueResponses, GetApiV1ShipmentsOverdueErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1ShipmentsOverdueResponses, GetApiV1ShipmentsOverdueErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/shipments/overdue',
-    ...options
-});
-
-/**
- * The price history, every price ever set. Needs the `price.manage` permission.
- */
-export const getApiV1PriceChanges = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1PriceChangesData, ThrowOnError>): RequestResult<GetApiV1PriceChangesResponses, GetApiV1PriceChangesErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1PriceChangesResponses, GetApiV1PriceChangesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/price-changes',
-    ...options
-});
-
-/**
- * /incidents operation on incident resource
- */
-export const getApiV1Incidents = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1IncidentsData, ThrowOnError>): RequestResult<GetApiV1IncidentsResponses, GetApiV1IncidentsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1IncidentsResponses, GetApiV1IncidentsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/incidents',
-    ...options
-});
-
-/**
- * /incidents operation on incident resource
- */
-export const postApiV1Incidents = <ThrowOnError extends boolean = false>(options: Options<PostApiV1IncidentsData, ThrowOnError>): RequestResult<PostApiV1IncidentsResponses, PostApiV1IncidentsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1IncidentsResponses, PostApiV1IncidentsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/incidents',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Rejects a pending request; `decision_reason` is required. Same rights as approving.
- */
-export const patchApiV1CancellationRequestsByIdReject = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1CancellationRequestsByIdRejectData, ThrowOnError>): RequestResult<PatchApiV1CancellationRequestsByIdRejectResponses, PatchApiV1CancellationRequestsByIdRejectErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1CancellationRequestsByIdRejectResponses, PatchApiV1CancellationRequestsByIdRejectErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/cancellation-requests/{id}/reject',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * The log of Cancellation Fee and Station approval settings, newest first. Needs `price.manage`.
- */
-export const getApiV1SettingChanges = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1SettingChangesData, ThrowOnError>): RequestResult<GetApiV1SettingChangesResponses, GetApiV1SettingChangesErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1SettingChangesResponses, GetApiV1SettingChangesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/setting-changes',
-    ...options
-});
-
-/**
- * Signs in with a phone number or an email (send it as `login`) and a password. Public.
- *
- * Returns `meta.token` (access token, valid 1 hour) and `meta.refresh_token` (single use, 30 days).
- * Send the access token as `Authorization: Bearer <token>`.
- *
- */
-export const postApiV1UsersSignIn = <ThrowOnError extends boolean = false>(options: Options<PostApiV1UsersSignInData, ThrowOnError>): RequestResult<PostApiV1UsersSignInResponses, PostApiV1UsersSignInErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1UsersSignInResponses, PostApiV1UsersSignInErrors, ThrowOnError>({
-    url: '/api/v1/users/sign-in',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Deletes a Route no Shipment has used. Needs the `reference_data.manage` permission.
- */
-export const deleteApiV1RoutesById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1RoutesByIdData, ThrowOnError>): RequestResult<DeleteApiV1RoutesByIdResponses, DeleteApiV1RoutesByIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1RoutesByIdResponses, DeleteApiV1RoutesByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/routes/{id}',
-    ...options
-});
-
-/**
- * Shows one Route. Any signed-in user.
- */
-export const getApiV1RoutesById = <ThrowOnError extends boolean = false>(options: Options<GetApiV1RoutesByIdData, ThrowOnError>): RequestResult<GetApiV1RoutesByIdResponses, GetApiV1RoutesByIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1RoutesByIdResponses, GetApiV1RoutesByIdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/routes/{id}',
-    ...options
-});
-
-/**
- * Sets how many hours after departure a Shipment is Overdue at this destination Station, and logs it. Needs `station_setting.manage`.
- */
-export const patchApiV1StationsByIdOverdueThreshold = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1StationsByIdOverdueThresholdData, ThrowOnError>): RequestResult<PatchApiV1StationsByIdOverdueThresholdResponses, PatchApiV1StationsByIdOverdueThresholdErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1StationsByIdOverdueThresholdResponses, PatchApiV1StationsByIdOverdueThresholdErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/stations/{id}/overdue-threshold',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Sets the global price per kg in KHR and logs it. Needs the `price.manage` permission.
- */
-export const postApiV1PricingPricePerKg = <ThrowOnError extends boolean = false>(options: Options<PostApiV1PricingPricePerKgData, ThrowOnError>): RequestResult<PostApiV1PricingPricePerKgResponses, PostApiV1PricingPricePerKgErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1PricingPricePerKgResponses, PostApiV1PricingPricePerKgErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/pricing/price-per-kg',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Lists Size Classes. Staff see only active ones; an Admin sees all.
- */
-export const getApiV1SizeClasses = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1SizeClassesData, ThrowOnError>): RequestResult<GetApiV1SizeClassesResponses, GetApiV1SizeClassesErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1SizeClassesResponses, GetApiV1SizeClassesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/size-classes',
-    ...options
-});
-
-/**
- * Creates a Size Class with a KHR price. Needs `price.manage`.
- */
-export const postApiV1SizeClasses = <ThrowOnError extends boolean = false>(options: Options<PostApiV1SizeClassesData, ThrowOnError>): RequestResult<PostApiV1SizeClassesResponses, PostApiV1SizeClassesErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1SizeClassesResponses, PostApiV1SizeClassesErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/size-classes',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Cash per staff member between `from` and `to`. Needs `report.cash`.
- */
-export const getApiV1ReportsCash = <ThrowOnError extends boolean = false>(options: Options<GetApiV1ReportsCashData, ThrowOnError>): RequestResult<GetApiV1ReportsCashResponses, GetApiV1ReportsCashErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1ReportsCashResponses, GetApiV1ReportsCashErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/reports/cash',
-    ...options
-});
-
-/**
- * The destination Station hands the Shipment to the Receiver. Only from Arrived, once, and only when the
- * `receiver_phone` given matches the Receiver phone. Needs `shipment.collect`, at the destination Station.
- *
- */
-export const patchApiV1ShipmentsByIdCollect = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1ShipmentsByIdCollectData, ThrowOnError>): RequestResult<PatchApiV1ShipmentsByIdCollectResponses, PatchApiV1ShipmentsByIdCollectErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1ShipmentsByIdCollectResponses, PatchApiV1ShipmentsByIdCollectErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/shipments/{id}/collect',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
-});
-
-/**
- * Cancellation requests per staff member between `from` and `to`. Needs `report.cancellation`.
- */
-export const getApiV1ReportsCancellations = <ThrowOnError extends boolean = false>(options: Options<GetApiV1ReportsCancellationsData, ThrowOnError>): RequestResult<GetApiV1ReportsCancellationsResponses, GetApiV1ReportsCancellationsErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1ReportsCancellationsResponses, GetApiV1ReportsCancellationsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/reports/cancellations',
-    ...options
-});
-
-/**
- * The current global pricing (price per kg). Any signed-in user.
- */
-export const getApiV1PricingCurrent = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1PricingCurrentData, ThrowOnError>): RequestResult<GetApiV1PricingCurrentResponses, GetApiV1PricingCurrentErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1PricingCurrentResponses, GetApiV1PricingCurrentErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/pricing/current',
-    ...options
-});
-
-/**
- * Lists Manifests at the caller's Station (as origin or destination). Needs `shipment.read`.
- */
-export const getApiV1Manifests = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1ManifestsData, ThrowOnError>): RequestResult<GetApiV1ManifestsResponses, GetApiV1ManifestsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1ManifestsResponses, GetApiV1ManifestsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/manifests',
-    ...options
-});
-
-/**
- * Opens the Manifest for a Trip from the schedule (`external_trip_id`) going to `destination_station_id`.
- * Opening the same Trip again returns the existing Manifest. Needs `shipment.mark_in_transit`.
- *
- */
-export const postApiV1Manifests = <ThrowOnError extends boolean = false>(options: Options<PostApiV1ManifestsData, ThrowOnError>): RequestResult<PostApiV1ManifestsResponses, PostApiV1ManifestsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1ManifestsResponses, PostApiV1ManifestsErrors, ThrowOnError>({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/api/v1/manifests',
-    ...options,
-    headers: {
-        'Content-Type': 'application/vnd.api+json',
-        ...options.headers
-    }
 });

@@ -5,6 +5,7 @@ defmodule Ex.Pricing.PriceChange do
   Rows are written only by `Ex.Pricing.Changes.LogPrice`, inside the pricing action's transaction.
   """
   use Ash.Resource,
+    primary_read_warning?: false,
     otp_app: :ex,
     domain: Ex.Pricing,
     data_layer: AshPostgres.DataLayer,
@@ -42,7 +43,16 @@ defmodule Ex.Pricing.PriceChange do
   end
 
   actions do
-    defaults [:read]
+    read :read do
+      primary? true
+      prepare build(default_sort: [inserted_at: :desc])
+
+      pagination keyset?: true,
+                 required?: false,
+                 default_limit: 50,
+                 max_page_size: 200,
+                 countable: true
+    end
 
     create :record do
       primary? true

@@ -1,33 +1,27 @@
-import { authFetch } from '#/lib/auth'
+import axios from 'axios'
+import { http } from '#/lib/auth'
 
 // Minimal JSON:API helper: flattens `{id, attributes}` into one object and
 // resolves `included` relationships. Errors become `Error(detail)`.
 export type Rec = { id: string; [k: string]: any }
 export type Money = { currency: string; amount: string }
 
-const HEADERS = { 'content-type': 'application/vnd.api+json', accept: 'application/vnd.api+json' }
-
 async function call(method: string, path: string, body?: unknown): Promise<any> {
-  const res = await authFetch(
-    new Request(`/api/v1${path}`, {
-      method,
-      headers: HEADERS,
-      body: body === undefined ? undefined : JSON.stringify(body),
-    }),
-  )
-  if (res.status === 204) return null
-  const json = await res.json().catch(() => null)
-  if (!res.ok) {
-    const errs: any[] = json?.errors ?? []
-    const msg = errs.map((e) => e.detail || e.title).filter(Boolean).join('; ')
-    if (res.status === 403 && (!msg || msg.toLowerCase() === 'forbidden'))
+  try {
+    const res = await http.request({ method, url: path, data: body, responseType: 'json' })
+    return res.status === 204 ? null : res.data
+  } catch (e) {
+    if (!axios.isAxiosError(e) || !e.response) throw e
+    const { status, data } = e.response
+    const errs: any[] = data?.errors ?? []
+    const msg = errs.map((x) => x.detail || x.title).filter(Boolean).join('; ')
+    if (status === 403 && (!msg || msg.toLowerCase() === 'forbidden'))
       throw new Error("You're not allowed to do this. Your role may not include it, or this Shipment isn't at your Station. Ask a Supervisor or Admin.")
-    throw new Error(msg || `Request failed (${res.status})`)
+    throw new Error(msg || `Request failed (${status})`)
   }
-  return json
 }
 
-function flatten(r: any, included: any[]): Rec {
+export function flatten(r: any, included: any[]): Rec {
   const out: Rec = { id: r.id, ...r.attributes }
   for (const [name, rel] of Object.entries<any>(r.relationships ?? {})) {
     const d = rel?.data
@@ -44,6 +38,16 @@ export async function list(path: string): Promise<Rec[]> {
   const j = await call('GET', path)
   const rows = Array.isArray(j.data) ? j.data : j.data ? [j.data] : []
   return rows.map((r: any) => flatten(r, j.included ?? []))
+}
+/** One server page: the rows plus the path of the next page (from `links.next`), or null on the last. */
+export type Page = { rows: Rec[]; next: string | null }
+export async function listPage(path: string): Promise<Page> {
+  const j = await call('GET', path)
+  const rows = (Array.isArray(j.data) ? j.data : []).map((r: any) => flatten(r, j.included ?? []))
+  const link: string | null = j.links?.next ?? null
+  // links.next is absolute (http://host/api/v1/shipments?...); keep the path after /api/v1.
+  const next = link ? link.replace(/^.*?\/api\/v1/, '') : null
+  return { rows, next }
 }
 export async function get(path: string): Promise<Rec> {
   const j = await call('GET', path)

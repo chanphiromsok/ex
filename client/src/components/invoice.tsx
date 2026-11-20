@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react'
 import JsBarcode from 'jsbarcode'
 import { useQuery } from '@tanstack/react-query'
 import { money, when, type Rec } from '#/lib/api'
-import { listQuery, recordQuery } from '#/lib/queries'
+import { getSaleItemsOptions, getShipmentsByIdOptions, getSizeClassesOptions, getStationsOptions } from '#/api/@tanstack/react-query.gen'
+import { asRow, asRows } from '#/lib/queries'
 import { Card, Err } from '#/components/kit'
 import { formatPhone } from '#/lib/phone'
 
@@ -123,10 +124,10 @@ export function Invoice({
 
 /** Loads one Shipment with what the Invoice needs and shows it. */
 export function InvoiceLoader({ id }: { id: string }) {
-  const shipment = useQuery(recordQuery(`/shipments/${id}?include=parcels,sale_items,payments`))
-  const stations = useQuery(listQuery('/stations'))
-  const sizeClasses = useQuery(listQuery('/size-classes'))
-  const saleItems = useQuery(listQuery('/sale-items'))
+  const shipment = useQuery({ ...getShipmentsByIdOptions({ path: { id }, query: { include: 'parcels,sale_items,payments' } }), select: asRow })
+  const stations = useQuery({ ...getStationsOptions(), select: asRows })
+  const sizeClasses = useQuery({ ...getSizeClassesOptions(), select: asRows })
+  const saleItems = useQuery({ ...getSaleItemsOptions(), select: asRows })
   if (!shipment.data)
     return shipment.isPending ? (
       <Card>

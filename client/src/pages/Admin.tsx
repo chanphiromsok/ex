@@ -7,7 +7,9 @@ import { z } from 'zod'
 import { toast } from 'sonner'
 import { Pencil, UserPlus } from 'lucide-react'
 import { create, update, type Rec } from '#/lib/api'
-import { apiKey, listQuery } from '#/lib/queries'
+import { getPermissionsOptions, getRolePermissionsOptions, getStationsOptions, getUsersInfiniteOptions } from '#/api/@tanstack/react-query.gen'
+import { usePaged } from '#/lib/paged'
+import { asRows, resource } from '#/lib/queries'
 import { Bilingual, Button, Card, Err, Num, Page, Pill, Tray } from '#/components/kit'
 import { Choice, Combobox, FormField, Segmented, type Option } from '#/components/form'
 import { DataTable, type ColumnDef } from '#/components/data-table'
@@ -42,7 +44,7 @@ function ThresholdDialog({ station, onClose }: { station: Rec | null; onClose: (
       update(`/stations/${station!.id}/overdue-threshold`, 'station', { overdue_threshold_days: Number(v.days) }),
     onSuccess: async (_d, v) => {
       toast.success(`${station?.name_en}: Overdue after ${days(Number(v.days))}`)
-      await qc.invalidateQueries({ queryKey: apiKey('stations') })
+      await qc.invalidateQueries(resource('stations'))
       onClose()
     },
   })
@@ -84,7 +86,7 @@ function ThresholdDialog({ station, onClose }: { station: Rec | null; onClose: (
 
 export function StationSettings() {
   const qc = useQueryClient()
-  const stationsQ = useQuery(listQuery('/stations'))
+  const stationsQ = useQuery({ ...getStationsOptions(), select: asRows })
   const [editing, setEditing] = useState<Rec | null>(null)
 
   const approval = useMutation({
@@ -96,7 +98,7 @@ export function StationSettings() {
           ? `${s.name_en}: Cancellations go through straight away`
           : `${s.name_en}: Cancellations now need a Supervisor`,
       )
-      await qc.invalidateQueries({ queryKey: apiKey('stations') })
+      await qc.invalidateQueries(resource('stations'))
     },
   })
 
@@ -194,13 +196,13 @@ const blankUser: z.input<typeof userSchema> = { phone: '', email: '', password: 
 
 export function Users() {
   const qc = useQueryClient()
-  const usersQ = useQuery(listQuery('/users'))
-  const stationsQ = useQuery(listQuery('/stations'))
+  const usersQ = usePaged(getUsersInfiniteOptions())
+  const stationsQ = useQuery({ ...getStationsOptions(), select: asRows })
   const stations = stationsQ.data ?? []
   const stationOptions: Option[] = stations.map((s) => ({ value: s.id, label: s.name_en, hint: s.name_km, keywords: [s.name_km ?? ''] }))
   const stationName = (id?: string | null) => stations.find((s) => s.id === id)?.name_en ?? ''
   const [roleFilter, setRoleFilter] = useState('all')
-  const refresh = () => qc.invalidateQueries({ queryKey: apiKey('users') })
+  const refresh = () => qc.invalidateQueries(resource('users'))
 
   const form = useForm({ resolver: zodResolver(userSchema), defaultValues: blankUser })
   const role = useWatch({ control: form.control, name: 'role' })
@@ -233,7 +235,7 @@ export function Users() {
     onError: (e, { u }) => toast.error(`Couldn't update ${who(u)}`, { description: e instanceof Error ? e.message : String(e) }),
   })
 
-  const rows = useMemo(() => (usersQ.data ?? []).filter((u) => roleFilter === 'all' || u.role === roleFilter), [usersQ.data, roleFilter])
+  const rows = useMemo(() => usersQ.rows.filter((u) => roleFilter === 'all' || u.role === roleFilter), [usersQ.rows, roleFilter])
 
   const columns = useMemo<ColumnDef<Rec>[]>(
     () => [
@@ -377,8 +379,8 @@ const CRITICAL: Record<string, string> = {
 
 /** What each Permission means and which roles hold it, so an Admin never has to guess from the key. */
 function PermissionGuide() {
-  const permsQ = useQuery(listQuery('/permissions'))
-  const grantsQ = useQuery(listQuery('/role-permissions'))
+  const permsQ = useQuery({ ...getPermissionsOptions(), select: asRows })
+  const grantsQ = useQuery({ ...getRolePermissionsOptions(), select: asRows })
   const rows = useMemo(() => {
     const roles = new Map<string, string[]>()
     for (const g of grantsQ.data ?? []) roles.set(g.permission, [...(roles.get(g.permission) ?? []), g.role])

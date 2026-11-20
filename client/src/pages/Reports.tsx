@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { RefreshCw } from 'lucide-react'
 import { money } from '#/lib/api'
-import { rawQuery } from '#/lib/queries'
+import { getReportsCancellationsOptions, getReportsCashOptions } from '#/api/@tanstack/react-query.gen'
 import { dayjs, dayStartUtc, ppDay } from '#/lib/date'
 import { Button, Card, Err, Num, Page } from '#/components/kit'
 import { DateRangePicker, rangeLabel, type DayRange } from '#/components/form'
@@ -21,9 +21,10 @@ function useReport(kind: 'cash' | 'cancellations') {
   }))
   const from = dayStartUtc(range.from)
   const to = dayStartUtc(dayjs(range.to).add(1, 'day').format('YYYY-MM-DD'))
+  const options = { query: { from, to } }
   const q = useQuery({
-    ...rawQuery<Row[]>(`/reports/${kind}?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`),
-    select: (r) => (Array.isArray(r) ? r : []),
+    ...(kind === 'cash' ? getReportsCashOptions(options) : getReportsCancellationsOptions(options)),
+    select: (r: unknown): Row[] => (Array.isArray(r) ? r : []),
   })
   return { range, setRange, q }
 }

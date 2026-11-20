@@ -6,6 +6,7 @@ defmodule Ex.Shipping.CancellationRequest do
   A rejected request keeps its decision and reason. Once a Shipment is In Transit it can no longer be cancelled.
   """
   use Ash.Resource,
+    primary_read_warning?: false,
     otp_app: :ex,
     domain: Ex.Shipping,
     data_layer: AshPostgres.DataLayer,
@@ -70,7 +71,16 @@ defmodule Ex.Shipping.CancellationRequest do
   end
 
   actions do
-    defaults [:read]
+    read :read do
+      primary? true
+      prepare build(default_sort: [inserted_at: :desc])
+
+      pagination keyset?: true,
+                 required?: false,
+                 default_limit: 50,
+                 max_page_size: 200,
+                 countable: true
+    end
 
     create :request do
       primary? true

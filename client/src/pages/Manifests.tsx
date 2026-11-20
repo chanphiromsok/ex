@@ -5,7 +5,9 @@ import { toast } from 'sonner'
 import { Bus, PackageCheck, Plus, ScanLine } from 'lucide-react'
 import { create, update, when, type Rec } from '#/lib/api'
 import type { Session } from '#/lib/auth'
-import { apiKey, listQuery, rawQuery, recordQuery } from '#/lib/queries'
+import { getManifestsByIdOptions, getManifestsDeparturesOptions, getManifestsInfiniteOptions, getStationsOptions } from '#/api/@tanstack/react-query.gen'
+import { usePaged } from '#/lib/paged'
+import { asRow, asRows, resource } from '#/lib/queries'
 import { Button, Card, Err, Page, Pill } from '#/components/kit'
 import { Choice } from '#/components/form'
 import { DataTable, type ColumnDef } from '#/components/data-table'
@@ -27,8 +29,8 @@ function StatusPill({ status }: { status: string }) {
 
 export function Manifests({ session }: { session: Session }) {
   const navigate = useNavigate()
-  const manifests = useQuery(listQuery('/manifests'))
-  const stations = useQuery(listQuery('/stations'))
+  const manifests = usePaged(getManifestsInfiniteOptions())
+  const stations = useQuery({ ...getStationsOptions(), select: asRows })
 
   const columns = useMemo<ColumnDef<Rec, any>[]>(
     () => [
@@ -71,8 +73,9 @@ export function Manifests({ session }: { session: Session }) {
         <DataTable
           id="manifests-table"
           columns={columns}
-          data={manifests.data ?? []}
+          data={manifests.rows}
           loading={manifests.isPending}
+          more={manifests.more}
           empty="No Manifests yet."
           search={{ id: 'manifest-search', placeholder: 'Bus or Station', label: 'Find a Manifest' }}
           initialSort={[{ id: 'departs', desc: true }]}
@@ -86,14 +89,14 @@ export function Manifests({ session }: { session: Session }) {
 
 export function OpenManifest({ session }: { session: Session }) {
   const navigate = useNavigate()
-  const stations = useQuery(listQuery('/stations')).data ?? []
+  const stations = useQuery({ ...getStationsOptions(), select: asRows }).data ?? []
   const onBack = () => navigate({ to: '/manifests' })
   const onOpened = (id: string) => navigate({ to: '/manifests/$id', params: { id }, replace: true })
   const [destination, setDestination] = useState('')
   const [date, setDate] = useState(today())
   const options = stations.filter((s) => s.id !== session.stationId && s.active !== false).map((s) => ({ value: s.id, label: s.name_en, hint: s.name_km }))
   const departures = useQuery({
-    ...rawQuery<any>(`/manifests/departures?destination_station_id=${destination}&date=${date}`),
+    ...getManifestsDeparturesOptions({ query: { destination_station_id: destination, date } }),
     enabled: !!destination && !!date,
     select: (j: any): Rec[] => (Array.isArray(j) ? j : (j?.data ?? [])),
   })
@@ -101,7 +104,7 @@ export function OpenManifest({ session }: { session: Session }) {
   const open = useMutation({
     mutationFn: (trip_id: string) => create('/manifests', 'manifest', { external_trip_id: trip_id, destination_station_id: destination }),
     onSuccess: (m) => {
-      qc.invalidateQueries({ queryKey: apiKey('manifests') })
+      qc.invalidateQueries({ ...resource('manifests') })
       toast.success('Manifest opened')
       onOpened(m.id)
     },
@@ -156,14 +159,13 @@ export function OpenManifest({ session }: { session: Session }) {
 
 export function ManifestDetail({ id, session }: { id: string; session: Session }) {
   const navigate = useNavigate()
-  const stations = useQuery(listQuery('/stations')).data
+  const stations = useQuery({ ...getStationsOptions(), select: asRows }).data
   const onBack = () => navigate({ to: '/manifests' })
   const qc = useQueryClient()
-  const path = `/manifests/${id}?include=shipments`
-  const manifest = useQuery(recordQuery(path))
+  const manifest = useQuery({ ...getManifestsByIdOptions({ path: { id }, query: { include: 'shipments' } }), select: asRow })
   const [invoice, setInvoice] = useState('')
   const m = manifest.data
-  const refresh = () => qc.invalidateQueries({ queryKey: apiKey('manifests') })
+  const refresh = () => qc.invalidateQueries({ ...resource('manifests') })
   const done = { onSuccess: refresh, onError: (e: Error) => toast.error(e.message) }
   const clearErrors = () => { scan.reset(); depart.reset(); arrive.reset() }
 
@@ -174,12 +176,12 @@ export function ManifestDetail({ id, session }: { id: string; session: Session }
       toast.success(`Invoice #${no} scanned`)
       setInvoice('')
       refresh()
-      qc.invalidateQueries({ queryKey: apiKey('shipments') })
+      qc.invalidateQueries({ ...resource('shipments') })
     },
     onError: (e: Error) => toast.error(e.message),
   })
-  const depart = useMutation({ mutationFn: () => update(`/manifests/${id}/depart`, 'manifest', {}), ...done, onSuccess: () => { clearErrors(); toast.success('Bus marked as departed'); refresh(); qc.invalidateQueries({ queryKey: apiKey('shipments') }) } })
-  const arrive = useMutation({ mutationFn: () => update(`/manifests/${id}/arrive`, 'manifest', {}), ...done, onSuccess: () => { clearErrors(); toast.success('Manifest closed'); refresh(); qc.invalidateQueries({ queryKey: apiKey('shipments') }) } })
+  const depart = useMutation({ mutationFn: () => update(`/manifests/${id}/depart`, 'manifest', {}), ...done, onSuccess: () => { clearErrors(); toast.success('Bus marked as departed'); refresh(); qc.invalidateQueries({ ...resource('shipments') }) } })
+  const arrive = useMutation({ mutationFn: () => update(`/manifests/${id}/arrive`, 'manifest', {}), ...done, onSuccess: () => { clearErrors(); toast.success('Manifest closed'); refresh(); qc.invalidateQueries({ ...resource('shipments') }) } })
 
   if (!m) return <Page title="Manifest" onBack={onBack} backLabel="Manifests"><Err error={manifest.error} /></Page>
 

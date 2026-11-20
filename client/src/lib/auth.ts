@@ -1,3 +1,4 @@
+import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios'
 import { client } from '#/api/client.gen'
 import { formatPhone } from '#/lib/phone'
 
@@ -71,16 +72,18 @@ function toSession(body: any): Session {
   }
 }
 
+// Plain axios (no interceptors): these calls must not carry a stale bearer or trigger a refresh.
+const bare = axios.create({ baseURL: import.meta.env.VITE_API_URL ?? '', headers: HEADERS })
+
 export async function signIn(login: string, password: string): Promise<Session> {
-  const res = await fetch('/api/v1/users/sign-in', {
-    method: 'POST',
-    headers: HEADERS,
-    body: JSON.stringify({ data: { type: 'user', attributes: { login, password } } }),
-  })
-  if (!res.ok) throw new Error(res.status === 400 ? 'Wrong phone, email or password' : 'Sign-in failed')
-  const session = toSession(await res.json())
-  setSession(session)
-  return session
+  try {
+    const res = await bare.post('/api/v1/users/sign-in', { data: { type: 'user', attributes: { login, password } } })
+    const session = toSession(res.data)
+    setSession(session)
+    return session
+  } catch (e) {
+    throw new Error(axios.isAxiosError(e) && e.response?.status === 400 ? 'Wrong phone, email or password' : 'Sign-in failed')
+  }
 }
 
 // Swaps the refresh token for a new session. A refresh token works once, and reusing
@@ -95,15 +98,16 @@ function refreshSession(staleToken: string): Promise<Session | null> {
     const current = getSession()
     if (!current?.refreshToken) return null
     if (current.token !== staleToken) return current
-    const res = await fetch('/api/v1/users/refresh', {
-      method: 'POST',
-      headers: HEADERS,
-      body: JSON.stringify({ data: { type: 'user', attributes: { refresh_token: current.refreshToken } } }),
-    }).catch(() => null)
-    if (!res?.ok) return null
-    const session = toSession(await res.json())
-    setSession(session)
-    return session
+    try {
+      const res = await bare.post('/api/v1/users/refresh', {
+        data: { type: 'user', attributes: { refresh_token: current.refreshToken } },
+      })
+      const session = toSession(res.data)
+      setSession(session)
+      return session
+    } catch {
+      return null
+    }
   }).finally(() => {
     inFlight = null
   })
@@ -119,29 +123,35 @@ function goToLogin() {
   window.location.assign('/login')
 }
 
-/**
- * `fetch` with the bearer token. On a 401 it refreshes the session once and retries;
- * if that fails too, the user is signed out and sent to the login page.
- */
-export async function authFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
-  const request = new Request(input, init)
-  const session = getSession()
-  if (!session) return fetch(request)
-  const retry = request.clone()
-  request.headers.set('authorization', `Bearer ${session.token}`)
-  const res = await fetch(request)
-  if (res.status !== 401) return res
+type Retryable = InternalAxiosRequestConfig & { _retried?: boolean }
 
-  const renewed = await refreshSession(session.token)
+// Every call (generated SDK and the helpers in api.ts) goes through this axios instance.
+// Requests carry the bearer token. On a 401 the session is refreshed once and the request
+// retried; if that fails too, the user is signed out and sent to the login page.
+const http = client.instance
+
+http.interceptors.request.use((config) => {
+  const session = getSession()
+  if (session) config.headers.set('authorization', `Bearer ${session.token}`)
+  return config
+})
+
+http.interceptors.response.use(undefined, async (error: AxiosError) => {
+  const config = error.config as Retryable | undefined
+  if (error.response?.status !== 401 || !config) throw error
+  const stale = getSession()
+  if (!stale || config._retried) {
+    if (config?._retried) goToLogin()
+    throw error
+  }
+  const renewed = await refreshSession(stale.token)
   if (!renewed) {
     goToLogin()
-    return res
+    throw error
   }
-  retry.headers.set('authorization', `Bearer ${renewed.token}`)
-  const second = await fetch(retry)
-  if (second.status === 401) goToLogin()
-  return second
-}
+  config._retried = true
+  config.headers.set('authorization', `Bearer ${renewed.token}`)
+  return http.request(config)
+})
 
-// Every generated-SDK call goes through authFetch.
-client.setConfig({ fetch: authFetch as typeof fetch })
+export { http }

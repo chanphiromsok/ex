@@ -4,6 +4,7 @@ defmodule Ex.Network.Station do
   """
 
   use Ash.Resource,
+    primary_read_warning?: false,
     otp_app: :ex,
     domain: Ex.Network,
     data_layer: AshPostgres.DataLayer,
@@ -68,7 +69,18 @@ defmodule Ex.Network.Station do
   end
 
   actions do
-    defaults [:read, :destroy]
+    defaults [:destroy]
+
+    read :read do
+      primary? true
+      prepare build(default_sort: [inserted_at: :desc])
+
+      pagination keyset?: true,
+                 required?: false,
+                 default_limit: 50,
+                 max_page_size: 200,
+                 countable: true
+    end
 
     create :create do
       primary? true

@@ -4,7 +4,8 @@ import { Link, Outlet, createFileRoute, redirect, useNavigate } from '@tanstack/
 import { LogOut, Menu, X } from 'lucide-react'
 import { getSession, signOut } from '#/lib/auth'
 import { menuFor } from '#/lib/menu'
-import { listQuery } from '#/lib/queries'
+import { getStationsOptions } from '#/api/@tanstack/react-query.gen'
+import { asRows } from '#/lib/queries'
 import { BrandMark, SCREEN_META, StationIcon } from '#/components/nav'
 
 export const Route = createFileRoute('/_app')({
@@ -22,7 +23,7 @@ function Shell() {
   const navigate = useNavigate()
   const groups = menuFor(session.permissions)
   const [open, setOpen] = useState(false)
-  const stations = useQuery({ ...listQuery('/stations'), enabled: !!session.stationId })
+  const stations = useQuery({ ...getStationsOptions(), select: asRows, enabled: !!session.stationId })
   const station = stations.data?.find((s) => s.id === session.stationId)
 
   const rail = (
