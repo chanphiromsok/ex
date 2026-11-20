@@ -73,7 +73,7 @@ services:
       #   +MHas aobf  process heap allocator: same strategy
       #   +MMmcs 0    keep no freed memory segments cached; give them back to the OS
       RELEASE_MODE: interactive
-      ERL_FLAGS: "+MBas aobf +MHas aobf +MMmcs 0"
+      # ERL_FLAGS: "+MBas aobf +MHas aobf +MMmcs 0"
       # Local-only fallbacks so `docker compose up` works with no setup. They are public:
       # deploy/common.sh refuses to deploy unless the env file sets real values.
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-local-only-secret-key-base-local-only-secret-key-base-local-only-0000}
